@@ -12,7 +12,7 @@ export function Navbar() {
             <img 
               src={logoImage} 
               alt="PestFlow" 
-              className="h-10 w-auto object-contain mix-blend-multiply" 
+              className="h-24 w-auto object-contain mix-blend-multiply scale-150 origin-left" 
             />
           </Link>
         </div>
