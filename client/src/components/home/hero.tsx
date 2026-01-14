@@ -45,7 +45,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-6xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-white font-heading leading-[1.1] drop-shadow-lg"
+            className="text-5xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-white font-heading leading-[1.1] drop-shadow-lg"
           >
             We help you be the <br />
             <span className="text-emerald-400">BEST</span> in <span className="text-blue-400">PEST</span>
