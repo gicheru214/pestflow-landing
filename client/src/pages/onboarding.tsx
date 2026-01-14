@@ -37,6 +37,7 @@ type Step2Values = z.infer<typeof step2Schema>;
 
 export default function Onboarding() {
   const [step, setStep] = useState(1);
+  const [step1Data, setStep1Data] = useState<Step1Values | null>(null);
   const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
 
   const form1 = useForm<Step1Values>({
@@ -64,14 +65,50 @@ export default function Onboarding() {
   });
 
   const onStep1Submit = (values: Step1Values) => {
-    console.log("Step 1:", values);
+    // Store file metadata instead of the file object itself to avoid serialization issues
+    const processedValues = { ...values };
+    if (values.profilePicture instanceof File) {
+      // @ts-ignore - storing metadata for mockup
+      processedValues.profilePicture = {
+        name: values.profilePicture.name,
+        size: values.profilePicture.size,
+        type: values.profilePicture.type
+      };
+    }
+    setStep1Data(processedValues);
     setStep(2);
   };
 
   const onStep2Submit = (values: Step2Values) => {
-    console.log("Step 2:", values);
-    // Combine data from both steps and submit (simulated)
-    window.location.href = stripeLink;
+    if (!step1Data) return;
+    
+    // Process logo file
+    const processedValues = { ...values };
+    if (values.logo instanceof File) {
+      // @ts-ignore - storing metadata for mockup
+      processedValues.logo = {
+        name: values.logo.name,
+        size: values.logo.size,
+        type: values.logo.type
+      };
+    }
+
+    const submission = { 
+      ...step1Data, 
+      ...processedValues, 
+      id: crypto.randomUUID(),
+      submittedAt: new Date().toISOString() 
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem("submissions") || "[]");
+      localStorage.setItem("submissions", JSON.stringify([...existing, submission]));
+    } catch (e) {
+      console.error("Failed to save submission", e);
+    }
+    
+    // Use window.location.assign for better redirect behavior
+    window.location.assign(stripeLink);
   };
 
   return (

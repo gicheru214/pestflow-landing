@@ -45,7 +45,7 @@ export function Footer() {
         <div className="pt-8 border-t text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} PestFlow. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            {/* Social icons could go here */}
+            <a href="/admin" className="hover:text-primary transition-colors">Admin</a>
           </div>
         </div>
       </div>
