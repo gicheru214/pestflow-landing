@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/generated_images/modern_pestflow_saas_logo.png";
+import logoImage from "@assets/generated_images/pestflow_logo_white_text_black_background.png";
 
 export function Navbar() {
   return (
@@ -12,7 +12,7 @@ export function Navbar() {
             <img 
               src={logoImage} 
               alt="PestFlow" 
-              className="h-24 w-auto object-contain mix-blend-multiply scale-150 origin-left" 
+              className="h-24 w-auto object-contain mix-blend-screen scale-150 origin-left" 
             />
           </Link>
         </div>
