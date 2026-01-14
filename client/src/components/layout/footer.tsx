@@ -1,4 +1,4 @@
-import logoImage from "@assets/generated_images/pestflow_logo_white_text_black_background.png";
+import logoImage from "@assets/generated_images/pestflow_logo_navy_text_green_icon_white_background.png";
 
 export function Footer() {
   return (

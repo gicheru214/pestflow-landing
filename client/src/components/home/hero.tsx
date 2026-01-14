@@ -28,12 +28,12 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-transparent" />
       </div>
 
-      <div className="container relative h-full mx-auto px-4 md:px-6 z-10 flex flex-col justify-center">
-        <div className="max-w-4xl space-y-8">
+      <div className="container relative h-full mx-auto px-4 md:px-6 z-10 flex flex-col justify-center items-center text-center">
+        <div className="max-w-5xl space-y-8 flex flex-col items-center">
           
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white font-medium backdrop-blur-md"
           >
@@ -55,7 +55,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-6 items-center justify-center sm:justify-start pt-8"
+            className="flex flex-col sm:flex-row gap-6 items-center justify-center pt-8"
           >
             <Link href="/onboarding">
               <Button size="xl" className="h-16 px-10 text-xl font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 bg-gradient-to-r from-emerald-500 to-blue-600 border-none group text-white">

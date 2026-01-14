@@ -28,7 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import logoImage from "@assets/generated_images/pestflow_logo_white_text_black_background.png";
+import logoImage from "@assets/generated_images/pestflow_logo_navy_text_green_icon_white_background.png";
 
 // Helper to format date
 const formatDate = (dateString: string) => {
