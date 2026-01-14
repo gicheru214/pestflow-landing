@@ -1,4 +1,4 @@
-import logoImage from "@assets/fa047a48-9d16-4d41-b933-c7508833c965_1768347009427.jpg";
+import logoImage from "@assets/generated_images/modern_pestflow_saas_logo.png";
 
 export function Footer() {
   return (
