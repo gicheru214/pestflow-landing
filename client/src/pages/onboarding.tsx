@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, Upload, Camera, Plus, Building2, User } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/generated_images/pestflow_logo_navy_text_green_icon_white_background.png";
+import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
 
 const step1Schema = z.object({
   firstName: z.string().min(2, "First name is required"),
