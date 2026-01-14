@@ -1,7 +1,6 @@
 import { FEATURES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 
 interface FeatureCardProps {
@@ -18,9 +17,9 @@ function FeatureCard({ icon: Icon, title, description, index }: FeatureCardProps
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       viewport={{ once: true }}
-      className="flex flex-col gap-3 p-6 rounded-2xl bg-white border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group"
+      className="flex flex-col gap-3 p-6 rounded-2xl bg-white border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group h-full"
     >
-      <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
+      <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300 shrink-0">
         <Icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-300" />
       </div>
       <div>
@@ -37,7 +36,7 @@ export function Features() {
   return (
     <section id="features" className="py-24 bg-white relative">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-wider mb-4">
             Features
           </div>
@@ -49,42 +48,28 @@ export function Features() {
           </p>
         </div>
 
-        <Tabs defaultValue={categories[0].id} className="w-full max-w-6xl mx-auto">
-          <div className="flex justify-center mb-12 overflow-x-auto pb-4 scrollbar-hide">
-            <TabsList className="h-14 p-1 bg-secondary/50 backdrop-blur-sm rounded-full border">
-              {categories.map((category) => (
-                <TabsTrigger 
-                  key={category.id} 
-                  value={category.id}
-                  className="rounded-full px-6 h-full text-base font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all"
-                >
-                  {category.shortTitle}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          {categories.map((category) => (
-            <TabsContent key={category.id} value={category.id} className="mt-0 focus-visible:outline-none">
-              <div className="space-y-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
-                  <p className="text-muted-foreground">{category.description}</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.items.map((feature, idx) => (
-                    <FeatureCard 
-                      key={idx} 
-                      {...feature} 
-                      index={idx}
-                    />
-                  ))}
-                </div>
+        <div className="space-y-24">
+          {categories.map((category, catIndex) => (
+            <div key={category.id} className="relative">
+              {/* Category Header */}
+              <div className="flex flex-col items-start mb-8 border-l-4 border-primary pl-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{category.title}</h3>
+                <p className="text-lg text-muted-foreground">{category.description}</p>
               </div>
-            </TabsContent>
+              
+              {/* Features Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {category.items.map((feature, idx) => (
+                  <FeatureCard 
+                    key={idx} 
+                    {...feature} 
+                    index={idx}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
-        </Tabs>
+        </div>
       </div>
     </section>
   );
