@@ -123,17 +123,34 @@ export function TrialModal({ children, className }: TrialModalProps) {
               )}
             />
 
-            <FormItem>
-              <FormLabel>Profile Picture (Optional)</FormLabel>
-              <div className="flex items-center gap-4">
-                <div className="flex-1">
-                  <Input type="file" accept="image/*" className="cursor-pointer" />
-                </div>
-              </div>
-              <p className="text-[0.8rem] text-muted-foreground">
-                Upload a photo for your technician profile badge.
-              </p>
-            </FormItem>
+            <FormField
+              control={form.control}
+              name="profilePicture"
+              render={({ field: { value, onChange, ...fieldProps } }) => (
+                <FormItem>
+                  <FormLabel>Profile Picture (Optional)</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <Input 
+                          {...fieldProps} 
+                          type="file" 
+                          accept="image/*" 
+                          className="cursor-pointer" 
+                          onChange={(event) => {
+                            onChange(event.target.files && event.target.files[0]);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </FormControl>
+                  <p className="text-[0.8rem] text-muted-foreground">
+                    Upload a photo for your technician profile badge.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <Button type="submit" size="lg" className="w-full mt-4 font-semibold">
               Continue to Trial <ArrowRight className="ml-2 h-4 w-4" />
