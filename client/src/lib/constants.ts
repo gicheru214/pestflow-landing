@@ -23,7 +23,9 @@ import {
 
 export const FEATURES = {
   business: {
+    id: "business",
     title: "For Business Owners",
+    shortTitle: "Business Owners",
     description: "Power your business with PestFlow and grow your revenue.",
     color: "bg-purple-100 text-purple-700",
     items: [
@@ -55,7 +57,9 @@ export const FEATURES = {
     ]
   },
   admins: {
+    id: "admins",
     title: "For Admins",
+    shortTitle: "Admins",
     description: "Improve business operations and keep customers happy.",
     color: "bg-cyan-100 text-cyan-700",
     items: [
@@ -87,7 +91,9 @@ export const FEATURES = {
     ]
   },
   technicians: {
+    id: "technicians",
     title: "For Technicians",
+    shortTitle: "Technicians",
     description: "Your on-the-go solution to simplify workflows and impress customers.",
     color: "bg-orange-100 text-orange-700",
     items: [
@@ -119,7 +125,9 @@ export const FEATURES = {
     ]
   },
   sales: {
+    id: "sales",
     title: "For Sales",
+    shortTitle: "Sales",
     description: "Tools and insights to manage your sales process end-to-end.",
     color: "bg-pink-100 text-pink-700",
     items: [

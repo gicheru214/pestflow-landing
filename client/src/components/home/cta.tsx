@@ -1,32 +1,32 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { TrialModal } from "./trial-modal";
 
 export function CTA() {
-  const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
-
   return (
-    <section className="py-24 bg-primary text-primary-foreground relative overflow-hidden">
-      {/* Background patterns */}
-      <div className="absolute inset-0 opacity-10 pattern-grid-lg" />
+    <section className="py-32 bg-primary relative overflow-hidden">
+      {/* Refined Background patterns */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent opacity-50" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       
-      <div className="container relative mx-auto px-4 md:px-6 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold mb-6">
+      <div className="container relative mx-auto px-4 md:px-6 text-center text-primary-foreground">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6 font-heading tracking-tight">
           Ready to grow your pest control business?
         </h2>
-        <p className="text-xl md:text-2xl opacity-90 mb-10 max-w-2xl mx-auto">
+        <p className="text-xl md:text-2xl opacity-90 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
           Join thousands of pest control professionals who trust PestFlow to manage their operations.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Button asChild size="xl" variant="secondary" className="h-16 px-10 text-lg font-bold shadow-2xl hover:scale-105 transition-transform">
-            <a href={stripeLink} target="_blank" rel="noopener noreferrer">
-              Start Your Free Trial <ArrowRight className="ml-2 h-6 w-6" />
-            </a>
-          </Button>
+          <TrialModal>
+            <Button size="xl" variant="secondary" className="h-16 px-12 text-lg font-bold shadow-2xl hover:scale-105 transition-all duration-300 bg-white text-primary hover:bg-slate-50 border-0">
+              Start Your Trial <ArrowRight className="ml-2 h-6 w-6" />
+            </Button>
+          </TrialModal>
         </div>
         
-        <p className="mt-6 text-sm opacity-75">
-          No credit card required for 14-day trial • Cancel anytime
+        <p className="mt-8 text-sm opacity-80 font-medium tracking-wide">
+          14-day free trial • Cancel anytime • Full access
         </p>
       </div>
     </section>
