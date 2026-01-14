@@ -1,6 +1,7 @@
 import { Link } from "wouter";
-
-// ... existing imports
+import { Button } from "@/components/ui/button";
+import { ArrowRight, PlayCircle, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function Hero() {
   const demoLink = "https://calendly.com/tgicheru21/30min";
