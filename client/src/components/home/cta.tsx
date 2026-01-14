@@ -26,7 +26,7 @@ export function CTA() {
         </div>
         
         <p className="mt-8 text-sm opacity-80 font-medium tracking-wide">
-          14-day free trial • Cancel anytime • Full access
+          14-day trial • Cancel anytime • Full access
         </p>
       </div>
     </section>

@@ -54,7 +54,7 @@ export function Pricing() {
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-heading text-slate-900">Simple, Transparent Pricing</h2>
             <p className="text-lg text-slate-600">
-              Choose the plan that fits your business stage. All plans come with a 14-day free trial.
+              Choose the plan that fits your business stage. All plans come with a 14-day trial.
             </p>
           </motion.div>
         </div>
@@ -97,7 +97,7 @@ export function Pricing() {
 
               <Link href="/onboarding">
                 <Button className={`w-full h-12 text-lg font-bold ${plan.popular ? 'bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20' : 'bg-slate-900 hover:bg-slate-800'} transition-all hover:scale-[1.02]`} size="lg">
-                  Start Free Trial
+                  Start Trial
                 </Button>
               </Link>
             </motion.div>

@@ -72,7 +72,7 @@ export function Hero() {
           >
             <Link href="/onboarding">
               <Button size="xl" className="h-16 px-10 text-xl font-bold shadow-xl shadow-primary/25 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/40 bg-gradient-to-r from-primary to-emerald-600 border-none group">
-                Start Free Trial <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                Start Trial <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             
@@ -91,7 +91,7 @@ export function Hero() {
           >
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-emerald-500" />
-              <span>14-day free trial</span>
+              <span>14-day trial</span>
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-emerald-500" />
