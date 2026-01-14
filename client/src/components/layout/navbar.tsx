@@ -1,6 +1,5 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { TrialModal } from "@/components/home/trial-modal";
 import logoImage from "@assets/fa047a48-9d16-4d41-b933-c7508833c965_1768347009427.jpg";
 
 export function Navbar() {
@@ -31,11 +30,11 @@ export function Navbar() {
           <Link href="/login" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
             Log in
           </Link>
-          <TrialModal>
+          <Link href="/onboarding">
             <Button size="lg" className="font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               Start Trial
             </Button>
-          </TrialModal>
+          </Link>
         </div>
       </div>
     </nav>

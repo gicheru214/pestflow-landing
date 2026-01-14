@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import { TrialModal } from "./trial-modal";
+import { Link } from "wouter";
 
 export function CTA() {
   return (
@@ -18,11 +18,11 @@ export function CTA() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <TrialModal>
+          <Link href="/onboarding">
             <Button size="xl" variant="secondary" className="h-16 px-12 text-lg font-bold shadow-2xl hover:scale-105 transition-all duration-300 bg-white text-primary hover:bg-slate-50 border-0">
               Start Your Trial <ArrowRight className="ml-2 h-6 w-6" />
             </Button>
-          </TrialModal>
+          </Link>
         </div>
         
         <p className="mt-8 text-sm opacity-80 font-medium tracking-wide">

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { TrialModal } from "./trial-modal";
+import { Link } from "wouter";
 
 const PRICING_PLANS = [
   {
@@ -75,11 +75,11 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <TrialModal>
+              <Link href="/onboarding">
                 <Button className={`w-full ${plan.popular ? 'bg-primary' : 'bg-slate-900'} hover:opacity-90 transition-opacity`} size="lg">
                   Start Trial
                 </Button>
-              </TrialModal>
+              </Link>
             </div>
           ))}
         </div>

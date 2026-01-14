@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, PlayCircle, CheckCircle2 } from "lucide-react";
-import { motion } from "framer-motion";
-import { TrialModal } from "./trial-modal";
+import { Link } from "wouter";
+
+// ... existing imports
 
 export function Hero() {
   const demoLink = "https://calendly.com/tgicheru21/30min";
@@ -55,11 +54,11 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4 w-full justify-center pt-6"
           >
-            <TrialModal>
+            <Link href="/onboarding">
               <Button size="xl" className="h-14 px-8 text-lg font-semibold shadow-xl shadow-primary/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30">
                 Start Trial <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </TrialModal>
+            </Link>
             
             <Button asChild variant="outline" size="xl" className="h-14 px-8 text-lg bg-white/80 backdrop-blur hover:bg-white hover:text-primary transition-all duration-300 border-2 border-primary/10 hover:border-primary/20">
               <a href={demoLink} target="_blank" rel="noopener noreferrer">
