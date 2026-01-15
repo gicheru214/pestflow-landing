@@ -29,7 +29,7 @@ export function Hero() {
       </div>
 
       <div className="container relative h-full mx-auto px-4 md:px-6 z-10 flex flex-col justify-center items-center text-center">
-        <div className="max-w-5xl space-y-8 flex flex-col items-center">
+        <div className="max-w-5xl space-y-8 flex flex-col items-center mt-20">
           
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
