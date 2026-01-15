@@ -69,6 +69,33 @@ export function Hero() {
               </a>
             </Button>
           </motion.div>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="pt-16 pb-8 flex flex-col items-center gap-6 w-full"
+          >
+            <p className="text-sm font-medium text-slate-300 uppercase tracking-widest">Trusted by 500+ Pest Control Companies</p>
+            <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+               {/* Placeholder Logos - In a real app these would be SVGs */}
+               <div className="flex items-center gap-2">
+                 <ShieldCheck className="w-8 h-8 text-white" />
+                 <span className="text-xl font-bold text-white">TermiGuard</span>
+               </div>
+               <div className="flex items-center gap-2">
+                 <Bug className="w-8 h-8 text-white" />
+                 <span className="text-xl font-bold text-white">EcoPest</span>
+               </div>
+               <div className="flex items-center gap-2">
+                 <SprayCan className="w-8 h-8 text-white" />
+                 <span className="text-xl font-bold text-white">BugBusters</span>
+               </div>
+               <div className="flex items-center gap-2">
+                 <Building2 className="w-8 h-8 text-white" />
+                 <span className="text-xl font-bold text-white">UrbanShield</span>
+               </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
