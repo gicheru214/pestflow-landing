@@ -17,7 +17,8 @@ import {
   Route, 
   Calendar,
   Eye,
-  ChevronRight
+  ChevronRight,
+  BookOpen
 } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
 
 // Helper to format date
@@ -92,6 +94,9 @@ export default function Admin() {
     sub.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     sub.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const demoRequests = filteredSubmissions.filter(sub => sub.type !== "newsletter");
+  const newsletterRequests = filteredSubmissions.filter(sub => sub.type === "newsletter");
 
   if (!isAuthenticated) {
     return (
@@ -176,6 +181,18 @@ export default function Admin() {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm font-medium text-muted-foreground">Demo Requests</div>
+              <div className="text-2xl font-bold mt-2 text-blue-600">{demoRequests.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-sm font-medium text-muted-foreground">Newsletter Signups</div>
+              <div className="text-2xl font-bold mt-2 text-emerald-600">{newsletterRequests.length}</div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Search & Filter */}
@@ -191,61 +208,118 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Submissions List */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredSubmissions.length === 0 ? (
-            <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed">
-              <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                <Search className="h-6 w-6 text-slate-400" />
-              </div>
-              <h3 className="text-lg font-medium text-slate-900">No submissions found</h3>
-              <p className="text-slate-500 text-sm mt-1">Try adjusting your search terms</p>
+        <Tabs defaultValue="demo" className="w-full">
+          <TabsList className="mb-8 bg-white border">
+            <TabsTrigger value="demo" className="px-6">Demo Requests</TabsTrigger>
+            <TabsTrigger value="newsletter" className="px-6">Newsletter Signups</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="demo">
+            {/* Submissions List */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {demoRequests.length === 0 ? (
+                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                    <Search className="h-6 w-6 text-slate-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-slate-900">No demo requests found</h3>
+                  <p className="text-slate-500 text-sm mt-1">Try adjusting your search terms</p>
+                </div>
+              ) : (
+                demoRequests.map((sub) => (
+                  <Card key={sub.id || Math.random()} className="hover:shadow-md transition-shadow cursor-pointer group" onClick={() => setSelectedSubmission(sub)}>
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          {sub.firstName?.[0]}{sub.lastName?.[0]}
+                        </div>
+                        <div>
+                          <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors">
+                            {sub.firstName} {sub.lastName}
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            {formatDate(sub.submittedAt)}
+                          </CardDescription>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="font-normal">
+                        New
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm pt-4">
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <Building2 className="w-4 h-4 shrink-0" />
+                        <span className="truncate font-medium">{sub.companyName}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <Mail className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{sub.email}</span>
+                      </div>
+                       <div className="flex items-center gap-2 text-slate-600">
+                        <Users className="w-4 h-4 shrink-0" />
+                        <span>{sub.technicians} Technicians</span>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="border-t bg-slate-50/50 p-3">
+                      <div className="w-full flex items-center justify-between text-xs font-medium text-primary">
+                        View Details
+                        <ChevronRight className="w-3 h-3 ml-1" />
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))
+              )}
             </div>
-          ) : (
-            filteredSubmissions.map((sub) => (
-              <Card key={sub.id || Math.random()} className="hover:shadow-md transition-shadow cursor-pointer group" onClick={() => setSelectedSubmission(sub)}>
-                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                      {sub.firstName?.[0]}{sub.lastName?.[0]}
-                    </div>
-                    <div>
-                      <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors">
-                        {sub.firstName} {sub.lastName}
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        {formatDate(sub.submittedAt)}
-                      </CardDescription>
-                    </div>
+          </TabsContent>
+
+          <TabsContent value="newsletter">
+            {/* Newsletter List */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {newsletterRequests.length === 0 ? (
+                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed">
+                  <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                    <BookOpen className="h-6 w-6 text-slate-400" />
                   </div>
-                  <Badge variant="secondary" className="font-normal">
-                    New
-                  </Badge>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm pt-4">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Building2 className="w-4 h-4 shrink-0" />
-                    <span className="truncate font-medium">{sub.companyName}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Mail className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{sub.email}</span>
-                  </div>
-                   <div className="flex items-center gap-2 text-slate-600">
-                    <Users className="w-4 h-4 shrink-0" />
-                    <span>{sub.technicians} Technicians</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="border-t bg-slate-50/50 p-3">
-                  <div className="w-full flex items-center justify-between text-xs font-medium text-primary">
-                    View Details
-                    <ChevronRight className="w-3 h-3 ml-1" />
-                  </div>
-                </CardFooter>
-              </Card>
-            ))
-          )}
-        </div>
+                  <h3 className="text-lg font-medium text-slate-900">No newsletter signups found</h3>
+                  <p className="text-slate-500 text-sm mt-1">They will appear here when people download the guide</p>
+                </div>
+              ) : (
+                newsletterRequests.map((sub) => (
+                  <Card key={sub.id || Math.random()} className="hover:shadow-md transition-shadow group">
+                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">
+                          {sub.firstName?.[0]}{sub.lastName?.[0]}
+                        </div>
+                        <div>
+                          <CardTitle className="text-base font-semibold group-hover:text-emerald-600 transition-colors">
+                            {sub.firstName} {sub.lastName}
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            {formatDate(sub.submittedAt)}
+                          </CardDescription>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="font-normal border-emerald-200 text-emerald-700 bg-emerald-50">
+                        Guide Sent
+                      </Badge>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm pt-4">
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <Mail className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{sub.email}</span>
+                      </div>
+                       <div className="flex items-center gap-2 text-slate-600">
+                        <BookOpen className="w-4 h-4 shrink-0" />
+                        <span>Downloaded Guide</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Detail Modal */}

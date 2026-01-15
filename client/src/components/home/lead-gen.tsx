@@ -2,8 +2,50 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function LeadGen() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // Create new submission object
+      const newSubmission = {
+        id: crypto.randomUUID(),
+        type: "newsletter",
+        submittedAt: new Date().toISOString(),
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        companyName: "N/A (Newsletter)",
+        status: "new"
+      };
+
+      // Get existing submissions
+      const existingSubmissions = JSON.parse(localStorage.getItem("submissions") || "[]");
+      
+      // Save new submission
+      localStorage.setItem("submissions", JSON.stringify([...existingSubmissions, newSubmission]));
+      
+      toast.success("Guide sent! Check your inbox shortly.");
+      setFormData({ firstName: "", lastName: "", email: "" });
+      
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
       {/* Background decoration */}
@@ -57,25 +99,47 @@ export function LeadGen() {
               Join 5,000+ pest control owners who read our newsletter.
             </p>
             
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label htmlFor="first-name" className="text-sm font-medium text-slate-300">First Name</label>
-                  <Input id="first-name" placeholder="John" className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" />
+                  <Input 
+                    id="first-name" 
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                    placeholder="John" 
+                    required
+                    className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="last-name" className="text-sm font-medium text-slate-300">Last Name</label>
-                  <Input id="last-name" placeholder="Doe" className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" />
+                  <Input 
+                    id="last-name" 
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                    placeholder="Doe" 
+                    required
+                    className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" 
+                  />
                 </div>
               </div>
               
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-slate-300">Work Email</label>
-                <Input id="email" type="email" placeholder="john@company.com" className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" />
+                <Input 
+                  id="email" 
+                  type="email" 
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  placeholder="john@company.com" 
+                  required
+                  className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500" 
+                />
               </div>
 
-              <Button size="lg" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 text-base">
-                Send Me The Guide
+              <Button disabled={isSubmitting} size="lg" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold h-12 text-base">
+                {isSubmitting ? "Sending..." : "Send Me The Guide"}
               </Button>
               
               <p className="text-xs text-center text-slate-500 mt-4">
