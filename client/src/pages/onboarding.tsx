@@ -107,8 +107,9 @@ export default function Onboarding() {
       console.error("Failed to save submission", e);
     }
     
-    // Use window.location.assign for better redirect behavior
-    window.location.assign(stripeLink);
+    // Simulate Stripe Redirect
+    // In a real app, this would be the Stripe Success URL
+    window.location.href = "/signup-success";
   };
 
   return (
