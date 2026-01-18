@@ -90,10 +90,6 @@ export function Hero() {
                  <SprayCan className="w-8 h-8 text-white" />
                  <span className="text-xl font-bold text-white">BugBusters</span>
                </div>
-               <div className="flex items-center gap-2">
-                 <Building2 className="w-8 h-8 text-white" />
-                 <span className="text-xl font-bold text-white">UrbanShield</span>
-               </div>
             </div>
           </motion.div>
         </div>
