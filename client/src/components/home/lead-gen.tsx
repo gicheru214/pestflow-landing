@@ -39,8 +39,8 @@ export function LeadGen() {
       // Save new submission
       localStorage.setItem("submissions", JSON.stringify([...existingSubmissions, newSubmission]));
       
-      // Redirect to payment
-      setLocation("/payment");
+      // Redirect to Stripe
+      window.location.href = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
       
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
