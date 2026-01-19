@@ -67,6 +67,10 @@ export function AutoPopup() {
   };
 
   const handleQualification = (isOwner: boolean) => {
+    // Save qualification response
+    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+    localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, isOwner }));
+
     if (isOwner) {
       setStep("route_size");
     } else {
@@ -75,11 +79,40 @@ export function AutoPopup() {
     }
   };
 
-  const handleRouteSize = () => {
+  const handleRouteSize = (size: string) => {
+    // Save route size response
+    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+    localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, routeSize: size }));
+    
     setStep("offer");
   };
 
   const handleAcceptOffer = () => {
+    // When they accept the offer (finish the flow), we can save it to submissions
+    // so it appears in the admin dashboard immediately as an "Inquiry"
+    const popupData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+    
+    // Create a partial submission
+    const inquiry = {
+      id: crypto.randomUUID(),
+      type: "popup_inquiry",
+      submittedAt: new Date().toISOString(),
+      firstName: "Website Visitor",
+      lastName: "(Inquiry)",
+      companyName: popupData.isOwner ? "Owner/Manager" : "Visitor",
+      email: "Pending...",
+      technicians: popupData.routeSize || "N/A",
+      routes: popupData.routeSize,
+      status: "new"
+    };
+
+    try {
+      const existing = JSON.parse(localStorage.getItem("submissions") || "[]");
+      localStorage.setItem("submissions", JSON.stringify([...existing, inquiry]));
+    } catch (e) {
+      console.error("Failed to save popup inquiry", e);
+    }
+
     setStep("demo");
   };
 
@@ -155,7 +188,7 @@ export function AutoPopup() {
                        key={option}
                        variant="outline" 
                        className="w-full text-lg h-12 justify-start px-6 hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50"
-                       onClick={handleRouteSize}
+                       onClick={() => handleRouteSize(option)}
                      >
                        {option}
                      </Button>
