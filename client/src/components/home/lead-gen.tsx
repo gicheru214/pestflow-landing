@@ -5,7 +5,10 @@ import { BookOpen, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { useLocation } from "wouter";
+
 export function LeadGen() {
+  const [, setLocation] = useLocation();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -36,12 +39,11 @@ export function LeadGen() {
       // Save new submission
       localStorage.setItem("submissions", JSON.stringify([...existingSubmissions, newSubmission]));
       
-      toast.success("Guide sent! Check your inbox shortly.");
-      setFormData({ firstName: "", lastName: "", email: "" });
+      // Redirect to payment
+      setLocation("/payment");
       
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
-    } finally {
       setIsSubmitting(false);
     }
   };

@@ -9,6 +9,7 @@ import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
 import Dashboard from "@/pages/dashboard";
 import SignupSuccess from "@/pages/signup-success";
+import Payment from "@/pages/payment";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/signup-success" component={SignupSuccess} />
+      <Route path="/payment" component={Payment} />
       <Route component={NotFound} />
     </Switch>
   );
