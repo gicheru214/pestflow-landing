@@ -95,11 +95,11 @@ export function Pricing() {
                 ))}
               </ul>
 
-              <a href="https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06">
+              <Link href="/onboarding">
                 <Button className={`w-full h-12 text-lg font-bold ${plan.popular ? 'bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20' : 'bg-slate-900 hover:bg-slate-800'} transition-all hover:scale-[1.02]`} size="lg">
                   Start Trial
                 </Button>
-              </a>
+              </Link>
             </motion.div>
           ))}
         </div>

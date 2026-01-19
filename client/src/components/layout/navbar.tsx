@@ -30,11 +30,11 @@ export function Navbar() {
           <Link href="/login" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
             Log in
           </Link>
-          <a href="https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06">
+          <Link href="/onboarding">
             <Button size="lg" className="font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               Start Trial
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </nav>

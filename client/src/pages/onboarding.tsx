@@ -109,7 +109,7 @@ export default function Onboarding() {
     
     // Simulate Stripe Redirect
     // In a real app, this would be the Stripe Success URL
-    window.location.href = "/signup-success";
+    window.location.href = stripeLink;
   };
 
   return (
