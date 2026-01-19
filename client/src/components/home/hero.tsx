@@ -57,11 +57,11 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-6 items-center justify-center pt-8"
           >
-            <Link href="/onboarding">
+            <a href="https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06">
               <Button size="xl" className="h-16 px-10 text-xl font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 bg-gradient-to-r from-emerald-500 to-blue-600 border-none group text-white">
                 Start Trial <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </Link>
+            </a>
             
             <Button asChild variant="outline" size="xl" className="h-16 px-10 text-xl font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300">
               <a href={demoLink} target="_blank" rel="noopener noreferrer">
