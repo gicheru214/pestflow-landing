@@ -56,7 +56,7 @@ export function AutoPopup() {
 
     const timer = setTimeout(() => {
       setOpen(true);
-    }, 2500);
+    }, 7000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -131,13 +131,6 @@ export function AutoPopup() {
     <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white">
         <div className="relative p-6 sm:p-10">
-          <button 
-            onClick={handleClose}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5 text-slate-400" />
-          </button>
-
           <AnimatePresence mode="wait">
             {step === "qualification" && (
               <motion.div
