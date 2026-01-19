@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
 
 export function Footer() {
@@ -45,7 +46,7 @@ export function Footer() {
         <div className="pt-8 border-t text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} PestFlow. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <a href="/admin" className="hover:text-primary transition-colors">Admin</a>
+            <Link href="/admin" className="hover:text-primary transition-colors cursor-pointer">Admin</Link>
           </div>
         </div>
       </div>
