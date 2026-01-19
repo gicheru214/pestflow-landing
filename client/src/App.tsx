@@ -9,6 +9,7 @@ import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
 import Dashboard from "@/pages/dashboard";
 import SignupSuccess from "@/pages/signup-success";
+import CreateAccount from "@/pages/create-account";
 import Payment from "@/pages/payment";
 import { useHashLocation } from "wouter/use-hash-location";
 
@@ -21,6 +22,7 @@ function AppRouter() {
         <Route path="/admin" component={Admin} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/signup-success" component={SignupSuccess} />
+        <Route path="/create-account" component={CreateAccount} />
         <Route path="/payment" component={Payment} />
         <Route component={NotFound} />
       </Switch>
