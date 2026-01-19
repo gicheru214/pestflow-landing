@@ -4,15 +4,18 @@ import { ArrowRight, PlayCircle, ShieldCheck, Bug, SprayCan, Search, Smartphone,
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import videoBackground from "@assets/generated_videos/background_video_of_nature_and_pests_for_pest_control_software.mp4";
+import { useState } from "react";
+import { DemoVideoModal } from "./auto-popup";
 
 export function Hero() {
-  const demoLink = "https://calendly.com/tgicheru21/30min";
+  const [showDemo, setShowDemo] = useState(false);
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
   return (
     <section className="relative w-full h-screen min-h-[800px] overflow-hidden">
+      <DemoVideoModal open={showDemo} onOpenChange={setShowDemo} />
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
         <video 
@@ -63,10 +66,13 @@ export function Hero() {
               </Button>
             </Link>
             
-            <Button asChild variant="outline" size="xl" className="h-16 px-10 text-xl font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300">
-              <a href={demoLink} target="_blank" rel="noopener noreferrer">
-                <PlayCircle className="mr-2 h-6 w-6" /> Watch Demo
-              </a>
+            <Button 
+              variant="outline" 
+              size="xl" 
+              className="h-16 px-10 text-xl font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300"
+              onClick={() => setShowDemo(true)}
+            >
+              <PlayCircle className="mr-2 h-6 w-6" /> Watch Demo
             </Button>
           </motion.div>
           <motion.div 
