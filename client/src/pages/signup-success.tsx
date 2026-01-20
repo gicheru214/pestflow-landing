@@ -3,10 +3,32 @@ import { useLocation } from "wouter";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
+declare global {
+  interface Window {
+    fbq: any;
+  }
+}
+
 export default function SignupSuccess() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
+    // Fire Meta Pixel Purchase Event
+    if (window.fbq) {
+      // Attempt to get session_id from various places in the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+      const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
+
+      window.fbq('track', 'Purchase', { 
+        value: 1.00, 
+        currency: 'USD',
+        content_name: 'PestFlow Subscription', 
+        content_ids: ['pestflow-monthly'],
+        event_id: sessionId // For deduplication with server-side events if implemented later
+      });
+    }
+
     const timer = setTimeout(() => {
       setLocation("/create-account");
     }, 5000);

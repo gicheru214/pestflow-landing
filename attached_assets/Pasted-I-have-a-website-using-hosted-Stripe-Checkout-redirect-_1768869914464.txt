@@ -1,0 +1,41 @@
+I have a website using hosted Stripe Checkout (redirect to stripe.com). Meta Events Manager shows "no pixel detected" warnings when testing the flow, especially around Stripe redirect pages. Meta support suggested the issue might be the "Cross-Origin-Opener-Policy" (COOP) header on my site, which could be blocking or interfering with the Meta Pixel script (fbevents.js) in their Event Setup Tool.
+
+From Meta support instructions:
+- Open my website in Chrome/Firefox.
+- Press F12 → Network tab.
+- Filter for "facebook.com" or type "fbevents.js".
+- Refresh page.
+- Click the fbevents.js request.
+- Check Response Headers for "Cross-Origin-Opener-Policy".
+- If it's set (e.g., to "same-origin" or similar strict value), remove it because it can break pixel detection/setup in Events Manager.
+
+Research shows strict COOP headers (like "same-origin") often break third-party embeds/scripts (including Meta Pixel and sometimes Stripe-related flows in testing), while looser values like "same-origin-allow-popups" or removing it entirely fixes compatibility without major security loss for most sites.
+
+My goal: Fix the Event Setup Tool / pixel detection issue in Meta Events Manager so it stops complaining about "no pixel" during tests, especially around the Stripe flow.
+
+I do NOT want to rebuild the Stripe integration (keep hosted Checkout redirect).
+
+Preferred fix steps to implement:
+1. Check if my server/app is setting Cross-Origin-Opener-Policy (or Cross-Origin-Embedder-Policy COEP) headers anywhere (e.g., in Express middleware, helmet.js, next.config.js if Next.js, Vercel/Netlify headers, or hosting platform settings).
+2. Remove or relax the COOP header:
+   - Best: Remove it completely (default to no COOP = "unsafe-none" behavior).
+   - Alternative: Set to "same-origin-allow-popups" if I need some popup isolation.
+   - Do NOT set to "same-origin" as that breaks things like pixel loading in tools.
+3. After changes, re-test in Meta Events Manager's Event Setup Tool:
+   - Enter my site URL.
+   - See if it now detects the pixel properly.
+   - Test events (PageView, Purchase via thank-you redirect) should show up without "no pixel" errors.
+4. Keep the previous plan for tracking: success_url redirect back to my /thank-you?session_id={CHECKOUT_SESSION_ID} page to fire client-side fbq('track', 'Purchase', ...), plus server-side Meta Conversions API via Stripe webhook on checkout.session.completed for reliability.
+
+Tech stack assumptions: Node.js + Express (possibly with helmet for headers, or plain res.setHeader). If using Next.js/Vercel, mention how to override headers there too.
+
+Please help step by step:
+- First, how to check current headers in code/hosting.
+- Code to remove/relax COOP (small snippets, e.g., if using helmet: app.use(helmet({ crossOriginOpenerPolicy: false })); or custom middleware).
+- How to verify the header is gone using DevTools after deploy/restart.
+- Then confirm Event Setup Tool works.
+- If needed, fallback tips (e.g., if hosting like Vercel injects it, how to override).
+
+Use environment variables where needed. Keep it incremental so I can test one change at a time.
+
+This should resolve the Event Setup Tool freaking out without touching the Stripe flow core.

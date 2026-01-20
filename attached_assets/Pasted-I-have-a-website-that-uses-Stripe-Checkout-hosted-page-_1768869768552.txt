@@ -1,0 +1,40 @@
+I have a website that uses Stripe Checkout (hosted page on stripe.com). 
+Meta Events Manager / Pixel Helper shows warnings and says "no pixel detected" when users are redirected to the Stripe Checkout page, because the Meta Pixel is only on my domain and can't fire on Stripe's domain.
+
+I do NOT want to switch to Stripe Elements, embedded Checkout, or rebuild the entire payment flow. I want to keep using the hosted Stripe Checkout redirect.
+
+My goal: Make Meta Pixel / Conversions API tracking compliant and reliable (especially for Purchase events) without major changes to the existing Stripe integration.
+
+Preferred solution structure:
+
+1. Use a success_url that redirects back to my own domain after successful payment, like:
+   https://my-site.com/thank-you?session_id={CHECKOUT_SESSION_ID}
+
+2. On that thank-you / confirmation page (my domain), fire the client-side Meta Pixel "Purchase" event using fbq('track', 'Purchase', {value, currency, ...}).
+
+3. For better reliability (ad blockers, iOS tracking prevention, etc.), also send the Purchase event server-side using Meta Conversions API (CAPI) from a Stripe webhook.
+
+   - Listen for Stripe webhook event: checkout.session.completed
+   - Verify the webhook signature
+   - If payment_status === 'paid', send the event to Meta CAPI with:
+     - event_name: "Purchase"
+     - action_source: "website"
+     - user_data (hashed email if available)
+     - custom_data (value, currency, contents)
+     - event_id (use checkout session ID for deduplication)
+   - Use the same event_id on client-side and server-side so Meta can deduplicate.
+
+I already have the Meta Pixel base code installed on my site.
+
+Please help me implement this step by step in Node.js (Express) + Stripe SDK.
+
+Start with:
+- How to set the success_url correctly when creating the Checkout Session
+- Basic structure of the /thank-you page with client-side fbq Purchase tracking
+- Then the Stripe webhook endpoint setup for server-side CAPI
+
+Use environment variables for secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, META_PIXEL_ID, META_CAPI_ACCESS_TOKEN).
+
+Keep explanations clear and show only small code blocks at each step so I can follow along and test incrementally.
+
+Current tech stack assumptions: Node.js, Express, Stripe Node SDK. No frontend framework specified yet (can use plain HTML/JS for thank-you page).
