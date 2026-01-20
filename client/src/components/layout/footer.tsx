@@ -2,6 +2,13 @@ import { Link } from "wouter";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
 
 export function Footer() {
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="w-full bg-secondary/30 border-t py-16">
       <div className="container mx-auto px-4 md:px-6">
@@ -16,29 +23,29 @@ export function Footer() {
           <div>
             <h4 className="font-heading font-semibold mb-4">Product</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Mobile App</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Integrations</a></li>
+              <li><button onClick={() => scrollToSection('features')} className="hover:text-primary transition-colors cursor-pointer">Features</button></li>
+              <li><button onClick={() => scrollToSection('pricing')} className="hover:text-primary transition-colors cursor-pointer">Pricing</button></li>
+              <li><span className="text-muted-foreground/50">Mobile App</span></li>
+              <li><span className="text-muted-foreground/50">Integrations</span></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-heading font-semibold mb-4">Company</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+              <li><span className="text-muted-foreground/50">About Us</span></li>
+              <li><span className="text-muted-foreground/50">Careers</span></li>
+              <li><span className="text-muted-foreground/50">Blog</span></li>
+              <li><span className="text-muted-foreground/50">Contact</span></li>
             </ul>
           </div>
           
           <div>
             <h4 className="font-heading font-semibold mb-4">Legal</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-primary transition-colors">Security</a></li>
+              <li><span className="text-muted-foreground/50">Privacy Policy</span></li>
+              <li><span className="text-muted-foreground/50">Terms of Service</span></li>
+              <li><span className="text-muted-foreground/50">Security</span></li>
             </ul>
           </div>
         </div>

@@ -22,6 +22,17 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// Remove restrictive COOP/COEP headers that break Meta Pixel detection
+// This fixes the "no pixel detected" error in Meta Events Manager
+app.use((_req, res, next) => {
+  // Explicitly remove or set permissive COOP header
+  res.removeHeader('Cross-Origin-Opener-Policy');
+  res.removeHeader('Cross-Origin-Embedder-Policy');
+  // Set permissive values if needed for some browsers
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  next();
+});
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
