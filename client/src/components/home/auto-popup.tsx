@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, PlayCircle, ArrowRight } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowRight, Building2 } from "lucide-react";
 
 export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
@@ -17,7 +15,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
           <iframe 
             width="100%" 
             height="100%" 
-            src="https://www.youtube.com/embed/_CsAvmYOAbI?autoplay=1&mute=1" 
+            src="https://www.youtube.com/embed/TB4__rmaNpE?autoplay=1&mute=1" 
             title="PestFlow Demo" 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
             allowFullScreen
@@ -44,13 +42,11 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"qualification" | "route_size" | "offer" | "demo">("qualification");
-  const [hasVisited, setHasVisited] = useState(false);
+  const [routeCount, setRouteCount] = useState(5);
 
   useEffect(() => {
-    // Check localStorage
     const visited = localStorage.getItem("pestflow_popup_visited");
     if (visited) {
-      setHasVisited(true);
       return;
     }
 
@@ -67,32 +63,26 @@ export function AutoPopup() {
   };
 
   const handleQualification = (isOwner: boolean) => {
-    // Save qualification response
     const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
     localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, isOwner }));
 
     if (isOwner) {
       setStep("route_size");
     } else {
-      // Even if No, show offer/demo as per requirements
       setStep("offer"); 
     }
   };
 
-  const handleRouteSize = (size: string) => {
-    // Save route size response
+  const handleRouteSize = () => {
     const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-    localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, routeSize: size }));
+    localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, routeSize: `${routeCount} routes` }));
     
     setStep("offer");
   };
 
   const handleAcceptOffer = () => {
-    // When they accept the offer (finish the flow), we can save it to submissions
-    // so it appears in the admin dashboard immediately as an "Inquiry"
     const popupData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
     
-    // Create a partial submission
     const inquiry = {
       id: crypto.randomUUID(),
       type: "popup_inquiry",
@@ -175,18 +165,36 @@ export function AutoPopup() {
                   We'll customize your trial experience.
                 </p>
                 
-                <div className="space-y-3 pt-2">
-                   {["1–2 routes", "3–5 routes", "6–10 routes", "10+ routes"].map((option) => (
-                     <Button 
-                       key={option}
-                       variant="outline" 
-                       className="w-full text-lg h-12 justify-start px-6 hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50"
-                       onClick={() => handleRouteSize(option)}
-                     >
-                       {option}
-                     </Button>
-                   ))}
+                <div className="pt-6 pb-4 space-y-8">
+                  <div className="text-center">
+                    <span className="text-5xl font-bold text-emerald-600">{routeCount}</span>
+                    <span className="text-2xl text-slate-500 ml-2">routes</span>
+                  </div>
+                  
+                  <div className="px-4">
+                    <Slider
+                      value={[routeCount]}
+                      onValueChange={(value) => setRouteCount(value[0])}
+                      min={1}
+                      max={50}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-slate-400 mt-2">
+                      <span>1</span>
+                      <span>25</span>
+                      <span>50</span>
+                    </div>
+                  </div>
                 </div>
+
+                <Button 
+                  size="lg" 
+                  className="w-full h-14 text-lg font-bold bg-emerald-600 hover:bg-emerald-700"
+                  onClick={handleRouteSize}
+                >
+                  Continue <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               </motion.div>
             )}
 
@@ -223,5 +231,3 @@ export function AutoPopup() {
     </Dialog>
   );
 }
-
-import { Building2 } from "lucide-react";
