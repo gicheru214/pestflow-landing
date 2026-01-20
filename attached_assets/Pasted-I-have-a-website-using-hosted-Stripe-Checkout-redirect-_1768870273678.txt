@@ -1,0 +1,157 @@
+I have a website using hosted Stripe Checkout (redirect to stripe.com domain). Meta Events Manager / Pixel shows warnings like "no pixel detected," duplicate events, mismatched attribution, deduplication errors, or "event received but not attributed." This happens because of domain hops: facebook.com → my-site.com → stripe.com → my-site.com, which breaks session/cookie continuity and makes attribution unreliable.
+
+Key problems:
+
+- Browser session resets on domain change → lost continuity, weakened attribution.
+
+- Pixel fires inconsistently/duplicates (e.g., on redirect pages or cached loads).
+
+- Stripe's domain prevents reliable pixel stitching.
+
+I do NOT want to switch to embedded Checkout or rebuild the payment flow—keep hosted redirect.
+
+Goal: Make tracking compliant, reduce Events Manager noise, get reliable directional Purchase signals (not perfect 100% attribution—accept some loss from iOS/privacy/blockers).
+
+Recommended solution steps to implement:
+
+1. **Fire Purchase event ONLY on your post-payment success page**  
+
+   - Set Stripe Checkout Session `success_url` to redirect back to your domain, e.g.:  
+
+     https://your-site.com/success?session_id={CHECKOUT_SESSION_ID}  
+
+     (or /thank-you, /confirmation—use a unique path).  
+
+   - On THAT page only (your domain where Pixel is installed):  
+
+     Trigger client-side fbq('track', 'Purchase', { value: XX.XX, currency: 'USD', contents: [...], content_type: 'product', event_id: 'unique-id-here' });  
+
+     - Pull value/currency from session lookup if needed (via Stripe API on page load).  
+
+   - IMPORTANT: Do NOT fire Purchase on button click, checkout init, Stripe redirect landing, dashboard, or any other page—this kills duplicates/noise.
+
+2. **Add URL-based rule in Meta Events Manager for Purchase**  
+
+   - Go to Events Manager → Data Sources → your Pixel → Custom Conversions (or edit standard Purchase).  
+
+   - Create/set rule: URL contains "/success" (or your exact success path, e.g. "/thank-you").  
+
+   - This filters: Only count Purchase if the confirmation page URL matches—eliminates stray/duplicate firings and fixes inconsistency warnings.
+
+3. **Enable Automatic Advanced Matching**  
+
+   - In Events Manager → Settings → turn on Automatic Advanced Matching.  
+
+   - If your success page has user email (from Stripe session), pass hashed email in fbq call to help recover lost sessions/attribution.
+
+4. **Optional strong upgrade (if ad spend grows or issues persist)**: Add server-side Meta Conversions API via Stripe webhook  
+
+   - Listen for Stripe `checkout.session.completed` webhook.  
+
+   - On payment success, send server-side Purchase event to Meta CAPI.  
+
+   - Include: event_name: "Purchase", action_source: "website", event_source_url: "https://your-site.com/checkout", event_id: session.id (for deduplication with client-side), value/currency, hashed user data if available.  
+
+   - This makes tracking browser-independent and rock-solid.
+
+Tech stack assumptions: Node.js + Express + Stripe SDK (possibly plain HTML/JS for success page).  
+
+- Use env vars for secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, META_PIXEL_ID, META_CAPI_ACCESS_TOKEN).  
+
+- Pixel base code already on site.
+
+Please guide me step by step in code:
+
+- Step 1: Update Checkout Session creation to set proper success_url with {CHECKOUT_SESSION_ID}.
+
+- Step 2: Create /success route/page with fbq Purchase trigger (include basic session lookup if needed).
+
+- Step 3: Instructions for setting URL rule in Events Manager (no code, just steps).
+
+- Step 4: Enable Advanced Matching steps.
+
+- Optional Step 5: Webhook endpoint for CAPI (small code block, focus on deduplication).
+
+Keep snippets small/incremental so I can implement & test one at a time.  
+
+After changes, test full flow in Events Manager Test Events tab—Purchase should appear clean, attributed, no duplicates.
+
+This should stop the "freaking out" and give solid tracking for Stripe redirects.I have a website using hosted Stripe Checkout (redirect to stripe.com domain). Meta Events Manager / Pixel shows warnings like "no pixel detected," duplicate events, mismatched attribution, deduplication errors, or "event received but not attributed." This happens because of domain hops: facebook.com → my-site.com → stripe.com → my-site.com, which breaks session/cookie continuity and makes attribution unreliable.
+
+Key problems:
+
+- Browser session resets on domain change → lost continuity, weakened attribution.
+
+- Pixel fires inconsistently/duplicates (e.g., on redirect pages or cached loads).
+
+- Stripe's domain prevents reliable pixel stitching.
+
+I do NOT want to switch to embedded Checkout or rebuild the payment flow—keep hosted redirect.
+
+Goal: Make tracking compliant, reduce Events Manager noise, get reliable directional Purchase signals (not perfect 100% attribution—accept some loss from iOS/privacy/blockers).
+
+Recommended solution steps to implement:
+
+1. **Fire Purchase event ONLY on your post-payment success page**  
+
+   - Set Stripe Checkout Session `success_url` to redirect back to your domain, e.g.:  
+
+     https://your-site.com/success?session_id={CHECKOUT_SESSION_ID}  
+
+     (or /thank-you, /confirmation—use a unique path).  
+
+   - On THAT page only (your domain where Pixel is installed):  
+
+     Trigger client-side fbq('track', 'Purchase', { value: XX.XX, currency: 'USD', contents: [...], content_type: 'product', event_id: 'unique-id-here' });  
+
+     - Pull value/currency from session lookup if needed (via Stripe API on page load).  
+
+   - IMPORTANT: Do NOT fire Purchase on button click, checkout init, Stripe redirect landing, dashboard, or any other page—this kills duplicates/noise.
+
+2. **Add URL-based rule in Meta Events Manager for Purchase**  
+
+   - Go to Events Manager → Data Sources → your Pixel → Custom Conversions (or edit standard Purchase).  
+
+   - Create/set rule: URL contains "/success" (or your exact success path, e.g. "/thank-you").  
+
+   - This filters: Only count Purchase if the confirmation page URL matches—eliminates stray/duplicate firings and fixes inconsistency warnings.
+
+3. **Enable Automatic Advanced Matching**  
+
+   - In Events Manager → Settings → turn on Automatic Advanced Matching.  
+
+   - If your success page has user email (from Stripe session), pass hashed email in fbq call to help recover lost sessions/attribution.
+
+4. **Optional strong upgrade (if ad spend grows or issues persist)**: Add server-side Meta Conversions API via Stripe webhook  
+
+   - Listen for Stripe `checkout.session.completed` webhook.  
+
+   - On payment success, send server-side Purchase event to Meta CAPI.  
+
+   - Include: event_name: "Purchase", action_source: "website", event_source_url: "https://your-site.com/checkout", event_id: session.id (for deduplication with client-side), value/currency, hashed user data if available.  
+
+   - This makes tracking browser-independent and rock-solid.
+
+Tech stack assumptions: Node.js + Express + Stripe SDK (possibly plain HTML/JS for success page).  
+
+- Use env vars for secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, META_PIXEL_ID, META_CAPI_ACCESS_TOKEN).  
+
+- Pixel base code already on site.
+
+Please guide me step by step in code:
+
+- Step 1: Update Checkout Session creation to set proper success_url with {CHECKOUT_SESSION_ID}.
+
+- Step 2: Create /success route/page with fbq Purchase trigger (include basic session lookup if needed).
+
+- Step 3: Instructions for setting URL rule in Events Manager (no code, just steps).
+
+- Step 4: Enable Advanced Matching steps.
+
+- Optional Step 5: Webhook endpoint for CAPI (small code block, focus on deduplication).
+
+Keep snippets small/incremental so I can implement & test one at a time.  
+
+After changes, test full flow in Events Manager Test Events tab—Purchase should appear clean, attributed, no duplicates.
+
+This should stop the "freaking out" and give solid tracking for Stripe redirects.
