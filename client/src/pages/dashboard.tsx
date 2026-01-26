@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
   LayoutDashboard, 
   Calendar as CalendarIcon, 
@@ -20,6 +21,7 @@ import {
   CheckCircle2,
   X
 } from "lucide-react";
+import { OnboardingFlow, OnboardingBanner } from "@/components/onboarding/OnboardingFlow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -40,6 +42,56 @@ const TECHNICIANS = ["Trevor", "Trevor", "Trevor", "Trevor", "Trevor", "Trevor",
 export default function Dashboard() {
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingSkipped, setOnboardingSkipped] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Check onboarding status
+  const { data: onboardingProgress, refetch: refetchOnboarding } = useQuery({
+    queryKey: ["/api/onboarding"],
+    queryFn: async () => {
+      const res = await fetch("/api/onboarding");
+      return res.json();
+    }
+  });
+
+  // Show onboarding if not completed
+  useEffect(() => {
+    if (onboardingProgress) {
+      // No onboarding record exists - show onboarding for first-time users
+      if (!onboardingProgress.id && !onboardingProgress.completed) {
+        setShowOnboarding(true);
+        setOnboardingSkipped(false);
+      }
+      // Onboarding was skipped - show banner
+      else if (onboardingProgress.skippedAt && !onboardingProgress.completed) {
+        setShowOnboarding(false);
+        setOnboardingSkipped(true);
+      }
+      // Onboarding is in progress but not completed - resume
+      else if (onboardingProgress.id && !onboardingProgress.completed && !onboardingProgress.skippedAt) {
+        setShowOnboarding(true);
+        setOnboardingSkipped(false);
+      }
+      // Onboarding is completed
+      else if (onboardingProgress.completed) {
+        setShowOnboarding(false);
+        setOnboardingSkipped(false);
+      }
+    }
+  }, [onboardingProgress]);
+
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    setOnboardingSkipped(false);
+    // Invalidate query to refresh onboarding status
+    await queryClient.invalidateQueries({ queryKey: ["/api/onboarding"] });
+  };
+
+  // Show onboarding flow
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <div className="flex h-screen w-full bg-slate-50 font-sans overflow-hidden">
@@ -77,13 +129,13 @@ export default function Dashboard() {
               Calendar
             </Button>
             <Link href="/materials">
-              <Button variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
+              <Button data-testid="button-materials" variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
                 <FileText className="h-4 w-4" />
                 Materials
               </Button>
             </Link>
             <Link href="/routes">
-              <Button variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
+              <Button data-testid="button-routes" variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
                 <MapIcon className="h-4 w-4" />
                 Routes
               </Button>
@@ -239,6 +291,11 @@ export default function Dashboard() {
       <div className="w-12 bg-white border-l flex flex-col items-center py-4 shrink-0">
         <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 mb-4"><ChevronLeft className="h-4 w-4" /></Button>
       </div>
+
+      {/* Onboarding Banner if skipped */}
+      {onboardingSkipped && (
+        <OnboardingBanner onResume={() => setShowOnboarding(true)} />
+      )}
     </div>
   );
 }

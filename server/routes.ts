@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertJobSchema } from "@shared/schema";
+import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema } from "@shared/schema";
 import { z } from "zod";
 
 const optimizeRouteSchema = z.object({
@@ -158,6 +158,165 @@ export async function registerRoutes(
       res.json(route);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch route" });
+    }
+  });
+
+  // Customers API
+  app.get("/api/customers", async (req, res) => {
+    try {
+      const customers = await storage.getCustomers();
+      res.json(customers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch customers" });
+    }
+  });
+
+  app.post("/api/customers", async (req, res) => {
+    try {
+      const validatedData = insertCustomerSchema.parse(req.body);
+      const customer = await storage.createCustomer(validatedData);
+      res.status(201).json(customer);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create customer" });
+    }
+  });
+
+  // Services API
+  app.get("/api/services", async (req, res) => {
+    try {
+      const services = await storage.getServices();
+      res.json(services);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch services" });
+    }
+  });
+
+  app.get("/api/services/presets", async (req, res) => {
+    try {
+      const presets = await storage.getPresetServices();
+      res.json(presets);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch preset services" });
+    }
+  });
+
+  app.post("/api/services", async (req, res) => {
+    try {
+      const validatedData = insertServiceSchema.parse(req.body);
+      const service = await storage.createService(validatedData);
+      res.status(201).json(service);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create service" });
+    }
+  });
+
+  // Invoices API
+  app.get("/api/invoices", async (req, res) => {
+    try {
+      const invoices = await storage.getInvoices();
+      res.json(invoices);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch invoices" });
+    }
+  });
+
+  app.post("/api/invoices", async (req, res) => {
+    try {
+      const validatedData = insertInvoiceSchema.parse(req.body);
+      const invoice = await storage.createInvoice(validatedData);
+      res.status(201).json(invoice);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create invoice" });
+    }
+  });
+
+  app.patch("/api/invoices/:id", async (req, res) => {
+    try {
+      const invoice = await storage.updateInvoice(req.params.id, req.body);
+      if (!invoice) {
+        return res.status(404).json({ error: "Invoice not found" });
+      }
+      res.json(invoice);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update invoice" });
+    }
+  });
+
+  // Onboarding Progress API
+  app.get("/api/onboarding", async (req, res) => {
+    try {
+      const progress = await storage.getOnboardingProgress();
+      res.json(progress || { step: 0, completed: false });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch onboarding progress" });
+    }
+  });
+
+  app.post("/api/onboarding", async (req, res) => {
+    try {
+      const progress = await storage.createOnboardingProgress(req.body);
+      res.status(201).json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create onboarding progress" });
+    }
+  });
+
+  app.patch("/api/onboarding/:id", async (req, res) => {
+    try {
+      const progress = await storage.updateOnboardingProgress(req.params.id, req.body);
+      res.json(progress);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update onboarding progress" });
+    }
+  });
+
+  // Feature Usage API (for guided tooltips)
+  app.post("/api/feature-usage/:featureName", async (req, res) => {
+    try {
+      const userId = req.body.userId || "default";
+      const usage = await storage.incrementFeatureUsage(userId, req.params.featureName);
+      res.json(usage);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to track feature usage" });
+    }
+  });
+
+  app.get("/api/feature-usage/:featureName", async (req, res) => {
+    try {
+      const userId = req.query.userId as string || "default";
+      const usage = await storage.getFeatureUsage(userId, req.params.featureName);
+      res.json(usage || { useCount: 0 });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to get feature usage" });
+    }
+  });
+
+  // Seed preset services
+  app.post("/api/seed-presets", async (req, res) => {
+    try {
+      const presetServices = [
+        { name: "General Pest Control", description: "Monthly interior/exterior spray treatment", price: "99", duration: 30, isPreset: true },
+        { name: "Bi-Monthly Service", description: "Every 2 months comprehensive treatment", price: "149", duration: 45, isPreset: true },
+        { name: "One-Time Treatment", description: "Single deep treatment for immediate issues", price: "199", duration: 60, isPreset: true },
+      ];
+      
+      const created = [];
+      for (const service of presetServices) {
+        const s = await storage.createService(service);
+        created.push(s);
+      }
+      res.json({ message: "Preset services created", services: created });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to seed presets" });
     }
   });
 

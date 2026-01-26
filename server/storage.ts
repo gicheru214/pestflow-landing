@@ -2,11 +2,15 @@ import {
   type User, type InsertUser, 
   type Job, type InsertJob,
   type Route, type InsertRoute,
-  users, jobs, routes 
+  type Customer, type InsertCustomer,
+  type Service, type InsertService,
+  type Invoice, type InsertInvoice,
+  type OnboardingProgress, type InsertOnboardingProgress,
+  type FeatureUsage, type InsertFeatureUsage,
+  users, jobs, routes, customers, services, invoices, onboardingProgress, featureUsage 
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
-import { randomUUID } from "crypto";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -28,6 +32,34 @@ export interface IStorage {
   getRouteByDate(date: string): Promise<Route | undefined>;
   createRoute(route: InsertRoute): Promise<Route>;
   updateRoute(id: string, route: Partial<InsertRoute>): Promise<Route | undefined>;
+  
+  // Customers
+  getCustomers(): Promise<Customer[]>;
+  getCustomer(id: string): Promise<Customer | undefined>;
+  createCustomer(customer: InsertCustomer): Promise<Customer>;
+  updateCustomer(id: string, customer: Partial<InsertCustomer>): Promise<Customer | undefined>;
+  deleteCustomer(id: string): Promise<boolean>;
+  
+  // Services
+  getServices(): Promise<Service[]>;
+  getService(id: string): Promise<Service | undefined>;
+  createService(service: InsertService): Promise<Service>;
+  getPresetServices(): Promise<Service[]>;
+  
+  // Invoices
+  getInvoices(): Promise<Invoice[]>;
+  getInvoice(id: string): Promise<Invoice | undefined>;
+  createInvoice(invoice: InsertInvoice): Promise<Invoice>;
+  updateInvoice(id: string, invoice: Partial<InsertInvoice>): Promise<Invoice | undefined>;
+  
+  // Onboarding
+  getOnboardingProgress(userId?: string): Promise<OnboardingProgress | undefined>;
+  createOnboardingProgress(progress: InsertOnboardingProgress): Promise<OnboardingProgress>;
+  updateOnboardingProgress(id: string, progress: Partial<InsertOnboardingProgress>): Promise<OnboardingProgress | undefined>;
+  
+  // Feature Usage
+  getFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage | undefined>;
+  incrementFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -99,6 +131,113 @@ export class DatabaseStorage implements IStorage {
   async updateRoute(id: string, routeUpdate: Partial<InsertRoute>): Promise<Route | undefined> {
     const [route] = await db.update(routes).set(routeUpdate).where(eq(routes.id, id)).returning();
     return route;
+  }
+
+  // Customers
+  async getCustomers(): Promise<Customer[]> {
+    return await db.select().from(customers);
+  }
+
+  async getCustomer(id: string): Promise<Customer | undefined> {
+    const [customer] = await db.select().from(customers).where(eq(customers.id, id));
+    return customer;
+  }
+
+  async createCustomer(insertCustomer: InsertCustomer): Promise<Customer> {
+    const [customer] = await db.insert(customers).values(insertCustomer).returning();
+    return customer;
+  }
+
+  async updateCustomer(id: string, customerUpdate: Partial<InsertCustomer>): Promise<Customer | undefined> {
+    const [customer] = await db.update(customers).set(customerUpdate).where(eq(customers.id, id)).returning();
+    return customer;
+  }
+
+  async deleteCustomer(id: string): Promise<boolean> {
+    const result = await db.delete(customers).where(eq(customers.id, id)).returning();
+    return result.length > 0;
+  }
+
+  // Services
+  async getServices(): Promise<Service[]> {
+    return await db.select().from(services);
+  }
+
+  async getService(id: string): Promise<Service | undefined> {
+    const [service] = await db.select().from(services).where(eq(services.id, id));
+    return service;
+  }
+
+  async createService(insertService: InsertService): Promise<Service> {
+    const [service] = await db.insert(services).values(insertService).returning();
+    return service;
+  }
+
+  async getPresetServices(): Promise<Service[]> {
+    return await db.select().from(services).where(eq(services.isPreset, true));
+  }
+
+  // Invoices
+  async getInvoices(): Promise<Invoice[]> {
+    return await db.select().from(invoices);
+  }
+
+  async getInvoice(id: string): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice;
+  }
+
+  async createInvoice(insertInvoice: InsertInvoice): Promise<Invoice> {
+    const [invoice] = await db.insert(invoices).values(insertInvoice).returning();
+    return invoice;
+  }
+
+  async updateInvoice(id: string, invoiceUpdate: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const [invoice] = await db.update(invoices).set(invoiceUpdate).where(eq(invoices.id, id)).returning();
+    return invoice;
+  }
+
+  // Onboarding
+  async getOnboardingProgress(userId?: string): Promise<OnboardingProgress | undefined> {
+    if (userId) {
+      const [progress] = await db.select().from(onboardingProgress).where(eq(onboardingProgress.userId, userId));
+      return progress;
+    }
+    const [progress] = await db.select().from(onboardingProgress);
+    return progress;
+  }
+
+  async createOnboardingProgress(insertProgress: InsertOnboardingProgress): Promise<OnboardingProgress> {
+    const [progress] = await db.insert(onboardingProgress).values(insertProgress).returning();
+    return progress;
+  }
+
+  async updateOnboardingProgress(id: string, progressUpdate: Partial<InsertOnboardingProgress>): Promise<OnboardingProgress | undefined> {
+    const [progress] = await db.update(onboardingProgress).set(progressUpdate).where(eq(onboardingProgress.id, id)).returning();
+    return progress;
+  }
+
+  // Feature Usage
+  async getFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage | undefined> {
+    const [usage] = await db.select().from(featureUsage).where(
+      and(eq(featureUsage.userId, userId), eq(featureUsage.featureName, featureName))
+    );
+    return usage;
+  }
+
+  async incrementFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage> {
+    const existing = await this.getFeatureUsage(userId, featureName);
+    if (existing) {
+      const [updated] = await db.update(featureUsage)
+        .set({ useCount: existing.useCount + 1, lastUsedAt: new Date() })
+        .where(eq(featureUsage.id, existing.id))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(featureUsage)
+      .values({ userId, featureName, useCount: 1 })
+      .returning();
+    return created;
   }
 }
 

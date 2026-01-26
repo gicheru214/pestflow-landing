@@ -65,3 +65,103 @@ export const insertRouteSchema = createInsertSchema(routes).omit({
 
 export type InsertRoute = z.infer<typeof insertRouteSchema>;
 export type Route = typeof routes.$inferSelect;
+
+// Customers table
+export const customers = pgTable("customers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email"),
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type Customer = typeof customers.$inferSelect;
+
+// Services table (preset templates)
+export const services = pgTable("services", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  duration: integer("duration").notNull().default(30),
+  isPreset: boolean("is_preset").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertServiceSchema = createInsertSchema(services).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertService = z.infer<typeof insertServiceSchema>;
+export type Service = typeof services.$inferSelect;
+
+// Invoices table
+export const invoices = pgTable("invoices", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  customerId: varchar("customer_id").notNull(),
+  jobId: varchar("job_id"),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  status: text("status").notNull().default("pending"),
+  paymentLink: text("payment_link"),
+  sentAt: timestamp("sent_at"),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertInvoiceSchema = createInsertSchema(invoices).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
+export type Invoice = typeof invoices.$inferSelect;
+
+// User onboarding progress
+export const onboardingProgress = pgTable("onboarding_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id"),
+  step: integer("step").notNull().default(0),
+  completed: boolean("completed").default(false),
+  customerId: varchar("customer_id"),
+  serviceId: varchar("service_id"),
+  jobId: varchar("job_id"),
+  invoiceId: varchar("invoice_id"),
+  skippedAt: timestamp("skipped_at"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertOnboardingProgressSchema = createInsertSchema(onboardingProgress).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertOnboardingProgress = z.infer<typeof insertOnboardingProgressSchema>;
+export type OnboardingProgress = typeof onboardingProgress.$inferSelect;
+
+// Feature usage tracking for guided tooltips
+export const featureUsage = pgTable("feature_usage", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id"),
+  featureName: text("feature_name").notNull(),
+  useCount: integer("use_count").notNull().default(0),
+  lastUsedAt: timestamp("last_used_at").defaultNow(),
+});
+
+export const insertFeatureUsageSchema = createInsertSchema(featureUsage).omit({
+  id: true,
+});
+
+export type InsertFeatureUsage = z.infer<typeof insertFeatureUsageSchema>;
+export type FeatureUsage = typeof featureUsage.$inferSelect;
