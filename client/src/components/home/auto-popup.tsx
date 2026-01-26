@@ -6,8 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Building2 } from "lucide-react";
 
 export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-black border-slate-800">
@@ -26,7 +24,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
           <Button 
             size="lg" 
             className="w-full md:w-auto px-8 py-6 text-xl font-bold bg-[#635BFF] hover:bg-[#5851E1] text-white shadow-lg shadow-indigo-500/20"
-            onClick={() => window.location.href = stripeLink}
+            onClick={() => window.location.href = "/#/onboarding"}
           >
             Start Trial <ArrowRight className="ml-2 h-5 w-5" />
           </Button>

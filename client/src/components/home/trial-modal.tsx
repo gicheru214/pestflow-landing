@@ -31,7 +31,6 @@ interface TrialModalProps {
 
 export function TrialModal({ children, className }: TrialModalProps) {
   const [open, setOpen] = useState(false);
-  const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,9 +44,9 @@ export function TrialModal({ children, className }: TrialModalProps) {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, we would upload the data here.
-    // For now, we simulate a delay and redirect.
+    // For now, we simulate a delay and redirect to onboarding.
     console.log(values);
-    window.open(stripeLink, "_blank");
+    window.location.href = "/#/onboarding";
     setOpen(false);
   }
 

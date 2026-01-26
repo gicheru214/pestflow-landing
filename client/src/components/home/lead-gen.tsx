@@ -34,8 +34,8 @@ export function LeadGen() {
         })
       });
       
-      // Redirect to Stripe
-      window.location.href = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
+      // Redirect to onboarding to complete signup
+      window.location.href = "/#/onboarding";
       
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
