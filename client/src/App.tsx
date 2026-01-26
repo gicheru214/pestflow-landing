@@ -11,6 +11,7 @@ import Dashboard from "@/pages/dashboard";
 import SignupSuccess from "@/pages/signup-success";
 import CreateAccount from "@/pages/create-account";
 import Payment from "@/pages/payment";
+import Materials from "@/pages/materials";
 import { useHashLocation } from "wouter/use-hash-location";
 
 function AppRouter() {
@@ -24,6 +25,7 @@ function AppRouter() {
         <Route path="/signup-success" component={SignupSuccess} />
         <Route path="/create-account" component={CreateAccount} />
         <Route path="/payment" component={Payment} />
+        <Route path="/materials" component={Materials} />
         <Route component={NotFound} />
       </Switch>
     </Router>

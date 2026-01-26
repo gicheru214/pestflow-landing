@@ -76,6 +76,12 @@ export default function Dashboard() {
               <CalendarIcon className="h-4 w-4" />
               Calendar
             </Button>
+            <Link href="/materials">
+              <Button variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
+                <FileText className="h-4 w-4" />
+                Materials
+              </Button>
+            </Link>
           </div>
 
           <div className="flex-1 max-w-xl mx-8 relative">
