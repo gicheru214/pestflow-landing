@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, ArrowRight, Upload, Camera, Plus, Building2, User } from "lucide-react";
 import { Link } from "wouter";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 const step1Schema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -40,6 +41,10 @@ export default function Onboarding() {
   const [step1Data, setStep1Data] = useState<Step1Values | null>(null);
   const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
 
+  useEffect(() => {
+    analytics.track(step === 1 ? EVENTS.ONBOARDING.STEP_1_VIEW : EVENTS.ONBOARDING.STEP_2_VIEW);
+  }, [step]);
+
   const form1 = useForm<Step1Values>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
@@ -65,10 +70,10 @@ export default function Onboarding() {
   });
 
   const onStep1Submit = (values: Step1Values) => {
-    // Store file metadata instead of the file object itself to avoid serialization issues
+    analytics.track(EVENTS.ONBOARDING.STEP_1_COMPLETE, { email: values.email });
+    
     const processedValues = { ...values };
     if (values.profilePicture instanceof File) {
-      // @ts-ignore - storing metadata for mockup
       processedValues.profilePicture = {
         name: values.profilePicture.name,
         size: values.profilePicture.size,
@@ -115,12 +120,16 @@ export default function Onboarding() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submission)
       });
+      
+      analytics.track(EVENTS.ONBOARDING.STEP_2_COMPLETE, { 
+        companyName: values.companyName,
+        technicians: values.technicians 
+      });
+      analytics.track(EVENTS.CHECKOUT.REDIRECT_TO_STRIPE);
     } catch (e) {
       console.error("Failed to save submission", e);
     }
     
-    // Simulate Stripe Redirect
-    // In a real app, this would be the Stripe Success URL
     window.location.href = stripeLink;
   };
 

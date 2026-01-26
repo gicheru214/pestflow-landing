@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Building2 } from "lucide-react";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   return (
@@ -50,12 +51,14 @@ export function AutoPopup() {
 
     const timer = setTimeout(() => {
       setOpen(true);
+      analytics.track(EVENTS.LANDING.POPUP_SHOWN);
     }, 7000);
 
     return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
+    analytics.track(EVENTS.LANDING.POPUP_DISMISSED);
     setOpen(false);
     localStorage.setItem("pestflow_popup_visited", "true");
   };

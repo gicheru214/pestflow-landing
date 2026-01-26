@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import videoBackground from "@assets/generated_videos/pest_control_professional_suburban.mp4";
 import { useState } from "react";
 import { DemoVideoModal } from "./auto-popup";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 export function Hero() {
   const [showDemo, setShowDemo] = useState(false);
@@ -60,7 +61,11 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-6 items-center justify-center pt-8"
           >
             <Link href="/onboarding">
-              <Button size="xl" className="h-16 px-10 text-xl font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 bg-emerald-600 hover:bg-emerald-700 border-none group text-white">
+              <Button 
+                size="xl" 
+                className="h-16 px-10 text-xl font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 bg-emerald-600 hover:bg-emerald-700 border-none group text-white"
+                onClick={() => analytics.track(EVENTS.LANDING.CTA_CLICK, { cta: "start_trial" })}
+              >
                 Start Trial <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -69,7 +74,10 @@ export function Hero() {
               variant="outline" 
               size="xl" 
               className="h-16 px-10 text-xl font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300"
-              onClick={() => setShowDemo(true)}
+              onClick={() => {
+                analytics.track(EVENTS.LANDING.DEMO_REQUEST_START);
+                setShowDemo(true);
+              }}
             >
               <PlayCircle className="mr-2 h-6 w-6" /> Watch Demo
             </Button>

@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-
 import { useLocation } from "wouter";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 export function LeadGen() {
   const [, setLocation] = useLocation();
@@ -21,7 +21,6 @@ export function LeadGen() {
     setIsSubmitting(true);
     
     try {
-      // Save submission to database via API
       await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,7 +33,7 @@ export function LeadGen() {
         })
       });
       
-      // Redirect to onboarding to complete signup
+      analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { email: formData.email });
       window.location.href = "/#/onboarding";
       
     } catch (error) {

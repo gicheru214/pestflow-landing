@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -52,6 +52,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
 
 interface InvoiceItem {
@@ -90,6 +91,10 @@ export default function Invoices() {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    analytics.track(EVENTS.DASHBOARD.INVOICES_VIEW);
+  }, []);
 
   // Fetch invoices
   const { data: invoices = [] } = useQuery({
@@ -425,10 +430,10 @@ function NewInvoiceModal({
       return res.json();
     },
     onSuccess: (invoice) => {
+      analytics.track(EVENTS.INVOICE.CREATE_COMPLETE, { amount: total });
       toast({ title: "Invoice created!", description: `Invoice #${invoice.id.slice(0,8)} has been created.` });
       queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
       onOpenChange(false);
-      // Generate PDF download
       generatePDF(invoice);
     },
     onError: () => {
@@ -458,6 +463,8 @@ Total: $${total.toFixed(2)}
 Thank you for your business!
 PestFlow - Pest Control Software
     `;
+    
+    analytics.track(EVENTS.INVOICE.PDF_DOWNLOAD, { invoiceNumber });
     
     const blob = new Blob([content], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -690,6 +697,7 @@ function AddCustomerModal({
       return res.json();
     },
     onSuccess: () => {
+      analytics.track(EVENTS.CUSTOMER.ADD_COMPLETE, { name });
       toast({ title: "Customer added!", description: `${name} has been added to your customers.` });
       queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
       onOpenChange(false);
@@ -758,6 +766,7 @@ function AddCustomerModal({
       });
       
       const result = await res.json();
+      analytics.track(EVENTS.CUSTOMER.IMPORT_COMPLETE, { imported: result.imported, failed: result.failed });
       toast({ 
         title: "Import complete!", 
         description: `Imported ${result.imported} customers${result.failed > 0 ? `, ${result.failed} failed` : ""}`

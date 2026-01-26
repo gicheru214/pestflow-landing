@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { analytics, EVENTS } from "@/lib/analytics";
 import { Link, useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { 
@@ -54,6 +55,10 @@ export default function Dashboard() {
       return res.json();
     }
   });
+
+  useEffect(() => {
+    analytics.track(EVENTS.DASHBOARD.PAGE_VIEW);
+  }, []);
 
   // Show onboarding if not completed
   useEffect(() => {
