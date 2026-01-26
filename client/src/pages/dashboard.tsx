@@ -82,6 +82,12 @@ export default function Dashboard() {
                 Materials
               </Button>
             </Link>
+            <Link href="/routes">
+              <Button variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
+                <MapIcon className="h-4 w-4" />
+                Routes
+              </Button>
+            </Link>
           </div>
 
           <div className="flex-1 max-w-xl mx-8 relative">
