@@ -121,25 +121,33 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Top Header */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 shrink-0 z-10">
-          <div className="flex items-center gap-4">
-            <img src={logoImage} alt="PestFlow" className="h-8 w-auto object-contain" />
-            <div className="h-6 w-px bg-slate-200 mx-2" />
-            <Button variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
-              <CalendarIcon className="h-4 w-4" />
-              Calendar
-            </Button>
-            <Link href="/materials">
-              <Button data-testid="button-materials" variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
-                <FileText className="h-4 w-4" />
-                Materials
+          <div className="flex items-center gap-2">
+            <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
+            <div className="h-5 w-px bg-slate-200" />
+            <nav className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-emerald-600 bg-emerald-50">
+                <CalendarIcon className="h-4 w-4 mr-1.5" />
+                Calendar
               </Button>
-            </Link>
-            <Link href="/routes">
-              <Button data-testid="button-routes" variant="outline" className="flex items-center gap-2 font-semibold text-slate-700 border-slate-300">
-                <MapIcon className="h-4 w-4" />
-                Routes
-              </Button>
-            </Link>
+              <Link href="/invoices">
+                <Button data-testid="button-invoices" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                  <FileText className="h-4 w-4 mr-1.5" />
+                  Invoices
+                </Button>
+              </Link>
+              <Link href="/materials">
+                <Button data-testid="button-materials" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                  <FileText className="h-4 w-4 mr-1.5" />
+                  Materials
+                </Button>
+              </Link>
+              <Link href="/routes">
+                <Button data-testid="button-routes" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                  <MapIcon className="h-4 w-4 mr-1.5" />
+                  Routes
+                </Button>
+              </Link>
+            </nav>
           </div>
 
           <div className="flex-1 max-w-xl mx-8 relative">

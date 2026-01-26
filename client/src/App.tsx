@@ -14,6 +14,7 @@ import CreateAccount from "@/pages/create-account";
 import Payment from "@/pages/payment";
 import Materials from "@/pages/materials";
 import Routes from "@/pages/routes";
+import Invoices from "@/pages/invoices";
 import { useHashLocation } from "wouter/use-hash-location";
 
 function AppRouter() {
@@ -29,6 +30,7 @@ function AppRouter() {
         <Route path="/payment" component={Payment} />
         <Route path="/materials" component={Materials} />
         <Route path="/routes" component={Routes} />
+        <Route path="/invoices" component={Invoices} />
         <Route component={NotFound} />
       </Switch>
     </Router>
