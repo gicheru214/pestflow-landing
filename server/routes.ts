@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema } from "@shared/schema";
+import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
 import { z } from "zod";
 
 const optimizeRouteSchema = z.object({
@@ -317,6 +317,29 @@ export async function registerRoutes(
       res.json({ message: "Preset services created", services: created });
     } catch (error) {
       res.status(500).json({ error: "Failed to seed presets" });
+    }
+  });
+
+  // Submissions API (for lead capture from landing page)
+  app.get("/api/submissions", async (req, res) => {
+    try {
+      const allSubmissions = await storage.getSubmissions();
+      res.json(allSubmissions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch submissions" });
+    }
+  });
+
+  app.post("/api/submissions", async (req, res) => {
+    try {
+      const validatedData = insertSubmissionSchema.parse(req.body);
+      const submission = await storage.createSubmission(validatedData);
+      res.status(201).json(submission);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create submission" });
     }
   });
 

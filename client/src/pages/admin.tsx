@@ -60,10 +60,16 @@ export default function Admin() {
     }
   }, []);
 
-  const loadSubmissions = () => {
+  const loadSubmissions = async () => {
     try {
-      const data = JSON.parse(localStorage.getItem("submissions") || "[]");
-      setSubmissions(data.reverse());
+      const res = await fetch("/api/submissions");
+      if (res.ok) {
+        const data = await res.json();
+        setSubmissions(data.reverse());
+      } else {
+        console.error("Failed to load submissions");
+        setSubmissions([]);
+      }
     } catch (e) {
       console.error("Failed to load submissions", e);
       setSubmissions([]);

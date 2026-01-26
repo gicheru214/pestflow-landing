@@ -165,3 +165,30 @@ export const insertFeatureUsageSchema = createInsertSchema(featureUsage).omit({
 
 export type InsertFeatureUsage = z.infer<typeof insertFeatureUsageSchema>;
 export type FeatureUsage = typeof featureUsage.$inferSelect;
+
+// Lead submissions from landing page (demo requests, newsletter signups)
+export const submissions = pgTable("submissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: text("type").notNull().default("demo"),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  companyName: text("company_name"),
+  website: text("website"),
+  technicians: text("technicians"),
+  routes: text("routes"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  zipCode: text("zip_code"),
+  submittedAt: timestamp("submitted_at").defaultNow(),
+});
+
+export const insertSubmissionSchema = createInsertSchema(submissions).omit({
+  id: true,
+  submittedAt: true,
+});
+
+export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
+export type Submission = typeof submissions.$inferSelect;

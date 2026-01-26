@@ -7,7 +7,8 @@ import {
   type Invoice, type InsertInvoice,
   type OnboardingProgress, type InsertOnboardingProgress,
   type FeatureUsage, type InsertFeatureUsage,
-  users, jobs, routes, customers, services, invoices, onboardingProgress, featureUsage 
+  type Submission, type InsertSubmission,
+  users, jobs, routes, customers, services, invoices, onboardingProgress, featureUsage, submissions 
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -60,6 +61,11 @@ export interface IStorage {
   // Feature Usage
   getFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage | undefined>;
   incrementFeatureUsage(userId: string, featureName: string): Promise<FeatureUsage>;
+  
+  // Submissions
+  getSubmissions(): Promise<Submission[]>;
+  getSubmission(id: string): Promise<Submission | undefined>;
+  createSubmission(submission: InsertSubmission): Promise<Submission>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -238,6 +244,21 @@ export class DatabaseStorage implements IStorage {
       .values({ userId, featureName, useCount: 1 })
       .returning();
     return created;
+  }
+
+  // Submissions
+  async getSubmissions(): Promise<Submission[]> {
+    return await db.select().from(submissions);
+  }
+
+  async getSubmission(id: string): Promise<Submission | undefined> {
+    const [submission] = await db.select().from(submissions).where(eq(submissions.id, id));
+    return submission;
+  }
+
+  async createSubmission(insertSubmission: InsertSubmission): Promise<Submission> {
+    const [submission] = await db.insert(submissions).values(insertSubmission).returning();
+    return submission;
   }
 }
 

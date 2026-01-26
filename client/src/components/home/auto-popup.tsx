@@ -80,25 +80,24 @@ export function AutoPopup() {
     setStep("offer");
   };
 
-  const handleAcceptOffer = () => {
+  const handleAcceptOffer = async () => {
     const popupData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
     
-    const inquiry = {
-      id: crypto.randomUUID(),
-      type: "popup_inquiry",
-      submittedAt: new Date().toISOString(),
-      firstName: "Website Visitor",
-      lastName: "(Inquiry)",
-      companyName: popupData.isOwner ? "Owner/Manager" : "Visitor",
-      email: "Pending...",
-      technicians: popupData.routeSize || "N/A",
-      routes: popupData.routeSize,
-      status: "new"
-    };
-
     try {
-      const existing = JSON.parse(localStorage.getItem("submissions") || "[]");
-      localStorage.setItem("submissions", JSON.stringify([...existing, inquiry]));
+      // Save inquiry to database via API
+      await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "popup_inquiry",
+          firstName: "Website Visitor",
+          lastName: "(Inquiry)",
+          companyName: popupData.isOwner ? "Owner/Manager" : "Visitor",
+          email: "Pending...",
+          technicians: popupData.routeSize || "N/A",
+          routes: popupData.routeSize
+        })
+      });
     } catch (e) {
       console.error("Failed to save popup inquiry", e);
     }

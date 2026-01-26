@@ -16,28 +16,23 @@ export function LeadGen() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // Create new submission object
-      const newSubmission = {
-        id: crypto.randomUUID(),
-        type: "newsletter",
-        submittedAt: new Date().toISOString(),
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        companyName: "N/A (Newsletter)",
-        status: "new"
-      };
-
-      // Get existing submissions
-      const existingSubmissions = JSON.parse(localStorage.getItem("submissions") || "[]");
-      
-      // Save new submission
-      localStorage.setItem("submissions", JSON.stringify([...existingSubmissions, newSubmission]));
+      // Save submission to database via API
+      await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "newsletter",
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          companyName: "N/A (Newsletter)"
+        })
+      });
       
       // Redirect to Stripe
       window.location.href = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";

@@ -79,7 +79,7 @@ export default function Onboarding() {
     setStep(2);
   };
 
-  const onStep2Submit = (values: Step2Values) => {
+  const onStep2Submit = async (values: Step2Values) => {
     if (!step1Data) return;
     
     // Process logo file
@@ -94,15 +94,27 @@ export default function Onboarding() {
     }
 
     const submission = { 
-      ...step1Data, 
-      ...processedValues, 
-      id: crypto.randomUUID(),
-      submittedAt: new Date().toISOString() 
+      type: "demo",
+      firstName: step1Data.firstName,
+      lastName: step1Data.lastName,
+      email: step1Data.email,
+      phone: step1Data.phone,
+      companyName: processedValues.companyName,
+      website: processedValues.website,
+      technicians: processedValues.technicians,
+      routes: processedValues.routes,
+      address: processedValues.address,
+      city: processedValues.city,
+      state: processedValues.state,
+      zipCode: processedValues.zipCode
     };
 
     try {
-      const existing = JSON.parse(localStorage.getItem("submissions") || "[]");
-      localStorage.setItem("submissions", JSON.stringify([...existing, submission]));
+      await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission)
+      });
     } catch (e) {
       console.error("Failed to save submission", e);
     }
