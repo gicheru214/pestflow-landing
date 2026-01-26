@@ -184,6 +184,38 @@ export async function registerRoutes(
     }
   });
 
+  // Bulk import customers (CSV/JSON)
+  app.post("/api/customers/import", async (req, res) => {
+    try {
+      const { customers: customersData } = req.body;
+      if (!Array.isArray(customersData) || customersData.length === 0) {
+        return res.status(400).json({ error: "No customers provided" });
+      }
+      
+      const results = [];
+      const errors = [];
+      
+      for (const customerData of customersData) {
+        try {
+          const validatedData = insertCustomerSchema.parse(customerData);
+          const customer = await storage.createCustomer(validatedData);
+          results.push(customer);
+        } catch (err) {
+          errors.push({ data: customerData, error: err instanceof Error ? err.message : "Invalid data" });
+        }
+      }
+      
+      res.status(201).json({ 
+        imported: results.length, 
+        failed: errors.length,
+        customers: results,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to import customers" });
+    }
+  });
+
   // Services API
   app.get("/api/services", async (req, res) => {
     try {

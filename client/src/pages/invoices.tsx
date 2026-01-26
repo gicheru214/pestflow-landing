@@ -17,7 +17,11 @@ import {
   Bell,
   MessageSquare,
   HelpCircle,
-  Settings
+  Settings,
+  Upload,
+  UserPlus,
+  FileSpreadsheet,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,6 +86,7 @@ function NavIcon({ icon: Icon, label, active = false }: { icon: any; label: stri
 
 export default function Invoices() {
   const [showNewInvoice, setShowNewInvoice] = useState(false);
+  const [showAddCustomer, setShowAddCustomer] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -179,7 +184,13 @@ export default function Invoices() {
           <div className="flex items-center gap-2">
             <Button 
               className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2"
-              onClick={() => setShowNewInvoice(true)}
+              onClick={() => {
+                if (customers.length === 0) {
+                  setShowAddCustomer(true);
+                } else {
+                  setShowNewInvoice(true);
+                }
+              }}
             >
               <Plus className="h-4 w-4" />
               New Invoice
@@ -248,7 +259,16 @@ export default function Invoices() {
                   <FileText className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-slate-700 mb-2">No invoices yet</h3>
                   <p className="text-slate-500 mb-4">Create your first invoice to start billing customers</p>
-                  <Button onClick={() => setShowNewInvoice(true)} className="bg-emerald-500 hover:bg-emerald-600">
+                  <Button 
+                    onClick={() => {
+                      if (customers.length === 0) {
+                        setShowAddCustomer(true);
+                      } else {
+                        setShowNewInvoice(true);
+                      }
+                    }} 
+                    className="bg-emerald-500 hover:bg-emerald-600"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Create Invoice
                   </Button>
@@ -293,11 +313,52 @@ export default function Invoices() {
         </div>
       </div>
 
+      {/* No Customers Prompt */}
+      {customers.length === 0 && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Card className="shadow-lg border-amber-200 bg-amber-50 max-w-sm">
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-amber-800 mb-1">Add your first customer</h4>
+                  <p className="text-sm text-amber-700 mb-3">
+                    You need customers to create invoices. Add your first customer now!
+                  </p>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      onClick={() => setShowAddCustomer(true)}
+                    >
+                      <UserPlus className="h-4 w-4 mr-1" />
+                      Add Customer
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* New Invoice Modal */}
       <NewInvoiceModal 
         open={showNewInvoice} 
-        onOpenChange={setShowNewInvoice}
+        onOpenChange={(open) => {
+          if (open && customers.length === 0) {
+            setShowAddCustomer(true);
+          } else {
+            setShowNewInvoice(open);
+          }
+        }}
         customers={customers}
+      />
+
+      {/* Add Customer Modal */}
+      <AddCustomerModal 
+        open={showAddCustomer}
+        onOpenChange={setShowAddCustomer}
       />
     </div>
   );
@@ -594,6 +655,294 @@ PestFlow - Pest Control Software
             {createInvoice.isPending ? "Creating..." : "Add"}
           </Button>
         </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddCustomerModal({ 
+  open, 
+  onOpenChange 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [mode, setMode] = useState<"manual" | "import">("manual");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [importData, setImportData] = useState("");
+  const [importing, setImporting] = useState(false);
+
+  const createCustomer = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/customers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, email, address, city, state, zipCode })
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Customer added!", description: `${name} has been added to your customers.` });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
+      onOpenChange(false);
+      resetForm();
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to add customer", variant: "destructive" });
+    }
+  });
+
+  const resetForm = () => {
+    setName("");
+    setPhone("");
+    setEmail("");
+    setAddress("");
+    setCity("");
+    setState("");
+    setZipCode("");
+    setImportData("");
+    setMode("manual");
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setImportData(content);
+    };
+    reader.readAsText(file);
+  };
+
+  const parseAndImportCSV = async () => {
+    setImporting(true);
+    try {
+      const lines = importData.trim().split("\n");
+      const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+      
+      const customers = lines.slice(1).map(line => {
+        const values = line.split(",").map(v => v.trim());
+        const customer: any = {};
+        headers.forEach((header, i) => {
+          if (header.includes("name")) customer.name = values[i];
+          else if (header.includes("phone")) customer.phone = values[i];
+          else if (header.includes("email")) customer.email = values[i];
+          else if (header.includes("address") && !header.includes("city")) customer.address = values[i];
+          else if (header.includes("city")) customer.city = values[i];
+          else if (header.includes("state")) customer.state = values[i];
+          else if (header.includes("zip")) customer.zipCode = values[i];
+        });
+        return customer;
+      }).filter(c => c.name && c.phone);
+
+      if (customers.length === 0) {
+        toast({ title: "No valid customers", description: "Please ensure CSV has name and phone columns", variant: "destructive" });
+        setImporting(false);
+        return;
+      }
+
+      const res = await fetch("/api/customers/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customers })
+      });
+      
+      const result = await res.json();
+      toast({ 
+        title: "Import complete!", 
+        description: `Imported ${result.imported} customers${result.failed > 0 ? `, ${result.failed} failed` : ""}`
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
+      onOpenChange(false);
+      resetForm();
+    } catch (err) {
+      toast({ title: "Import failed", description: "Please check your file format", variant: "destructive" });
+    }
+    setImporting(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Add Your First Customer</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex gap-2 mb-4">
+          <Button 
+            variant={mode === "manual" ? "default" : "outline"} 
+            size="sm"
+            onClick={() => setMode("manual")}
+            className={mode === "manual" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+          >
+            <UserPlus className="h-4 w-4 mr-1" />
+            Add Manually
+          </Button>
+          <Button 
+            variant={mode === "import" ? "default" : "outline"} 
+            size="sm"
+            onClick={() => setMode("import")}
+            className={mode === "import" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            Import List
+          </Button>
+        </div>
+
+        {mode === "manual" ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Customer Name *</Label>
+                <Input 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Smith"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Phone *</Label>
+                <Input 
+                  value={phone} 
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(555) 123-4567"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label>Email</Label>
+              <Input 
+                type="email"
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="john@example.com"
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label>Address *</Label>
+              <Input 
+                value={address} 
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="123 Main St"
+                className="mt-1"
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>City *</Label>
+                <Input 
+                  value={city} 
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Dallas"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>State *</Label>
+                <Input 
+                  value={state} 
+                  onChange={(e) => setState(e.target.value)}
+                  placeholder="TX"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Zip *</Label>
+                <Input 
+                  value={zipCode} 
+                  onChange={(e) => setZipCode(e.target.value)}
+                  placeholder="75001"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="bg-emerald-500 hover:bg-emerald-600"
+                onClick={() => createCustomer.mutate()}
+                disabled={!name || !phone || !address || !city || !state || !zipCode || createCustomer.isPending}
+              >
+                {createCustomer.isPending ? "Adding..." : "Add Customer"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="bg-slate-50 border rounded-lg p-4">
+              <h4 className="font-medium mb-2">Import from file</h4>
+              <p className="text-sm text-slate-600 mb-3">
+                Upload a CSV file with your customer list. Required columns: Name, Phone, Address, City, State, Zip
+              </p>
+              
+              <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-lg cursor-pointer hover:border-emerald-500 hover:bg-emerald-50 transition-colors">
+                  <FileSpreadsheet className="h-5 w-5 text-slate-500" />
+                  <span className="text-sm font-medium">Upload CSV File</span>
+                  <input 
+                    type="file" 
+                    accept=".csv" 
+                    className="hidden" 
+                    onChange={handleFileUpload}
+                  />
+                </label>
+
+              <div className="text-xs text-slate-500">
+                CSV format with columns: name, phone, email, address, city, state, zip
+              </div>
+            </div>
+
+            {importData && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-emerald-700">
+                  <FileText className="h-4 w-4" />
+                  <span className="text-sm font-medium">File loaded - {importData.split("\n").length - 1} rows detected</span>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <Label>Or paste data directly</Label>
+              <Textarea 
+                value={importData}
+                onChange={(e) => setImportData(e.target.value)}
+                placeholder="name,phone,email,address,city,state,zip&#10;John Smith,(555) 123-4567,john@email.com,123 Main St,Dallas,TX,75001"
+                className="mt-1 min-h-[120px] font-mono text-xs"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="bg-emerald-500 hover:bg-emerald-600"
+                onClick={parseAndImportCSV}
+                disabled={!importData || importing}
+              >
+                {importing ? "Importing..." : "Import Customers"}
+              </Button>
+            </div>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
