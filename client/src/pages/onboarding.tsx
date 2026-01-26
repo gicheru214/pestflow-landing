@@ -70,7 +70,7 @@ export default function Onboarding() {
   });
 
   const onStep1Submit = (values: Step1Values) => {
-    analytics.track(EVENTS.ONBOARDING.STEP_1_COMPLETE, { email: values.email });
+    analytics.track(EVENTS.ONBOARDING.STEP_1_COMPLETE);
     
     const processedValues = { ...values };
     if (values.profilePicture instanceof File) {

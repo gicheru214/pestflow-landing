@@ -33,7 +33,7 @@ export function LeadGen() {
         })
       });
       
-      analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { email: formData.email });
+      analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP);
       window.location.href = "/#/onboarding";
       
     } catch (error) {

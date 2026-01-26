@@ -697,7 +697,7 @@ function AddCustomerModal({
       return res.json();
     },
     onSuccess: () => {
-      analytics.track(EVENTS.CUSTOMER.ADD_COMPLETE, { name });
+      analytics.track(EVENTS.CUSTOMER.ADD_COMPLETE);
       toast({ title: "Customer added!", description: `${name} has been added to your customers.` });
       queryClient.invalidateQueries({ queryKey: ["/api/customers"] });
       onOpenChange(false);

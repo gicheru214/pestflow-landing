@@ -99,6 +99,7 @@ export function AutoPopup() {
           routes: popupData.routeSize
         })
       });
+    analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
     } catch (e) {
       console.error("Failed to save popup inquiry", e);
     }
