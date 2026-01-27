@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -13,19 +14,35 @@ export default function SignupSuccess() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
+    // Get session_id from URL for tracking
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+    const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
+
+    // Track checkout success with Mixpanel
+    analytics.track(EVENTS.CHECKOUT.SUCCESS, { 
+      sessionId,
+      value: 1.00,
+      currency: 'USD'
+    });
+    analytics.track(EVENTS.ACCOUNT.SIGNUP_COMPLETE);
+
+    // Identify user with anonymous ID (no PII)
+    const anonId = sessionStorage.getItem('pestflow_user_id') || `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    sessionStorage.setItem('pestflow_user_id', anonId);
+    analytics.identify(anonId, {
+      signupDate: new Date().toISOString(),
+      plan: 'trial'
+    });
+
     // Fire Meta Pixel Purchase Event
     if (window.fbq) {
-      // Attempt to get session_id from various places in the URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
-      const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
-
       window.fbq('track', 'Purchase', { 
         value: 1.00, 
         currency: 'USD',
         content_name: 'PestFlow Subscription', 
         content_ids: ['pestflow-monthly'],
-        event_id: sessionId // For deduplication with server-side events if implemented later
+        event_id: sessionId
       });
     }
 

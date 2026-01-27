@@ -72,6 +72,10 @@ export default function Onboarding() {
   const onStep1Submit = (values: Step1Values) => {
     analytics.track(EVENTS.ONBOARDING.STEP_1_COMPLETE);
     
+    // Store anonymous user ID for tracking (no PII)
+    const userId = `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    sessionStorage.setItem('pestflow_user_id', userId);
+    
     const processedValues = { ...values };
     if (values.profilePicture instanceof File) {
       processedValues.profilePicture = {
@@ -121,9 +125,9 @@ export default function Onboarding() {
         body: JSON.stringify(submission)
       });
       
+      // Track step 2 completion with non-PII metadata only
       analytics.track(EVENTS.ONBOARDING.STEP_2_COMPLETE, { 
-        companyName: values.companyName,
-        technicians: values.technicians 
+        technicianCount: values.technicians 
       });
       analytics.track(EVENTS.CHECKOUT.REDIRECT_TO_STRIPE);
     } catch (e) {

@@ -130,24 +130,47 @@ export default function Dashboard() {
             <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
             <div className="h-5 w-px bg-slate-200" />
             <nav className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-emerald-600 bg-emerald-50">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 px-3 text-sm font-medium text-emerald-600 bg-emerald-50"
+                onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'calendar' })}
+              >
                 <CalendarIcon className="h-4 w-4 mr-1.5" />
                 Calendar
               </Button>
               <Link href="/invoices">
-                <Button data-testid="button-invoices" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  data-testid="button-invoices" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'invoices' })}
+                >
                   <FileText className="h-4 w-4 mr-1.5" />
                   Invoices
                 </Button>
               </Link>
               <Link href="/materials">
-                <Button data-testid="button-materials" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  data-testid="button-materials" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'materials' })}
+                >
                   <FileText className="h-4 w-4 mr-1.5" />
                   Materials
                 </Button>
               </Link>
               <Link href="/routes">
-                <Button data-testid="button-routes" variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  data-testid="button-routes" 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'routes' })}
+                >
                   <MapIcon className="h-4 w-4 mr-1.5" />
                   Routes
                 </Button>
@@ -157,25 +180,61 @@ export default function Dashboard() {
 
           <div className="flex-1 max-w-xl mx-8 relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input placeholder="Search..." className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors" />
+            <Input 
+              placeholder="Search..." 
+              className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+              onFocus={() => analytics.track(EVENTS.NAVIGATION.SEARCH_FOCUS)}
+              onChange={(e) => {
+                const query = e.target.value.toLowerCase();
+                if (query.includes('invoice')) {
+                  window.location.href = '/#/invoices';
+                } else if (query.includes('route')) {
+                  window.location.href = '/#/routes';
+                } else if (query.includes('material')) {
+                  window.location.href = '/#/materials';
+                }
+              }}
+            />
             <div className="absolute right-3 top-2.5 text-xs text-slate-400 font-medium">OPTION+S</div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Button className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-9 w-9 p-0 shadow-sm">
+            <Button 
+              className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-9 w-9 p-0 shadow-sm"
+              onClick={() => analytics.track(EVENTS.DASHBOARD.QUICK_ACTION_CLICK, { action: 'add_new' })}
+            >
               <Plus className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
+            >
               <Bell className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.MENU_OPEN, { menu: 'messages' })}
+            >
               <MessageSquare className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.HELP_CLICK)}
+            >
               <HelpCircle className="h-5 w-5" />
             </Button>
             <div className="h-6 w-px bg-slate-200 mx-1" />
-            <Button variant="ghost" className="flex items-center gap-2 pl-1 pr-2">
+            <Button 
+              variant="ghost" 
+              className="flex items-center gap-2 pl-1 pr-2"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
+            >
               <Avatar className="h-8 w-8 border border-slate-200">
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>JD</AvatarFallback>

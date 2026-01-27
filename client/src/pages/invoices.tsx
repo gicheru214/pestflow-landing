@@ -94,6 +94,8 @@ export default function Invoices() {
 
   useEffect(() => {
     analytics.track(EVENTS.DASHBOARD.INVOICES_VIEW);
+    analytics.track(EVENTS.INVOICE.LIST_VIEW);
+    analytics.track(EVENTS.CUSTOMER.LIST_VIEW);
   }, []);
 
   // Fetch invoices
@@ -152,23 +154,43 @@ export default function Invoices() {
             <div className="h-5 w-px bg-slate-200" />
             <nav className="flex items-center gap-1">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'calendar' })}
+                >
                   <CalendarIcon className="h-4 w-4 mr-1.5" />
                   Calendar
                 </Button>
               </Link>
-              <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-emerald-600 bg-emerald-50">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-8 px-3 text-sm font-medium text-emerald-600 bg-emerald-50"
+                onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'invoices' })}
+              >
                 <FileText className="h-4 w-4 mr-1.5" />
                 Invoices
               </Button>
               <Link href="/materials">
-                <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'materials' })}
+                >
                   <FileText className="h-4 w-4 mr-1.5" />
                   Materials
                 </Button>
               </Link>
               <Link href="/routes">
-                <Button variant="ghost" size="sm" className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'routes' })}
+                >
                   <MapIcon className="h-4 w-4 mr-1.5" />
                   Routes
                 </Button>
@@ -182,7 +204,12 @@ export default function Invoices() {
               placeholder="Search invoices..." 
               className="pl-10 bg-slate-50 border-slate-200"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (e.target.value.length > 2) {
+                  analytics.track(EVENTS.INVOICE.SEARCH);
+                }
+              }}
             />
           </div>
 
@@ -190,7 +217,9 @@ export default function Invoices() {
             <Button 
               className="bg-emerald-500 hover:bg-emerald-600 text-white gap-2"
               onClick={() => {
+                analytics.track(EVENTS.INVOICE.CREATE_START);
                 if (customers.length === 0) {
+                  analytics.track(EVENTS.CUSTOMER.ADD_START);
                   setShowAddCustomer(true);
                 } else {
                   setShowNewInvoice(true);
@@ -200,14 +229,28 @@ export default function Invoices() {
               <Plus className="h-4 w-4" />
               New Invoice
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
+            >
               <Bell className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.HELP_CLICK)}
+            >
               <HelpCircle className="h-5 w-5" />
             </Button>
             <div className="h-6 w-px bg-slate-200 mx-1" />
-            <Button variant="ghost" className="flex items-center gap-2 pl-1 pr-2">
+            <Button 
+              variant="ghost" 
+              className="flex items-center gap-2 pl-1 pr-2"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
+            >
               <Avatar className="h-8 w-8 border border-slate-200">
                 <AvatarImage src="https://github.com/shadcn.png" />
                 <AvatarFallback>JD</AvatarFallback>
@@ -393,6 +436,7 @@ function NewInvoiceModal({
   const total = subtotal - (subtotal * discount / 100);
 
   const addItem = () => {
+    analytics.track(EVENTS.INVOICE.LINE_ITEM_ADD);
     setItems([...items, { 
       id: String(items.length + 1), 
       name: "", 
@@ -489,7 +533,10 @@ PestFlow - Pest Control Software
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
             <Label className="text-sm font-medium text-slate-700">Customer</Label>
-            <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+            <Select value={selectedCustomer} onValueChange={(val) => {
+              setSelectedCustomer(val);
+              analytics.track(EVENTS.CUSTOMER.SELECT);
+            }}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select customer..." />
               </SelectTrigger>
@@ -704,6 +751,7 @@ function AddCustomerModal({
       resetForm();
     },
     onError: () => {
+      analytics.track(EVENTS.CUSTOMER.ADD_ERROR);
       toast({ title: "Error", description: "Failed to add customer", variant: "destructive" });
     }
   });
@@ -791,7 +839,10 @@ function AddCustomerModal({
           <Button 
             variant={mode === "manual" ? "default" : "outline"} 
             size="sm"
-            onClick={() => setMode("manual")}
+            onClick={() => {
+              setMode("manual");
+              analytics.track(EVENTS.CUSTOMER.ADD_START);
+            }}
             className={mode === "manual" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
           >
             <UserPlus className="h-4 w-4 mr-1" />
@@ -800,7 +851,10 @@ function AddCustomerModal({
           <Button 
             variant={mode === "import" ? "default" : "outline"} 
             size="sm"
-            onClick={() => setMode("import")}
+            onClick={() => {
+              setMode("import");
+              analytics.track(EVENTS.CUSTOMER.IMPORT_START);
+            }}
             className={mode === "import" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
           >
             <Upload className="h-4 w-4 mr-1" />

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Switch, Route, Router } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -16,6 +17,7 @@ import Materials from "@/pages/materials";
 import Routes from "@/pages/routes";
 import Invoices from "@/pages/invoices";
 import { useHashLocation } from "wouter/use-hash-location";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 function AppRouter() {
   return (
@@ -38,6 +40,24 @@ function AppRouter() {
 }
 
 function App() {
+  useEffect(() => {
+    // Track session start when app loads
+    analytics.trackSessionStart();
+    analytics.track(EVENTS.SESSION.APP_OPENED);
+    
+    // Track when user leaves/backgrounds app
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        analytics.track(EVENTS.SESSION.APP_BACKGROUNDED);
+      } else {
+        analytics.track(EVENTS.SESSION.APP_OPENED);
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

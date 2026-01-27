@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { 
   ChevronLeft, 
@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 const INITIAL_MATERIALS = [
   { id: 1, name: "Cyper TC .25%", epa: "53883-92" },
@@ -73,8 +74,14 @@ export default function Materials() {
   const [newLocation, setNewLocation] = useState("");
   const [newPest, setNewPest] = useState("");
 
+  useEffect(() => {
+    analytics.track(EVENTS.DASHBOARD.MATERIALS_VIEW);
+    analytics.track(EVENTS.MATERIALS.LIST_VIEW);
+  }, []);
+
   const addMaterial = () => {
     if (newMaterial.name.trim()) {
+      analytics.track(EVENTS.MATERIALS.ADD_COMPLETE, { type: 'material' });
       setMaterials([...materials, { id: Date.now(), ...newMaterial }]);
       setNewMaterial({ name: "", epa: "" });
     }
@@ -82,6 +89,7 @@ export default function Materials() {
 
   const addLocation = () => {
     if (newLocation.trim()) {
+      analytics.track(EVENTS.MATERIALS.ADD_COMPLETE, { type: 'location' });
       setLocations([...locations, { id: Date.now(), name: newLocation }]);
       setNewLocation("");
     }
@@ -89,6 +97,7 @@ export default function Materials() {
 
   const addPest = () => {
     if (newPest.trim()) {
+      analytics.track(EVENTS.MATERIALS.ADD_COMPLETE, { type: 'pest' });
       setPests([...pests, { id: Date.now(), name: newPest }]);
       setNewPest("");
     }
@@ -116,21 +125,49 @@ export default function Materials() {
 
         <div className="flex-1 max-w-xl mx-8 relative">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          <Input placeholder="Search..." className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors" />
+          <Input 
+            placeholder="Search..." 
+            className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+            onFocus={() => analytics.track(EVENTS.NAVIGATION.SEARCH_FOCUS)}
+            onChange={(e) => {
+              if (e.target.value.length > 2) {
+                analytics.track(EVENTS.MATERIALS.SEARCH);
+              }
+            }}
+          />
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="text-slate-500">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-slate-500"
+            onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
+          >
             <Bell className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-slate-500">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-slate-500"
+            onClick={() => analytics.track(EVENTS.NAVIGATION.MENU_OPEN, { menu: 'messages' })}
+          >
             <MessageSquare className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="text-slate-500">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-slate-500"
+            onClick={() => analytics.track(EVENTS.NAVIGATION.HELP_CLICK)}
+          >
             <HelpCircle className="h-5 w-5" />
           </Button>
           <div className="h-6 w-px bg-slate-200 mx-1" />
-          <Button variant="ghost" className="flex items-center gap-2 pl-1 pr-2">
+          <Button 
+            variant="ghost" 
+            className="flex items-center gap-2 pl-1 pr-2"
+            onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
+          >
             <Avatar className="h-8 w-8 border border-slate-200">
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>JD</AvatarFallback>

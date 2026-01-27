@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
+import { analytics, EVENTS } from "@/lib/analytics";
 
 interface Job {
   id: string;
@@ -38,6 +39,11 @@ interface Job {
 export default function Routes() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  
+  useEffect(() => {
+    analytics.track(EVENTS.DASHBOARD.ROUTES_VIEW);
+    analytics.track(EVENTS.ROUTE.LIST_VIEW);
+  }, []);
   
   // Filter states
   const [schedule, setSchedule] = useState("Blake");
@@ -86,6 +92,7 @@ export default function Routes() {
   // Optimize route mutation
   const optimizeMutation = useMutation({
     mutationFn: async () => {
+      analytics.track(EVENTS.ROUTE.OPTIMIZE_START, { jobCount: selectedJobs.length });
       const res = await fetch("/api/routes/optimize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,11 +107,15 @@ export default function Routes() {
       return res.json();
     },
     onSuccess: (data) => {
+      analytics.track(EVENTS.ROUTE.OPTIMIZE_COMPLETE, { jobCount: data.optimizedJobs.length });
       queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
       toast({ 
         title: "Route Optimized!", 
         description: `${data.optimizedJobs.length} jobs scheduled. ${data.estimatedDuration}`
       });
+    },
+    onError: () => {
+      analytics.track(EVENTS.ROUTE.OPTIMIZE_ERROR);
     }
   });
 
@@ -339,16 +350,32 @@ export default function Routes() {
               <Plus className="h-4 w-4 mr-1" />
               {seedMutation.isPending ? "Loading..." : "Add Demo Jobs"}
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
+            >
               <Bell className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-slate-500">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-slate-500"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.MENU_OPEN, { menu: 'messages' })}
+            >
               <MessageSquare className="h-5 w-5" />
             </Button>
-            <Avatar className="h-8 w-8 border">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>TR</AvatarFallback>
-            </Avatar>
+            <Button 
+              variant="ghost" 
+              className="p-0"
+              onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
+            >
+              <Avatar className="h-8 w-8 border">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>TR</AvatarFallback>
+              </Avatar>
+            </Button>
           </div>
         </header>
 
