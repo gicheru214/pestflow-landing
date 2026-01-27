@@ -95,6 +95,17 @@ export const EVENTS = {
     END: 'Session End',
     APP_OPENED: 'App Opened',
     APP_BACKGROUNDED: 'App Backgrounded',
+    LOGIN: 'Login',
+  },
+
+  // Account Events
+  SIGNUP: {
+    COMPLETE: 'Signup',
+  },
+
+  // Activation Events  
+  ACTIVATION: {
+    REACHED: 'Activation Reached',
   },
 
   // Landing Page Events

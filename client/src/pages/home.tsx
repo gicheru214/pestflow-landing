@@ -11,7 +11,23 @@ import { analytics, EVENTS } from "@/lib/analytics";
 
 export default function Home() {
   useEffect(() => {
-    analytics.track(EVENTS.LANDING.PAGE_VIEW);
+    // Save UTM params for later use in signup tracking
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+    
+    const utmSource = urlParams.get('utm_source') || hashParams.get('utm_source');
+    const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign');
+    const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content');
+    
+    if (utmSource) sessionStorage.setItem('utm_source', utmSource);
+    if (utmCampaign) sessionStorage.setItem('utm_campaign', utmCampaign);
+    if (utmContent) sessionStorage.setItem('utm_content', utmContent);
+    
+    analytics.track(EVENTS.LANDING.PAGE_VIEW, {
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
+    });
   }, []);
 
   return (

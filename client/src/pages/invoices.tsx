@@ -814,7 +814,23 @@ function AddCustomerModal({
       });
       
       const result = await res.json();
-      analytics.track(EVENTS.CUSTOMER.IMPORT_COMPLETE, { imported: result.imported, failed: result.failed });
+      const customersCount = result.imported || 0;
+      
+      // Track Customers Imported with count
+      analytics.track(EVENTS.CUSTOMER.IMPORT_COMPLETE, { 
+        customers_count: customersCount, 
+        imported: customersCount, 
+        failed: result.failed 
+      });
+      
+      // Track Activation Reached if 10+ customers imported
+      if (customersCount >= 10) {
+        analytics.track(EVENTS.ACTIVATION.REACHED, { 
+          customers_count: customersCount,
+          trigger: 'customers_imported'
+        });
+      }
+      
       toast({ 
         title: "Import complete!", 
         description: `Imported ${result.imported} customers${result.failed > 0 ? `, ${result.failed} failed` : ""}`

@@ -248,9 +248,21 @@ export default function Admin() {
                           </CardDescription>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="font-normal">
-                        New
-                      </Badge>
+                      <div className="flex flex-col gap-1 items-end">
+                        {sub.activated ? (
+                          <Badge className="bg-emerald-500 hover:bg-emerald-600 font-normal">
+                            Activated
+                          </Badge>
+                        ) : sub.customersImported > 0 ? (
+                          <Badge variant="outline" className="font-normal text-amber-600 border-amber-300">
+                            {sub.customersImported} Customers
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="font-normal">
+                            New
+                          </Badge>
+                        )}
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-3 text-sm pt-4">
                       <div className="flex items-center gap-2 text-slate-600">

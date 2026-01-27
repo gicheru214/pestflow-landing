@@ -19,6 +19,18 @@ export default function SignupSuccess() {
     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
     const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
 
+    // Get UTM parameters
+    const utmSource = urlParams.get('utm_source') || hashParams.get('utm_source') || sessionStorage.getItem('utm_source') || undefined;
+    const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign') || undefined;
+    const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
+
+    // Track Signup event with UTM parameters
+    analytics.track(EVENTS.SIGNUP.COMPLETE, { 
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
+    });
+
     // Track checkout success with Mixpanel
     analytics.track(EVENTS.CHECKOUT.SUCCESS, { 
       sessionId,
@@ -32,7 +44,10 @@ export default function SignupSuccess() {
     sessionStorage.setItem('pestflow_user_id', anonId);
     analytics.identify(anonId, {
       signupDate: new Date().toISOString(),
-      plan: 'trial'
+      plan: 'trial',
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
     });
 
     // Fire Meta Pixel Purchase Event

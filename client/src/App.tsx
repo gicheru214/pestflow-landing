@@ -41,8 +41,9 @@ function AppRouter() {
 
 function App() {
   useEffect(() => {
-    // Track session start when app loads
+    // Track session start / login when app loads
     analytics.trackSessionStart();
+    analytics.track(EVENTS.SESSION.LOGIN);
     analytics.track(EVENTS.SESSION.APP_OPENED);
     
     // Track when user leaves/backgrounds app
