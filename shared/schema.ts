@@ -183,6 +183,9 @@ export const submissions = pgTable("submissions", {
   state: text("state"),
   zipCode: text("zip_code"),
   submittedAt: timestamp("submitted_at").defaultNow(),
+  // Activation tracking
+  customersImported: integer("customers_imported").default(0),
+  activated: boolean("activated").default(false),
 });
 
 export const insertSubmissionSchema = createInsertSchema(submissions).omit({
