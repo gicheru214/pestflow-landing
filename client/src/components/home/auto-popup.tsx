@@ -49,12 +49,9 @@ export function AutoPopup() {
       return;
     }
 
-    const timer = setTimeout(() => {
-      setOpen(true);
-      analytics.track(EVENTS.LANDING.POPUP_SHOWN);
-    }, 7000);
-
-    return () => clearTimeout(timer);
+    // Show popup immediately on page load
+    setOpen(true);
+    analytics.track(EVENTS.LANDING.POPUP_SHOWN);
   }, []);
 
   const handleClose = () => {
