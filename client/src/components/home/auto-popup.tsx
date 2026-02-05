@@ -116,8 +116,13 @@ export function AutoPopup() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
-      <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white">
+    <Dialog open={open} onOpenChange={() => {}}>
+      <DialogContent 
+        className="sm:max-w-[500px] p-0 overflow-hidden bg-white" 
+        hideCloseButton
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <div className="relative p-6 sm:p-10">
           <AnimatePresence mode="wait">
             {step === "qualification" && (
