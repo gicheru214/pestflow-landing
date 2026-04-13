@@ -168,7 +168,7 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-14 w-auto object-contain mb-5"
+                  className="h-28 w-auto object-contain mb-5"
                 />
 
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-1">
@@ -258,7 +258,7 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-12 w-auto object-contain mb-6"
+                  className="h-24 w-auto object-contain mb-6"
                 />
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
                   One Quick Question
@@ -299,7 +299,7 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-12 w-auto object-contain mb-6"
+                  className="h-24 w-auto object-contain mb-6"
                 />
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
                   How many routes do you run?
@@ -352,7 +352,7 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-12 w-auto object-contain mb-5"
+                  className="h-24 w-auto object-contain mb-5"
                 />
                 <div className="text-3xl mb-3 animate-bounce">🎁</div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
