@@ -40,7 +40,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "qualification" | "route_size" | "offer";
+type Step = "guide" | "details" | "offer";
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
@@ -110,25 +110,12 @@ export function AutoPopup() {
       console.error("Failed to save guide request", e);
     }
 
-    setStep("qualification");
+    setStep("details");
   };
 
   const handleQualification = (isOwner: boolean) => {
     const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
     localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, isOwner }));
-    if (isOwner) {
-      setStep("route_size");
-    } else {
-      setStep("offer");
-    }
-  };
-
-  const handleRouteSize = () => {
-    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-    localStorage.setItem(
-      "pestflow_popup_data",
-      JSON.stringify({ ...currentData, routeSize: `${routeCount}` })
-    );
     setStep("offer");
   };
 
@@ -245,10 +232,10 @@ export function AutoPopup() {
               </motion.div>
             )}
 
-            {/* ── STEP 2: Owner / manager question ── */}
-            {step === "qualification" && (
+            {/* ── STEP 2: Owner / manager + route size ── */}
+            {step === "details" && (
               <motion.div
-                key="qualification"
+                key="details"
                 variants={slideVariants}
                 initial="initial"
                 animate="animate"
@@ -258,7 +245,7 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-24 w-auto object-contain mb-6"
+                  className="h-28 w-auto object-contain mb-6"
                 />
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
                   One Quick Question
@@ -266,7 +253,7 @@ export function AutoPopup() {
                 <p className="text-slate-400 text-sm text-center mb-8">
                   Are you a pest control business owner or manager?
                 </p>
-                <div className="w-full grid grid-cols-2 gap-3">
+                <div className="w-full grid grid-cols-2 gap-3 mb-8">
                   <Button
                     variant="outline"
                     size="lg"
@@ -283,31 +270,12 @@ export function AutoPopup() {
                     Yes
                   </Button>
                 </div>
-              </motion.div>
-            )}
-
-            {/* ── STEP 3: Route count slider ── */}
-            {step === "route_size" && (
-              <motion.div
-                key="route_size"
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="p-6 sm:p-8 flex flex-col items-center"
-              >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="h-24 w-auto object-contain mb-6"
-                />
-                <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-white text-center mb-4">
                   How many routes do you run?
-                </h2>
-                <p className="text-slate-400 text-sm text-center mb-8">
+                </h3>
+                <p className="text-slate-400 text-sm text-center mb-6">
                   We'll tailor your experience to your team size.
                 </p>
-
                 <div className="w-full space-y-6 mb-8">
                   <div className="text-center">
                     <span className="text-5xl font-bold text-emerald-400">{routeCount}</span>
@@ -331,7 +299,14 @@ export function AutoPopup() {
                 </div>
 
                 <Button
-                  onClick={handleRouteSize}
+                  onClick={() => {
+                    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+                    localStorage.setItem(
+                      "pestflow_popup_data",
+                      JSON.stringify({ ...currentData, routeSize: `${routeCount}` })
+                    );
+                    setStep("offer");
+                  }}
                   className="w-full h-12 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg"
                 >
                   Continue <ArrowRight className="ml-2 h-4 w-4" />
