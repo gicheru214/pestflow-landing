@@ -36,7 +36,7 @@ export function Pricing() {
           className="w-full rounded-2xl overflow-hidden shadow-xl border border-slate-200"
         >
           <iframe
-            src="https://id-preview--ea15a4c1-32ea-4870-9503-5548729cdaf5.lovable.app/embed/pricing"
+            src="https://pestflow-smart-pricing.lovable.app/embed/pricing"
             style={{ width: "100%", height: "800px", border: "none" }}
             title="PestFlow Pricing"
             allow="payment"
