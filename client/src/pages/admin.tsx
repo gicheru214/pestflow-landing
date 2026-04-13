@@ -109,7 +109,7 @@ export default function Admin() {
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-md space-y-8">
           <div className="flex flex-col items-center text-center">
-            <img src={logoImage} alt="PestFlow" className="h-12 w-auto mix-blend-multiply mb-6" />
+            <img src={logoImage} alt="PestFlow" className="h-14 w-auto mix-blend-multiply mb-6" />
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">Admin Access</h1>
             <p className="text-muted-foreground mt-2">Enter your password to view submissions</p>
           </div>
@@ -154,7 +154,7 @@ export default function Admin() {
       <header className="bg-white border-b sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <img src={logoImage} alt="PestFlow" className="h-8 w-auto mix-blend-multiply hidden sm:block" />
+             <img src={logoImage} alt="PestFlow" className="h-10 w-auto mix-blend-multiply hidden sm:block" />
              <span className="font-bold text-lg text-slate-900">Admin Dashboard</span>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">

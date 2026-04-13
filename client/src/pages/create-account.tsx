@@ -26,7 +26,7 @@ export default function CreateAccount() {
 
       <div className="w-full max-w-md space-y-8 relative z-10">
         <div className="flex flex-col items-center text-center">
-          <img src={logoImage} alt="PestFlow" className="h-16 w-auto object-contain mb-8" />
+          <img src={logoImage} alt="PestFlow" className="h-20 w-auto object-contain mb-8" />
           
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-2">
             Welcome to PestFlow

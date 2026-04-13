@@ -150,7 +150,7 @@ export default function Invoices() {
         {/* Top Header */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 shrink-0 z-10">
           <div className="flex items-center gap-2">
-            <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
+            <img src={logoImage} alt="PestFlow" className="h-9 w-auto object-contain" />
             <div className="h-5 w-px bg-slate-200" />
             <nav className="flex items-center gap-1">
               <Link href="/dashboard">

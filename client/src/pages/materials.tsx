@@ -120,7 +120,7 @@ export default function Materials() {
       {/* Header */}
       <header className="h-16 bg-white border-b flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
-          <img src={logoImage} alt="PestFlow" className="h-8 w-auto object-contain" />
+          <img src={logoImage} alt="PestFlow" className="h-10 w-auto object-contain" />
         </div>
 
         <div className="flex-1 max-w-xl mx-8 relative">

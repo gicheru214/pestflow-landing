@@ -331,7 +331,7 @@ export default function Routes() {
             <Link href="/dashboard" className="text-slate-500 hover:text-slate-700">
               <ChevronLeft className="h-5 w-5" />
             </Link>
-            <img src={logoImage} alt="PestFlow" className="h-8 w-auto object-contain" />
+            <img src={logoImage} alt="PestFlow" className="h-10 w-auto object-contain" />
           </div>
 
           <div className="flex-1 max-w-xl mx-8 relative">

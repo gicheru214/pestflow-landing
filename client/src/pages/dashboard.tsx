@@ -127,7 +127,7 @@ export default function Dashboard() {
         {/* Top Header */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 shrink-0 z-10">
           <div className="flex items-center gap-2">
-            <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
+            <img src={logoImage} alt="PestFlow" className="h-9 w-auto object-contain" />
             <div className="h-5 w-px bg-slate-200" />
             <nav className="flex items-center gap-1">
               <Button 
@@ -281,7 +281,7 @@ export default function Dashboard() {
                {/* Search overlay on map */}
                <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
                  <div className="flex-1 bg-white rounded-md shadow-md border border-slate-200 flex items-center px-3 h-10">
-                   <img src={logoImage} className="h-5 w-5 object-contain opacity-80 mr-2" />
+                   <img src={logoImage} className="h-6 w-6 object-contain opacity-80 mr-2" />
                    <input className="flex-1 text-sm outline-none text-slate-700 placeholder:text-slate-400" placeholder="Search PestFlow Map" />
                    <Filter className="h-4 w-4 text-slate-400" />
                  </div>

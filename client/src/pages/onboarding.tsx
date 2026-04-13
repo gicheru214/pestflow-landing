@@ -143,7 +143,7 @@ export default function Onboarding() {
       <header className="w-full bg-white border-b py-4">
         <div className="container mx-auto px-4 flex justify-center">
            <Link href="/" className="cursor-pointer">
-              <img src={logoImage} alt="PestFlow" className="h-8 w-auto mix-blend-multiply" />
+              <img src={logoImage} alt="PestFlow" className="h-10 w-auto mix-blend-multiply" />
            </Link>
         </div>
       </header>
