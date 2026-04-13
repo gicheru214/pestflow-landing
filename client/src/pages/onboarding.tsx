@@ -45,13 +45,22 @@ export default function Onboarding() {
     analytics.track(step === 1 ? EVENTS.ONBOARDING.STEP_1_VIEW : EVENTS.ONBOARDING.STEP_2_VIEW);
   }, [step]);
 
+  // Prefill from popup data if available
+  const popupData = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+    } catch {
+      return {};
+    }
+  })();
+
   const form1 = useForm<Step1Values>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
+      firstName: popupData.firstName || "",
+      lastName: popupData.lastName || "",
+      email: popupData.email || "",
+      phone: popupData.phone || "",
     },
   });
 
