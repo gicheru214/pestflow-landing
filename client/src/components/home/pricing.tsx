@@ -1,6 +1,24 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 
 export function Pricing() {
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (!event.origin.includes("lovable.app")) return;
+      const data = event.data;
+      if (!data) return;
+      const url: string | undefined =
+        typeof data === "string"
+          ? data
+          : data.url || data.href || data.checkoutUrl || data.stripeUrl;
+      if (url && (url.includes("stripe.com") || url.startsWith("https://"))) {
+        window.location.href = url;
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   return (
     <section id="pricing" className="py-24 relative overflow-hidden" style={{ backgroundColor: "#f0fdf4" }}>
       <div className="container px-4 md:px-6 mx-auto relative z-10">

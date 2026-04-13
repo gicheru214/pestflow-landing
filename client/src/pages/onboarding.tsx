@@ -39,7 +39,7 @@ type Step2Values = z.infer<typeof step2Schema>;
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Values | null>(null);
-  const stripeLink = "https://buy.stripe.com/cNi28q7XZ9XB5LRcH6dfG06";
+  const pricingLink = "https://pestflow-smart-pricing.lovable.app";
 
   useEffect(() => {
     analytics.track(step === 1 ? EVENTS.ONBOARDING.STEP_1_VIEW : EVENTS.ONBOARDING.STEP_2_VIEW);
@@ -138,12 +138,11 @@ export default function Onboarding() {
       analytics.track(EVENTS.ONBOARDING.STEP_2_COMPLETE, { 
         technicianCount: values.technicians 
       });
-      analytics.track(EVENTS.CHECKOUT.REDIRECT_TO_STRIPE);
     } catch (e) {
       console.error("Failed to save submission", e);
     }
     
-    window.location.href = stripeLink;
+    window.location.href = pricingLink;
   };
 
   return (
