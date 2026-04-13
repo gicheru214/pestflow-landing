@@ -32,7 +32,7 @@ import {
   ResizablePanelGroup 
 } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import logoImage from "@assets/Screenshot_2026-01-13_at_7.27.30_PM-removebg-preview_1768354175011.png";
+import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 import mapImage from "@assets/generated_images/google_maps_style_street_view_of_residential_neighborhood.png";
 
 // Mock Data for Calendar
