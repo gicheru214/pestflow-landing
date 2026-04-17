@@ -62,8 +62,8 @@ export default function SignupSuccess() {
     }
 
     const timer = setTimeout(() => {
-      setLocation("/create-account");
-    }, 5000);
+      window.location.href = "https://pestflow-smart-pricing.lovable.app";
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [setLocation]);
@@ -91,9 +91,9 @@ export default function SignupSuccess() {
         </motion.div>
         
         <div className="space-y-2">
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Payment Successful!</h1>
+          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
           <p className="text-lg text-slate-500 max-w-sm mx-auto">
-            Redirecting you to create your account in a few seconds...
+            Redirecting you to choose your plan in a moment...
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default function SignupSuccess() {
           <motion.div 
             initial={{ width: "0%" }}
             animate={{ width: "100%" }}
-            transition={{ duration: 5, ease: "linear" }}
+            transition={{ duration: 4, ease: "linear" }}
             className="h-full bg-emerald-500 rounded-full"
           />
         </motion.div>
