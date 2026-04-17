@@ -56,8 +56,11 @@ export function AutoPopup() {
   useEffect(() => {
     const visited = localStorage.getItem("pestflow_popup_visited");
     if (visited) return;
-    setOpen(true);
-    analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+    const timer = setTimeout(() => {
+      setOpen(true);
+      analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
@@ -135,12 +138,12 @@ export function AutoPopup() {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent
-        className="w-[calc(100vw-2rem)] sm:max-w-[460px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
+        className="w-[calc(100vw-2rem)] sm:max-w-[420px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
         hideCloseButton
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-        <div className="max-h-[90vh] overflow-y-auto">
+        <div className="max-h-[85vh] overflow-y-auto">
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Guide offer + contact info ── */}
             {step === "guide" && (
@@ -150,22 +153,22 @@ export function AutoPopup() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="p-6 sm:p-8 flex flex-col items-center"
+                className="p-5 sm:p-7 flex flex-col items-center"
               >
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-28 w-auto object-contain mb-5"
+                  className="h-16 w-auto object-contain mb-4"
                 />
 
-                <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-1">
-                  Get the Free Pest Control<br className="hidden sm:block" /> Growth Guide
+                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-1">
+                  Get the Free Pest Control Growth Guide
                 </h2>
-                <p className="text-slate-400 text-sm text-center mb-5">
-                  Drop your info and we'll unlock the guide in step 2 with your free trial.
+                <p className="text-slate-400 text-xs text-center mb-4">
+                  Drop your info and we'll unlock the guide with your free trial.
                 </p>
 
-                <ul className="w-full space-y-2 mb-6">
+                <ul className="w-full space-y-1.5 mb-5">
                   {[
                     "How to scale routes without hiring more staff",
                     "Rank higher on Google Maps & local search",
@@ -178,7 +181,7 @@ export function AutoPopup() {
                   ))}
                 </ul>
 
-                <div className="w-full space-y-3">
+                <div className="w-full space-y-2.5">
                   <div>
                     <label className="text-xs font-medium text-slate-400 mb-1 block">
                       Full Name <span className="text-slate-500">(optional)</span>
@@ -187,7 +190,7 @@ export function AutoPopup() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="John Smith"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-11"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10"
                     />
                   </div>
 
@@ -200,7 +203,7 @@ export function AutoPopup() {
                       onChange={(e) => { setPhone(e.target.value); setPhoneError(""); }}
                       placeholder="(555) 123-4567"
                       type="tel"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-11 ${phoneError ? "border-red-500" : ""}`}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${phoneError ? "border-red-500" : ""}`}
                     />
                     {phoneError && <p className="text-red-400 text-xs mt-1">{phoneError}</p>}
                   </div>
@@ -214,7 +217,7 @@ export function AutoPopup() {
                       onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
                       placeholder="john@example.com"
                       type="email"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-11 ${emailError ? "border-red-500" : ""}`}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${emailError ? "border-red-500" : ""}`}
                     />
                     {emailError && <p className="text-red-400 text-xs mt-1">{emailError}</p>}
                   </div>
