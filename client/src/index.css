@@ -41,6 +41,19 @@
   --font-heading: 'Outfit', sans-serif;
   
   --radius: 0.5rem;
+
+  /* Override Tailwind's emerald palette to match the PestFlow logo green */
+  --color-emerald-50:  #f2fbee;
+  --color-emerald-100: #e0f5d5;
+  --color-emerald-200: #c0ecac;
+  --color-emerald-300: #92da78;
+  --color-emerald-400: #5ec23e;
+  --color-emerald-500: #42a824;
+  --color-emerald-600: #348a1a;
+  --color-emerald-700: #296e14;
+  --color-emerald-800: #225810;
+  --color-emerald-900: #1b470d;
+  --color-emerald-950: #0d280a;
 }
 
 :root {
@@ -54,24 +67,24 @@
   --popover: 0 0% 100%;
   --popover-foreground: 150 50% 10%;
 
-  --primary: 142 76% 36%; /* Vibrant Green from logo approximation */
+  --primary: 110 65% 32%; /* Forest green matching PestFlow logo */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 140 30% 96%; /* Very light green tint */
-  --secondary-foreground: 142 76% 26%;
+  --secondary: 110 30% 96%; /* Very light green tint */
+  --secondary-foreground: 110 65% 22%;
 
   --muted: 140 20% 96%;
   --muted-foreground: 150 10% 40%;
 
-  --accent: 140 30% 96%;
-  --accent-foreground: 142 76% 26%;
+  --accent: 110 30% 96%;
+  --accent-foreground: 110 65% 22%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
   --border: 140 20% 90%;
   --input: 140 20% 90%;
-  --ring: 142 76% 36%;
+  --ring: 110 65% 32%;
 
   --radius: 0.75rem;
 }
@@ -86,7 +99,7 @@
   --popover: 150 50% 5%;
   --popover-foreground: 140 10% 90%;
 
-  --primary: 142 76% 46%;
+  --primary: 110 60% 42%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 150 30% 15%;
@@ -103,7 +116,7 @@
 
   --border: 150 30% 15%;
   --input: 150 30% 15%;
-  --ring: 142 76% 46%;
+  --ring: 110 60% 42%;
 }
 
 @layer base {

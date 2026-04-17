@@ -14,7 +14,7 @@ export function Hero() {
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
   return (
-    <section className="relative w-full h-screen min-h-[800px] overflow-hidden">
+    <section className="relative w-full h-screen min-h-[600px] overflow-hidden">
       <DemoVideoModal open={showDemo} onOpenChange={setShowDemo} />
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
@@ -48,7 +48,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl font-extrabold tracking-tight sm:text-7xl md:text-8xl text-white font-heading leading-[1.1] drop-shadow-lg"
+            className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-8xl text-white font-heading leading-[1.1] drop-shadow-lg"
           >
             Software for <br />
             <span className="text-emerald-400">pest control</span> businesses
@@ -58,35 +58,35 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col sm:flex-row gap-6 items-center justify-center pt-8"
+            className="flex flex-col sm:flex-row gap-4 items-center justify-center pt-6"
           >
             <Link href="/onboarding">
               <Button 
-                size="xl" 
-                className="h-16 px-10 text-xl font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 bg-emerald-600 hover:bg-emerald-700 border-none group text-white"
+                size="lg"
+                className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 bg-emerald-600 hover:bg-emerald-700 border-none group text-white w-full sm:w-auto"
                 onClick={() => analytics.track(EVENTS.LANDING.CTA_CLICK, { cta: "start_trial" })}
               >
-                Start Trial <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                Start Trial <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             
             <Button 
               variant="outline" 
-              size="xl" 
-              className="h-16 px-10 text-xl font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300"
+              size="lg"
+              className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-semibold bg-white/10 text-white border-white/20 hover:bg-white hover:text-slate-900 backdrop-blur-md transition-all duration-300 w-full sm:w-auto"
               onClick={() => {
                 analytics.track(EVENTS.LANDING.DEMO_REQUEST_START);
                 setShowDemo(true);
               }}
             >
-              <PlayCircle className="mr-2 h-6 w-6" /> Watch Demo
+              <PlayCircle className="mr-2 h-5 w-5" /> Watch Demo
             </Button>
           </motion.div>
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="pt-16 pb-8 flex flex-col items-center gap-6 w-full"
+            className="pt-8 pb-4 flex flex-col items-center gap-4 w-full"
           >
             <p className="text-sm font-medium text-slate-300 uppercase tracking-widest">Trusted by 500+ Pest Control Companies</p>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
