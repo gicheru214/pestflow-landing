@@ -50,6 +50,7 @@ export function AutoPopup() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
 
@@ -71,6 +72,12 @@ export function AutoPopup() {
 
   const handleGuideSubmit = async () => {
     let valid = true;
+    if (!name.trim() || name.trim().length < 2) {
+      setNameError("Please enter your full name");
+      valid = false;
+    } else {
+      setNameError("");
+    }
     if (!phone.trim() || phone.replace(/\D/g, "").length < 10) {
       setPhoneError("Please enter a valid phone number");
       valid = false;
@@ -184,14 +191,15 @@ export function AutoPopup() {
                 <div className="w-full space-y-2.5">
                   <div>
                     <label className="text-xs font-medium text-slate-400 mb-1 block">
-                      Full Name <span className="text-slate-500">(optional)</span>
+                      Full Name <span className="text-red-400">*</span>
                     </label>
                     <Input
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => { setName(e.target.value); setNameError(""); }}
                       placeholder="John Smith"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10"
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${nameError ? "border-red-500" : ""}`}
                     />
+                    {nameError && <p className="text-red-400 text-xs mt-1">{nameError}</p>}
                   </div>
 
                   <div>
