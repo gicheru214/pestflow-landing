@@ -142,7 +142,7 @@ export default function Onboarding() {
       console.error("Failed to save submission", e);
     }
     
-    window.location.href = "/signup-success";
+    window.location.href = "/#/signup-success";
   };
 
   return (
