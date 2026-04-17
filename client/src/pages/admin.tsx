@@ -1,60 +1,37 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { 
-  Lock, 
-  LogOut, 
-  ArrowLeft, 
-  Search, 
-  User, 
-  Building2, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Users, 
-  Route, 
-  Calendar,
-  Eye,
-  ChevronRight,
-  BookOpen
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Lock, LogOut, Search, Phone, Mail, Building2, Route, Calendar, ArrowLeft, TrendingUp, Users, CheckCircle
 } from "lucide-react";
 import { Link } from "wouter";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
-// Helper to format date
 const formatDate = (dateString: string) => {
-  if (!dateString) return "N/A";
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  });
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+    " at " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
 };
+
+const isRealLead = (sub: any) =>
+  sub.email &&
+  sub.email !== "" &&
+  !sub.email.includes("placeholder") &&
+  sub.firstName &&
+  sub.firstName !== "Website Visitor" &&
+  sub.firstName !== "";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
-  const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const auth = sessionStorage.getItem("adminAuth");
-    if (auth === "true") {
+    if (sessionStorage.getItem("adminAuth") === "true") {
       setIsAuthenticated(true);
       loadSubmissions();
     }
@@ -66,13 +43,9 @@ export default function Admin() {
       if (res.ok) {
         const data = await res.json();
         setSubmissions(data.reverse());
-      } else {
-        console.error("Failed to load submissions");
-        setSubmissions([]);
       }
     } catch (e) {
       console.error("Failed to load submissions", e);
-      setSubmissions([]);
     }
   };
 
@@ -88,369 +61,226 @@ export default function Admin() {
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem("adminAuth");
-    setPassword("");
-  };
+  const realLeads = submissions.filter(isRealLead);
+  const popupLeads = realLeads.filter(s => s.type === "newsletter");
+  const onboardingLeads = realLeads.filter(s => s.type === "demo");
 
-  const filteredSubmissions = submissions.filter(sub => 
-    sub.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    sub.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    sub.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    sub.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const thisWeek = realLeads.filter(s => {
+    const diff = Date.now() - new Date(s.submittedAt).getTime();
+    return diff <= 7 * 24 * 60 * 60 * 1000;
+  });
 
-  const demoRequests = filteredSubmissions.filter(sub => sub.type !== "newsletter");
-  const newsletterRequests = filteredSubmissions.filter(sub => sub.type === "newsletter");
+  const funnelMax = realLeads.length || 1;
+
+  const filtered = (list: any[]) =>
+    list.filter(s =>
+      [s.firstName, s.lastName, s.email, s.phone, s.companyName]
+        .some(v => v?.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-8">
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-sm space-y-8">
           <div className="flex flex-col items-center text-center">
-            <img src={logoImage} alt="PestFlow" className="h-14 w-auto mix-blend-multiply mb-6" />
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">Admin Access</h1>
-            <p className="text-muted-foreground mt-2">Enter your password to view submissions</p>
+            <img src={logoImage} alt="PestFlow" className="h-14 w-auto mb-6" style={{ filter: "brightness(0) invert(1)" }} />
+            <h1 className="text-2xl font-bold text-white">Admin Access</h1>
+            <p className="text-zinc-400 mt-1 text-sm">Enter your password to continue</p>
           </div>
-          
-          <Card className="border-slate-200 shadow-xl">
-            <CardContent className="pt-6">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-9 bg-slate-50 border-slate-200"
-                    />
-                  </div>
-                  {error && <p className="text-sm text-destructive font-medium animate-in fade-in slide-in-from-top-1">{error}</p>}
-                </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 h-10">
-                  Access Dashboard
-                </Button>
-              </form>
-            </CardContent>
-            <CardFooter className="justify-center border-t bg-slate-50/50 py-4">
-              <Link href="/">
-                <a className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
-                  <ArrowLeft className="w-4 h-4" /> Back to Website
-                </a>
-              </Link>
-            </CardFooter>
-          </Card>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-9 bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-emerald-500"
+              />
+            </div>
+            {error && <p className="text-sm text-red-400">{error}</p>}
+            <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold">
+              Access Dashboard
+            </Button>
+          </form>
+          <div className="text-center">
+            <Link href="/">
+              <a className="text-sm text-zinc-500 hover:text-zinc-300 flex items-center gap-2 justify-center">
+                <ArrowLeft className="w-4 h-4" /> Back to Website
+              </a>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-zinc-950 text-white pb-20">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             <img src={logoImage} alt="PestFlow" className="h-10 w-auto mix-blend-multiply hidden sm:block" />
-             <span className="font-bold text-lg text-slate-900">Admin Dashboard</span>
-          </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-destructive">
-            <LogOut className="w-4 h-4 mr-2" /> Logout
-          </Button>
+      <header className="border-b border-zinc-800 sticky top-0 z-30 bg-zinc-950/90 backdrop-blur">
+        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+          <span className="font-bold text-white text-sm">PestFlow Admin</span>
+          <button onClick={() => { setIsAuthenticated(false); sessionStorage.removeItem("adminAuth"); }} className="text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 text-sm">
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-muted-foreground">Total Submissions</div>
-              <div className="text-2xl font-bold mt-2">{submissions.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-muted-foreground">This Week</div>
-              <div className="text-2xl font-bold mt-2 text-primary">
-                {submissions.filter(s => {
-                  const date = new Date(s.submittedAt);
-                  const now = new Date();
-                  const diffTime = Math.abs(now.getTime() - date.getTime());
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                  return diffDays <= 7;
-                }).length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-muted-foreground">Demo Requests</div>
-              <div className="text-2xl font-bold mt-2 text-blue-600">{demoRequests.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-sm font-medium text-muted-foreground">Newsletter Signups</div>
-              <div className="text-2xl font-bold mt-2 text-emerald-600">{newsletterRequests.length}</div>
-            </CardContent>
-          </Card>
-        </div>
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
 
-        {/* Search & Filter */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search by name, company, email..." 
-              className="pl-9 bg-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        {/* Scoreboard */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+            <div className="flex items-center gap-2 text-zinc-400 text-xs mb-2">
+              <TrendingUp className="w-3.5 h-3.5" /> Total Leads
+            </div>
+            <div className="text-4xl font-bold text-white">{realLeads.length}</div>
+          </div>
+          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+            <div className="flex items-center gap-2 text-zinc-400 text-xs mb-2">
+              <Users className="w-3.5 h-3.5" /> This Week
+            </div>
+            <div className="text-4xl font-bold text-emerald-400">{thisWeek.length}</div>
+          </div>
+          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+            <div className="flex items-center gap-2 text-zinc-400 text-xs mb-2">
+              <Mail className="w-3.5 h-3.5" /> Popup Signups
+            </div>
+            <div className="text-4xl font-bold text-white">{popupLeads.length}</div>
+          </div>
+          <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+            <div className="flex items-center gap-2 text-zinc-400 text-xs mb-2">
+              <CheckCircle className="w-3.5 h-3.5" /> Onboarding Done
+            </div>
+            <div className="text-4xl font-bold text-white">{onboardingLeads.length}</div>
           </div>
         </div>
 
-        <Tabs defaultValue="demo" className="w-full">
-          <TabsList className="mb-8 bg-white border">
-            <TabsTrigger value="demo" className="px-6">Demo Requests</TabsTrigger>
-            <TabsTrigger value="newsletter" className="px-6">Newsletter Signups</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="demo">
-            {/* Submissions List */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {demoRequests.length === 0 ? (
-                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed">
-                  <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                    <Search className="h-6 w-6 text-slate-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-slate-900">No demo requests found</h3>
-                  <p className="text-slate-500 text-sm mt-1">Try adjusting your search terms</p>
+        {/* Funnel */}
+        <div className="bg-zinc-900 rounded-2xl p-5 border border-zinc-800">
+          <h2 className="font-semibold text-white mb-4">Funnel Breakdown</h2>
+          <div className="space-y-4">
+            {[
+              { label: "Total Leads", count: realLeads.length },
+              { label: "Popup Signups", count: popupLeads.length },
+              { label: "Completed Onboarding", count: onboardingLeads.length },
+            ].map(({ label, count }) => (
+              <div key={label}>
+                <div className="flex justify-between text-sm mb-1.5">
+                  <span className="text-zinc-300">{label}</span>
+                  <span className="text-white font-semibold">{count}</span>
                 </div>
-              ) : (
-                demoRequests.map((sub) => (
-                  <Card key={sub.id || Math.random()} className="hover:shadow-md transition-shadow cursor-pointer group" onClick={() => setSelectedSubmission(sub)}>
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                          {sub.firstName?.[0]}{sub.lastName?.[0]}
-                        </div>
-                        <div>
-                          <CardTitle className="text-base font-semibold group-hover:text-primary transition-colors">
-                            {sub.firstName} {sub.lastName}
-                          </CardTitle>
-                          <CardDescription className="text-xs">
-                            {formatDate(sub.submittedAt)}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1 items-end">
-                        {sub.activated ? (
-                          <Badge className="bg-emerald-500 hover:bg-emerald-600 font-normal">
-                            Activated
-                          </Badge>
-                        ) : sub.customersImported > 0 ? (
-                          <Badge variant="outline" className="font-normal text-amber-600 border-amber-300">
-                            {sub.customersImported} Customers
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="font-normal">
-                            New
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm pt-4">
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <Building2 className="w-4 h-4 shrink-0" />
-                        <span className="truncate font-medium">{sub.companyName}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <Mail className="w-4 h-4 shrink-0" />
-                        <span className="truncate">{sub.email}</span>
-                      </div>
-                       <div className="flex items-center gap-2 text-slate-600">
-                        <Users className="w-4 h-4 shrink-0" />
-                        <span>{sub.technicians} Technicians</span>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t bg-slate-50/50 p-3">
-                      <div className="w-full flex items-center justify-between text-xs font-medium text-primary">
-                        View Details
-                        <ChevronRight className="w-3 h-3 ml-1" />
-                      </div>
-                    </CardFooter>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="newsletter">
-            {/* Newsletter List */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {newsletterRequests.length === 0 ? (
-                <div className="col-span-full flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-dashed">
-                  <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-                    <BookOpen className="h-6 w-6 text-slate-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-slate-900">No newsletter signups found</h3>
-                  <p className="text-slate-500 text-sm mt-1">They will appear here when people download the guide</p>
-                </div>
-              ) : (
-                newsletterRequests.map((sub) => (
-                  <Card key={sub.id || Math.random()} className="hover:shadow-md transition-shadow group">
-                    <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">
-                          {sub.firstName?.[0]}{sub.lastName?.[0]}
-                        </div>
-                        <div>
-                          <CardTitle className="text-base font-semibold group-hover:text-emerald-600 transition-colors">
-                            {sub.firstName} {sub.lastName}
-                          </CardTitle>
-                          <CardDescription className="text-xs">
-                            {formatDate(sub.submittedAt)}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <Badge variant="outline" className="font-normal border-emerald-200 text-emerald-700 bg-emerald-50">
-                        Guide Sent
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="space-y-3 text-sm pt-4">
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <Mail className="w-4 h-4 shrink-0" />
-                        <span className="truncate">{sub.email}</span>
-                      </div>
-                       <div className="flex items-center gap-2 text-slate-600">
-                        <BookOpen className="w-4 h-4 shrink-0" />
-                        <span>Downloaded Guide</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
-
-      {/* Detail Modal */}
-      <Dialog open={!!selectedSubmission} onOpenChange={(open) => !open && setSelectedSubmission(null)}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Submission Details</DialogTitle>
-            <DialogDescription>
-              Received on {selectedSubmission && formatDate(selectedSubmission.submittedAt)}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedSubmission && (
-            <div className="space-y-6 py-4">
-              {/* Profile Section */}
-              <div className="flex items-start gap-4 p-4 bg-slate-50 rounded-lg border">
-                <div className="h-16 w-16 rounded-full bg-white border-2 border-slate-100 flex items-center justify-center text-2xl font-bold text-slate-300 shadow-sm shrink-0 overflow-hidden">
-                   {/* Mockup: In a real app we would display the image URL here */}
-                   <User className="w-8 h-8" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-lg">{selectedSubmission.firstName} {selectedSubmission.lastName}</h3>
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Phone className="w-3 h-3" /> {selectedSubmission.phone}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <Mail className="w-3 h-3" /> {selectedSubmission.email}
-                  </div>
+                <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                    style={{ width: `${Math.round((count / funnelMax) * 100)}%` }}
+                  />
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
 
-              {/* Company Section */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider border-b pb-2">Company Information</h4>
-                
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Company Name</span>
-                      <div className="font-medium">{selectedSubmission.companyName}</div>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Website</span>
-                      <div className="font-medium truncate text-blue-600">
-                        {selectedSubmission.website ? (
-                          <a href={`https://${selectedSubmission.website.replace(/^https?:\/\//, '')}`} target="_blank" rel="noreferrer">
-                            {selectedSubmission.website}
-                          </a>
-                        ) : "N/A"}
-                      </div>
-                    </div>
-                  </div>
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
+          <Input
+            placeholder="Search leads..."
+            className="pl-9 bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 focus:border-emerald-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Team Size</span>
-                      <div className="font-medium flex items-center gap-2">
-                        <Users className="w-4 h-4 text-slate-400" />
-                        {selectedSubmission.technicians} Technicians
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <span className="text-xs text-muted-foreground">Routes</span>
-                      <div className="font-medium flex items-center gap-2">
-                        <Route className="w-4 h-4 text-slate-400" />
-                        {selectedSubmission.routes || "N/A"} Routes
-                      </div>
-                    </div>
-                  </div>
+        {/* Tabs */}
+        <Tabs defaultValue="all">
+          <TabsList className="bg-zinc-900 border border-zinc-800 mb-4">
+            <TabsTrigger value="all" className="data-[state=active]:bg-zinc-700 data-[state=active]:text-white text-zinc-400">
+              All Leads ({filtered(realLeads).length})
+            </TabsTrigger>
+            <TabsTrigger value="popup" className="data-[state=active]:bg-zinc-700 data-[state=active]:text-white text-zinc-400">
+              Popup ({filtered(popupLeads).length})
+            </TabsTrigger>
+            <TabsTrigger value="onboarding" className="data-[state=active]:bg-zinc-700 data-[state=active]:text-white text-zinc-400">
+              Onboarding ({filtered(onboardingLeads).length})
+            </TabsTrigger>
+          </TabsList>
 
-                  <div className="space-y-1">
-                    <span className="text-xs text-muted-foreground">Address</span>
-                    <div className="font-medium flex items-start gap-2">
-                      <MapPin className="w-4 h-4 text-slate-400 mt-0.5" />
-                      <div>
-                        <div>{selectedSubmission.address || "No address provided"}</div>
-                        {(selectedSubmission.city || selectedSubmission.state || selectedSubmission.zipCode) && (
-                          <div className="text-sm text-slate-500">
-                            {[selectedSubmission.city, selectedSubmission.state, selectedSubmission.zipCode].filter(Boolean).join(", ")}
+          {(["all", "popup", "onboarding"] as const).map(tab => {
+            const list = filtered(tab === "all" ? realLeads : tab === "popup" ? popupLeads : onboardingLeads);
+            return (
+              <TabsContent key={tab} value={tab} className="space-y-3">
+                {list.length === 0 ? (
+                  <div className="text-center py-16 text-zinc-500 text-sm">No leads yet</div>
+                ) : (
+                  list.map((sub) => (
+                    <div key={sub.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-3">
+                      {/* Name + tags */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold text-white text-base">
+                          {sub.firstName} {sub.lastName}
+                        </span>
+                        {sub.type === "demo" && (
+                          <span className="text-xs bg-zinc-700 text-zinc-300 px-2 py-0.5 rounded-full">Completed form</span>
+                        )}
+                        {sub.type === "newsletter" && (
+                          <span className="text-xs bg-zinc-700 text-zinc-300 px-2 py-0.5 rounded-full">Popup signup</span>
+                        )}
+                        {sub.isOwner !== undefined && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${sub.isOwner ? "bg-emerald-900/60 text-emerald-400" : "bg-zinc-700 text-zinc-300"}`}>
+                            {sub.isOwner ? "Owner" : "Manager"}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Contact info */}
+                      <div className="space-y-1.5">
+                        {sub.phone && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-300">
+                            <Phone className="w-3.5 h-3.5 text-zinc-500" />
+                            <a href={`tel:${sub.phone}`} className="hover:text-white">{sub.phone}</a>
+                          </div>
+                        )}
+                        {sub.email && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-300">
+                            <Mail className="w-3.5 h-3.5 text-zinc-500" />
+                            <a href={`mailto:${sub.email}`} className="hover:text-white">{sub.email}</a>
+                          </div>
+                        )}
+                        {sub.companyName && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-300">
+                            <Building2 className="w-3.5 h-3.5 text-zinc-500" />
+                            {sub.companyName}
+                          </div>
+                        )}
+                        {sub.routes && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-300">
+                            <Route className="w-3.5 h-3.5 text-zinc-500" />
+                            {sub.routes} routes
+                          </div>
+                        )}
+                        {(sub.routeSize) && !sub.routes && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-300">
+                            <Route className="w-3.5 h-3.5 text-zinc-500" />
+                            ~{sub.routeSize} routes (self-reported)
                           </div>
                         )}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-               {/* Attachments Section */}
-               <div className="space-y-4">
-                <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider border-b pb-2">Attachments</h4>
-                <div className="flex gap-4">
-                  {selectedSubmission.profilePicture?.name && (
-                    <div className="flex items-center gap-2 p-2 bg-slate-50 border rounded text-xs">
-                      <User className="w-4 h-4" />
-                      <span className="truncate max-w-[150px]">{selectedSubmission.profilePicture.name}</span>
+                      {/* Date */}
+                      <div className="flex items-center gap-1.5 text-xs text-zinc-500 pt-1 border-t border-zinc-800">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(sub.submittedAt)}
+                      </div>
                     </div>
-                  )}
-                  {selectedSubmission.logo?.name && (
-                    <div className="flex items-center gap-2 p-2 bg-slate-50 border rounded text-xs">
-                      <Building2 className="w-4 h-4" />
-                      <span className="truncate max-w-[150px]">{selectedSubmission.logo.name}</span>
-                    </div>
-                  )}
-                  {!selectedSubmission.profilePicture?.name && !selectedSubmission.logo?.name && (
-                    <span className="text-sm text-slate-400 italic">No files uploaded</span>
-                  )}
-                </div>
-               </div>
-
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+                  ))
+                )}
+              </TabsContent>
+            );
+          })}
+        </Tabs>
+      </main>
     </div>
   );
 }
