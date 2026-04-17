@@ -34,7 +34,7 @@ export function LeadGen() {
       });
       
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP);
-      window.location.href = "/#/onboarding";
+      window.location.href = "/onboarding";
       
     } catch (error) {
       toast.error("Something went wrong. Please try again.");

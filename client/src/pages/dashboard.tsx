@@ -187,11 +187,11 @@ export default function Dashboard() {
               onChange={(e) => {
                 const query = e.target.value.toLowerCase();
                 if (query.includes('invoice')) {
-                  window.location.href = '/#/invoices';
+                  window.location.href = '/invoices';
                 } else if (query.includes('route')) {
-                  window.location.href = '/#/routes';
+                  window.location.href = '/routes';
                 } else if (query.includes('material')) {
-                  window.location.href = '/#/materials';
+                  window.location.href = '/materials';
                 }
               }}
             />

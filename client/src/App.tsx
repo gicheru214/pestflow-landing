@@ -16,12 +16,11 @@ import Payment from "@/pages/payment";
 import Materials from "@/pages/materials";
 import Routes from "@/pages/routes";
 import Invoices from "@/pages/invoices";
-import { useHashLocation } from "wouter/use-hash-location";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 function AppRouter() {
   return (
-    <Router hook={useHashLocation}>
+    <Router>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/onboarding" component={Onboarding} />

@@ -27,7 +27,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
           <Button
             size="lg"
             className="w-full md:w-auto px-8 py-6 text-xl font-bold bg-[#635BFF] hover:bg-[#5851E1] text-white shadow-lg shadow-indigo-500/20"
-            onClick={() => (window.location.href = "/#/onboarding")}
+            onClick={() => (window.location.href = "/onboarding")}
           >
             Start Trial <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -133,7 +133,7 @@ export function AutoPopup() {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
     localStorage.setItem("pestflow_popup_visited", "true");
     setOpen(false);
-    window.location.href = "/#/onboarding";
+    window.location.href = "/onboarding";
   };
 
   const slideVariants = {

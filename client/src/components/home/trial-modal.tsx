@@ -46,7 +46,7 @@ export function TrialModal({ children, className }: TrialModalProps) {
     // In a real app, we would upload the data here.
     // For now, we simulate a delay and redirect to onboarding.
     console.log(values);
-    window.location.href = "/#/onboarding";
+    window.location.href = "/onboarding";
     setOpen(false);
   }
 
