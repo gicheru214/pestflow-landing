@@ -50,14 +50,11 @@ export default function SignupSuccess() {
       utm_content: utmContent,
     });
 
-    // Fire Meta Pixel Purchase Event
+    // Fire Meta Pixel Lead Event
     if (window.fbq) {
-      window.fbq('track', 'Purchase', { 
-        value: 1.00, 
-        currency: 'USD',
-        content_name: 'PestFlow Subscription', 
-        content_ids: ['pestflow-monthly'],
-        event_id: sessionId
+      window.fbq('track', 'Lead', {
+        value: 10.00,
+        currency: 'USD'
       });
     }
 
