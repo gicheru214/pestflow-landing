@@ -60,7 +60,7 @@ export function AutoPopup() {
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
-    }, 3000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
