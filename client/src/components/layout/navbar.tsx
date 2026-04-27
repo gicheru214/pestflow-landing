@@ -39,9 +39,14 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+          <a
+            href="https://app.pestflow.org/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
             Log in
-          </Link>
+          </a>
           <Link href="/onboarding">
             <Button size="lg" className="font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               Start Trial
