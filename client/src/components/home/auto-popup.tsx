@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
@@ -55,8 +55,8 @@ export function AutoPopup() {
   const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
-    const visited = localStorage.getItem("pestflow_popup_visited");
-    if (visited) return;
+    const submitted = localStorage.getItem("pestflow_popup_submitted");
+    if (submitted) return;
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
@@ -64,10 +64,24 @@ export function AutoPopup() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const submitted = localStorage.getItem("pestflow_popup_submitted");
+      if (submitted || open) return;
+      const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
+      if (nearBottom) {
+        setStep("guide");
+        setOpen(true);
+        analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [open]);
+
   const handleClose = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED);
     setOpen(false);
-    localStorage.setItem("pestflow_popup_visited", "true");
   };
 
   const handleGuideSubmit = async () => {
@@ -116,6 +130,7 @@ export function AutoPopup() {
         }),
       });
       analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
+      localStorage.setItem("pestflow_popup_submitted", "true");
     } catch (e) {
       console.error("Failed to save guide request", e);
     }
@@ -131,7 +146,7 @@ export function AutoPopup() {
 
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
-    localStorage.setItem("pestflow_popup_visited", "true");
+    localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
     window.location.href = "/onboarding";
   };
@@ -143,14 +158,21 @@ export function AutoPopup() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={() => {}}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        className="w-[calc(100vw-2rem)] sm:max-w-[420px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
+        className="w-[calc(100vw-1.5rem)] sm:max-w-[400px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
         hideCloseButton
         onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
+        onEscapeKeyDown={handleClose}
       >
-        <div className="max-h-[85vh] overflow-y-auto">
+        <button
+          onClick={handleClose}
+          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </button>
+        <div className="max-h-[88vh] overflow-y-auto">
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Guide offer + contact info ── */}
             {step === "guide" && (
@@ -160,39 +182,39 @@ export function AutoPopup() {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="p-5 sm:p-7 flex flex-col items-center"
+                className="p-4 sm:p-6 flex flex-col items-center"
               >
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-16 w-auto object-contain mb-3"
+                  className="h-12 sm:h-14 w-auto object-contain mb-2"
                 />
 
                 <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-3">
                   <span className="text-emerald-400 text-xs font-semibold tracking-wide uppercase">Free Download — $97 Value</span>
                 </div>
 
-                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-1 leading-tight">
+                <h2 className="text-base sm:text-lg font-bold text-white text-center mb-1 leading-tight">
                   The $1M Pest Control Playbook
                 </h2>
-                <p className="text-slate-400 text-xs text-center mb-4">
+                <p className="text-slate-400 text-xs text-center mb-3">
                   The exact blueprint top operators use to scale past 7 figures — and finally get off the truck for good.
                 </p>
 
-                <ul className="w-full space-y-1.5 mb-5">
+                <ul className="w-full space-y-1 mb-4">
                   {[
                     "The route-stacking system that 3x revenue without adding a single truck",
                     "The Google formula that puts you #1 in your city and keeps you there",
                     "How to collect faster, follow up automatically & stop chasing deadbeats",
                   ].map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <li key={item} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500 shrink-0 mt-0.5" />
                       {item}
                     </li>
                   ))}
                 </ul>
 
-                <div className="w-full space-y-2.5">
+                <div className="w-full space-y-2">
                   <div>
                     <label className="text-xs font-medium text-slate-400 mb-1 block">
                       Full Name <span className="text-red-400">*</span>
@@ -201,9 +223,9 @@ export function AutoPopup() {
                       value={name}
                       onChange={(e) => { setName(e.target.value); setNameError(""); }}
                       placeholder="John Smith"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${nameError ? "border-red-500" : ""}`}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${nameError ? "border-red-500" : ""}`}
                     />
-                    {nameError && <p className="text-red-400 text-xs mt-1">{nameError}</p>}
+                    {nameError && <p className="text-red-400 text-xs mt-0.5">{nameError}</p>}
                   </div>
 
                   <div>
@@ -215,9 +237,9 @@ export function AutoPopup() {
                       onChange={(e) => { setPhone(e.target.value); setPhoneError(""); }}
                       placeholder="(555) 123-4567"
                       type="tel"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${phoneError ? "border-red-500" : ""}`}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${phoneError ? "border-red-500" : ""}`}
                     />
-                    {phoneError && <p className="text-red-400 text-xs mt-1">{phoneError}</p>}
+                    {phoneError && <p className="text-red-400 text-xs mt-0.5">{phoneError}</p>}
                   </div>
 
                   <div>
@@ -229,19 +251,19 @@ export function AutoPopup() {
                       onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
                       placeholder="john@example.com"
                       type="email"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-10 ${emailError ? "border-red-500" : ""}`}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${emailError ? "border-red-500" : ""}`}
                     />
-                    {emailError && <p className="text-red-400 text-xs mt-1">{emailError}</p>}
+                    {emailError && <p className="text-red-400 text-xs mt-0.5">{emailError}</p>}
                   </div>
 
                   <Button
                     onClick={handleGuideSubmit}
-                    className="w-full h-12 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
+                    className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
                   >
                     Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <p className="text-center text-xs text-slate-500 pt-1">
-                    500+ pest control owners already scaling with this.
+                  <p className="text-center text-xs text-slate-500 pt-0.5">
+                    500+ owners already scaling with this. No spam — we don't do that.
                   </p>
                 </div>
               </motion.div>
