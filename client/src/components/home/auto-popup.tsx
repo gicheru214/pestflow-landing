@@ -46,6 +46,7 @@ export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("guide");
   const [routeCount, setRouteCount] = useState(5);
+  const [showClose, setShowClose] = useState(false);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -57,9 +58,12 @@ export function AutoPopup() {
   useEffect(() => {
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
+    const seenBefore = localStorage.getItem("pestflow_popup_seen");
+    if (seenBefore) setShowClose(true);
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+      localStorage.setItem("pestflow_popup_seen", "true");
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -71,6 +75,7 @@ export function AutoPopup() {
       const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
       if (nearBottom) {
         setStep("guide");
+        setShowClose(true);
         setOpen(true);
         analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       }
@@ -158,20 +163,22 @@ export function AutoPopup() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={showClose ? handleClose : () => {}}>
       <DialogContent
         className="w-[calc(100vw-1.5rem)] sm:max-w-[400px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
         hideCloseButton
         onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={handleClose}
+        onEscapeKeyDown={showClose ? handleClose : (e) => e.preventDefault()}
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors"
-          aria-label="Close"
-        >
-          <X className="h-4 w-4" />
-        </button>
+        {showClose && (
+          <button
+            onClick={handleClose}
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
         <div className="max-h-[88vh] overflow-y-auto">
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Guide offer + contact info ── */}
