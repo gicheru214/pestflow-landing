@@ -165,21 +165,25 @@ export function AutoPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="h-16 w-auto object-contain mb-4"
+                  className="h-16 w-auto object-contain mb-3"
                 />
 
-                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-1">
-                  Get the Free Pest Control Growth Guide
+                <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-3">
+                  <span className="text-emerald-400 text-xs font-semibold tracking-wide uppercase">Free Download — $97 Value</span>
+                </div>
+
+                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-1 leading-tight">
+                  The $1M Pest Control Playbook
                 </h2>
                 <p className="text-slate-400 text-xs text-center mb-4">
-                  Drop your info and we'll unlock the guide with your free trial.
+                  The exact blueprint top operators use to scale past 7 figures — and finally get off the truck for good.
                 </p>
 
                 <ul className="w-full space-y-1.5 mb-5">
                   {[
-                    "How to scale routes without hiring more staff",
-                    "Rank higher on Google Maps & local search",
-                    "Automate invoicing & collect faster",
+                    "The route-stacking system that 3x revenue without adding a single truck",
+                    "The Google formula that puts you #1 in your city and keeps you there",
+                    "How to collect faster, follow up automatically & stop chasing deadbeats",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-slate-300">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -234,10 +238,10 @@ export function AutoPopup() {
                     onClick={handleGuideSubmit}
                     className="w-full h-12 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
                   >
-                    Continue to Step 2 <ArrowRight className="ml-2 h-4 w-4" />
+                    Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-1">
-                    Guide unlocks in step 2 when you start your free trial.
+                    500+ pest control owners already scaling with this.
                   </p>
                 </div>
               </motion.div>
