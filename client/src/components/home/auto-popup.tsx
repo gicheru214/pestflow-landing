@@ -384,7 +384,7 @@ export function AutoPopup() {
                 <div className="w-full bg-emerald-900/40 border border-emerald-700/50 rounded-xl p-5 mb-6 space-y-2">
                   {[
                     "Free Growth Guide (unlocks now)",
-                    "14-day full access trial",
+                    "7-day full access trial",
                     "98% off first month — only $1",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2 text-sm text-emerald-300">
