@@ -45,6 +45,7 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSkipped, setOnboardingSkipped] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(() => localStorage.getItem("pestflow_banner_dismissed") === "true");
   const queryClient = useQueryClient();
 
   // Check onboarding status
