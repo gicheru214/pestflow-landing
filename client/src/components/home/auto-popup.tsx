@@ -32,7 +32,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
             Start Trial <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           <p className="mt-4 text-sm text-slate-400">
-            No credit card required for demo. Start your 14-day free trial today.
+            No credit card required for demo. Start your 7-day free trial today.
           </p>
         </div>
       </DialogContent>
