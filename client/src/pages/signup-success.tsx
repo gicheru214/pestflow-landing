@@ -59,7 +59,12 @@ export default function SignupSuccess() {
     }
 
     const timer = setTimeout(() => {
-      window.location.href = "https://pestflow-smart-pricing.lovable.app";
+      const popupData = (() => {
+        try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); } catch { return {}; }
+      })();
+      const routes = parseInt(popupData.routeSize || "1", 10);
+      const validRoutes = isNaN(routes) || routes < 1 ? 1 : Math.min(routes, 74);
+      window.location.href = `https://pestflow-smart-pricing.lovable.app?routes=${validRoutes}`;
     }, 4000);
 
     return () => clearTimeout(timer);
