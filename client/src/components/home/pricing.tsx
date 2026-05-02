@@ -33,7 +33,7 @@ export function Pricing() {
               Simple, Transparent Pricing
             </h2>
             <p className="text-lg text-slate-600">
-              Slide to your route count and see exactly what you'll pay. All plans include a 14-day free trial.
+              Slide to your route count and see exactly what you'll pay. All plans include a 7-day free trial.
             </p>
           </motion.div>
         </div>
