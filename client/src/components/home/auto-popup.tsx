@@ -58,30 +58,45 @@ export function AutoPopup() {
   useEffect(() => {
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
+    const showCount = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
+    if (showCount >= 2) return;
     const seenBefore = localStorage.getItem("pestflow_popup_seen");
     if (seenBefore) setShowClose(true);
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       localStorage.setItem("pestflow_popup_seen", "true");
+      localStorage.setItem("pestflow_popup_show_count", String(showCount + 1));
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
+    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
     const handleScroll = () => {
       const submitted = localStorage.getItem("pestflow_popup_submitted");
       if (submitted || open) return;
+      const showCount = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
+      if (showCount >= 2) return;
       const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
       if (nearBottom) {
-        setStep("guide");
-        setShowClose(true);
-        setOpen(true);
-        analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+        if (scrollTimer) return;
+        scrollTimer = setTimeout(() => {
+          setStep("guide");
+          setShowClose(true);
+          setOpen(true);
+          analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+          const count = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
+          localStorage.setItem("pestflow_popup_show_count", String(count + 1));
+          scrollTimer = null;
+        }, 1500);
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimer) clearTimeout(scrollTimer);
+    };
   }, [open]);
 
   const handleClose = () => {
