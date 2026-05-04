@@ -329,8 +329,149 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .chem-epa{font-size:12px;color:var(--sub);}
 .chem-meta{font-size:12px;color:var(--sub);display:flex;align-items:center;gap:4px;margin-top:4px;}
 
+/* Route size selector */
+.ob-size-btn{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:border-color 0.15s;}
+.ob-size-btn.selected{border-color:var(--green);background:var(--green-light);}
+
 /* Scrollbar hide */
 .screen-body::-webkit-scrollbar,.filter-row::-webkit-scrollbar,.cal-strip::-webkit-scrollbar,.inv-filter-row::-webkit-scrollbar{display:none;}
+
+/* ══ ONBOARDING / PAYWALL ══ */
+.ob-splash{display:flex;flex-direction:column;flex:1;}
+.ob-splash-top{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:28px 28px 24px;text-align:center;background:var(--green);}
+.ob-splash-logo-wrap{width:80px;height:80px;background:#fff;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;overflow:hidden;padding:8px;box-shadow:0 8px 32px rgba(0,0,0,0.18);}
+.ob-splash-logo-wrap img{width:100%;height:100%;object-fit:contain;}
+.ob-splash-brand-name{font-size:28px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:10px;}
+.ob-splash-headline{font-size:20px;font-weight:700;color:#fff;line-height:1.35;margin-bottom:24px;}
+.ob-splash-features{width:100%;text-align:left;}
+.ob-splash-feat{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.ob-splash-feat-check{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800;flex-shrink:0;margin-top:2px;}
+.ob-splash-feat-text{font-size:14px;color:rgba(255,255,255,0.9);line-height:1.45;}
+.ob-splash-bottom{padding:20px 24px 40px;background:var(--green);}
+.ob-social-proof{text-align:center;font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:16px;font-weight:500;}
+.ob-main-cta{width:100%;padding:17px;background:#fff;border-radius:14px;font-size:16px;font-weight:800;color:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 20px rgba(0,0,0,0.2);-webkit-tap-highlight-color:transparent;}
+.ob-signin-link{text-align:center;margin-top:14px;font-size:14px;color:rgba(255,255,255,0.7);cursor:pointer;}
+.ob-signin-link span{color:#fff;font-weight:700;text-decoration:underline;}
+.ob-terms{text-align:center;margin-top:10px;font-size:11px;color:rgba(255,255,255,0.38);}
+
+/* Step screens */
+.ob-step-screen{display:flex;flex-direction:column;flex:1;background:#fff;overflow:hidden;}
+.ob-step-top-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;}
+.ob-back-btn{font-size:22px;color:var(--sub);cursor:pointer;padding:4px;background:none;border:none;-webkit-tap-highlight-color:transparent;}
+.ob-skip-btn{font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;padding:4px;background:none;border:none;}
+.ob-step-prog{display:flex;gap:6px;padding:12px 20px 0;}
+.ob-step-seg{flex:1;height:4px;border-radius:2px;background:#e5e7eb;}
+.ob-step-seg.done{background:var(--green);}
+.ob-step-header{padding:16px 24px 0;}
+.ob-step-label{font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+.ob-step-h1{font-size:23px;font-weight:800;color:var(--text);line-height:1.25;margin-bottom:6px;}
+.ob-step-sub{font-size:14px;color:var(--sub);line-height:1.5;}
+.ob-step-body{flex:1;padding:20px 24px 0;overflow-y:auto;}
+.ob-step-footer{padding:16px 24px 36px;background:#fff;flex-shrink:0;}
+
+/* Customer slots */
+.ob-slot{display:flex;align-items:center;gap:14px;padding:15px;background:#f9fafb;border:2px dashed #d1d5db;border-radius:14px;margin-bottom:12px;cursor:pointer;transition:all 0.25s;-webkit-tap-highlight-color:transparent;}
+.ob-slot.filled{background:var(--green-light);border-color:var(--green);border-style:solid;}
+.ob-slot-num{width:38px;height:38px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#9ca3af;flex-shrink:0;transition:all 0.25s;}
+.ob-slot.filled .ob-slot-num{background:var(--green);color:#fff;font-size:10px;letter-spacing:-0.5px;}
+.ob-slot-content{flex:1;}
+.ob-slot-title{font-size:15px;font-weight:700;color:#9ca3af;transition:color 0.25s;}
+.ob-slot.filled .ob-slot-title{color:var(--text);}
+.ob-slot-hint{font-size:12px;color:#9ca3af;margin-top:2px;transition:color 0.25s;}
+.ob-slot.filled .ob-slot-hint{color:var(--green);}
+.ob-slot-action{font-size:22px;color:#d1d5db;font-weight:300;transition:all 0.25s;flex-shrink:0;}
+.ob-slot.filled .ob-slot-action{color:var(--green);font-size:16px;font-weight:800;}
+.ob-prog-wrap{margin:20px 0 4px;}
+.ob-prog-bar{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
+.ob-prog-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.4s cubic-bezier(0.34,1.56,0.64,1);width:0%;}
+.ob-prog-label{font-size:13px;color:var(--sub);margin-top:6px;text-align:right;font-weight:500;}
+.ob-cta-btn{width:100%;padding:17px;background:var(--green);border-radius:14px;font-size:16px;font-weight:800;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;-webkit-tap-highlight-color:transparent;}
+.ob-cta-btn.locked{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;}
+.ob-cta-hint{text-align:center;margin-top:12px;font-size:12px;color:var(--sub);}
+
+/* Route build */
+.ob-map-preview{background:linear-gradient(135deg,#e8f5eb 0%,#d4edda 100%);border-radius:14px;padding:18px 16px;text-align:center;margin-bottom:16px;border:1px solid #c3e6cb;}
+.ob-map-emoji{font-size:36px;margin-bottom:8px;}
+.ob-map-status{font-size:14px;font-weight:600;color:var(--green);}
+.ob-route-stop-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;opacity:0;transform:translateX(-12px);transition:opacity 0.35s,transform 0.35s;}
+.ob-route-stop-row.show{opacity:1;transform:translateX(0);}
+.ob-route-num{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ob-route-name{font-size:15px;font-weight:700;color:var(--text);}
+.ob-route-addr{font-size:12px;color:var(--sub);margin-top:2px;}
+.ob-savings-reveal{background:var(--green-light);border-radius:14px;border:1px solid #c3e6cb;padding:16px;margin-top:4px;opacity:0;transform:translateY(8px);transition:opacity 0.4s,transform 0.4s;}
+.ob-savings-reveal.show{opacity:1;transform:translateY(0);}
+.ob-savings-eyebrow{font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;}
+.ob-savings-big{font-size:26px;font-weight:900;color:var(--text);margin-bottom:10px;line-height:1.2;}
+.ob-savings-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.ob-savings-stat-val{font-size:15px;font-weight:800;color:var(--green);}
+.ob-savings-stat-label{font-size:11px;color:var(--sub);margin-top:2px;}
+
+/* Reward screen */
+.ob-reward-screen{display:flex;flex-direction:column;flex:1;background:var(--green);padding:40px 28px 36px;text-align:center;overflow-y:auto;}
+.ob-reward-emoji{font-size:54px;margin-bottom:16px;animation:ob-pop 0.5s ease;}
+.ob-reward-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.55);text-transform:uppercase;margin-bottom:8px;}
+.ob-reward-time{font-size:56px;font-weight:900;color:#fff;line-height:1;margin-bottom:4px;}
+.ob-reward-saved-label{font-size:16px;font-weight:600;color:rgba(255,255,255,0.85);margin-bottom:8px;}
+.ob-reward-desc{font-size:14px;color:rgba(255,255,255,0.62);line-height:1.6;margin-bottom:28px;}
+.ob-reward-stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:32px;}
+.ob-reward-stat-card{background:rgba(255,255,255,0.15);border-radius:12px;padding:14px 8px;}
+.ob-reward-stat-val{font-size:20px;font-weight:900;color:#fff;}
+.ob-reward-stat-label{font-size:11px;color:rgba(255,255,255,0.58);margin-top:4px;}
+.ob-reward-cta{width:100%;padding:17px;background:#fff;border-radius:14px;font-size:16px;font-weight:800;color:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+.ob-reward-soft{text-align:center;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.45);cursor:pointer;}
+
+/* Paywall */
+.ob-paywall-screen{display:flex;flex-direction:column;flex:1;background:#f5f7f5;overflow:hidden;}
+.ob-timer-banner{background:#111;padding:12px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.ob-timer-left{flex:1;}
+.ob-timer-label{font-size:10px;font-weight:800;color:#ff5c5c;letter-spacing:0.06em;text-transform:uppercase;}
+.ob-timer-desc{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.ob-timer-clock{font-size:20px;font-weight:900;color:#ff5c5c;font-family:'SF Mono',monospace;letter-spacing:0.04em;flex-shrink:0;}
+.ob-paywall-body{flex:1;overflow-y:auto;padding:20px;}
+.ob-paywall-title{font-size:22px;font-weight:800;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.ob-paywall-sub{font-size:14px;color:var(--sub);line-height:1.5;margin-bottom:20px;}
+.ob-plan-toggle{display:flex;background:#e5e7eb;border-radius:10px;padding:3px;margin-bottom:16px;}
+.ob-plan-opt{flex:1;padding:9px;border-radius:8px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;color:#6b7280;border:none;background:transparent;-webkit-tap-highlight-color:transparent;}
+.ob-plan-opt.sel{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+.ob-plan-card{background:#fff;border-radius:14px;border:2px solid #e5e7eb;padding:18px;margin-bottom:14px;position:relative;}
+.ob-plan-card.best{border-color:var(--green);}
+.ob-plan-badge-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:10px;font-weight:800;padding:3px 14px;border-radius:999px;white-space:nowrap;letter-spacing:0.04em;}
+.ob-plan-name{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+.ob-plan-price-row{display:flex;align-items:baseline;gap:4px;margin-bottom:2px;}
+.ob-plan-price{font-size:34px;font-weight:900;color:var(--text);}
+.ob-plan-per{font-size:14px;color:var(--sub);}
+.ob-plan-save{font-size:13px;color:var(--green);font-weight:600;margin-bottom:12px;}
+.ob-plan-feats{border-top:1px solid var(--border);padding-top:12px;}
+.ob-plan-feat-row{display:flex;align-items:flex-start;gap:8px;font-size:14px;color:var(--text);margin-bottom:8px;}
+.ob-plan-feat-check{color:var(--green);font-weight:800;font-size:15px;flex-shrink:0;margin-top:1px;}
+.ob-card-section{background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:14px;}
+.ob-card-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;}
+.ob-card-field{border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.ob-card-field-hint{font-size:14px;color:#9ca3af;}
+.ob-card-field:last-child{margin-bottom:0;}
+.ob-card-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ob-card-row .ob-card-field{margin-bottom:0;}
+.ob-trust-row{display:flex;align-items:center;justify-content:center;gap:14px;font-size:11px;color:var(--sub);margin-bottom:16px;flex-wrap:wrap;}
+.ob-trust-item{display:flex;align-items:center;gap:4px;}
+.ob-paywall-footer{padding:0 20px 36px;flex-shrink:0;}
+.ob-paywall-cta{width:100%;padding:17px;background:var(--green);border-radius:14px;font-size:16px;font-weight:800;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ob-paywall-cta-hint{text-align:center;margin-top:10px;font-size:12px;color:var(--sub);line-height:1.6;}
+.ob-remind-later{text-align:center;margin-top:14px;font-size:13px;color:var(--sub);cursor:pointer;}
+.pw-tier-card{background:#fff;border-radius:14px;border:2px solid #e5e7eb;padding:16px;margin-bottom:12px;position:relative;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;}
+.pw-tier-card.selected{border-color:var(--green);box-shadow:0 0 0 3px rgba(45,122,58,0.12);}
+.pw-feat{background:var(--green-light);color:var(--green);border-radius:6px;padding:4px 8px;font-size:11px;font-weight:600;}
+
+/* Success */
+.ob-success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;background:var(--green);padding:40px 28px;text-align:center;overflow-y:auto;}
+.ob-success-ring{width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,0.2);border:3px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 24px;animation:ob-pop 0.5s ease;}
+.ob-success-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:10px;line-height:1.2;}
+.ob-success-sub{font-size:15px;color:rgba(255,255,255,0.72);line-height:1.55;margin-bottom:28px;}
+.ob-success-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-bottom:32px;}
+.ob-success-stat{background:rgba(255,255,255,0.15);border-radius:12px;padding:14px;}
+.ob-success-stat-val{font-size:22px;font-weight:900;color:#fff;}
+.ob-success-stat-label{font-size:12px;color:rgba(255,255,255,0.58);margin-top:3px;}
+
+@keyframes ob-pop{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -342,8 +483,380 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
     <span class="status-icons">▲▲▲▲ ☁ 🔋</span>
   </div>
 
+  <!-- ══ SCREEN: SPLASH ══ -->
+  <div class="screen active" id="screen-splash">
+    <div class="ob-splash">
+      <div class="ob-splash-top">
+        <div class="ob-splash-logo-wrap"><img src="./pestflow-logo.png" alt="PestFlow"></div>
+        <div class="ob-splash-brand-name">PestFlow</div>
+        <div class="ob-splash-headline">Run every job. Build every route.<br>Get paid — fast.</div>
+        <div class="ob-splash-features">
+          <div class="ob-splash-feat">
+            <div class="ob-splash-feat-check">✓</div>
+            <span class="ob-splash-feat-text">Auto-optimize daily routes — save 2+ hours every single week</span>
+          </div>
+          <div class="ob-splash-feat">
+            <div class="ob-splash-feat-check">✓</div>
+            <span class="ob-splash-feat-text">Send invoices in 30 seconds and collect on the spot</span>
+          </div>
+          <div class="ob-splash-feat">
+            <div class="ob-splash-feat-check">✓</div>
+            <span class="ob-splash-feat-text">Every job, tech, and customer — one app, zero paperwork</span>
+          </div>
+        </div>
+      </div>
+      <div class="ob-splash-bottom">
+        <div class="ob-social-proof">⭐ 4.9 · Trusted by 2,400+ pest control operators</div>
+        <button class="ob-main-cta" onclick="go('ob-step1')">Get Started Free — No Card Needed →</button>
+        <div class="ob-signin-link">Already have an account? <span onclick="go('home')">Sign in</span></div>
+        <div class="ob-terms">14-day free trial · Cancel anytime · No spam, ever</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: ONBOARD STEP 1 — Add Customers ══ -->
+  <div class="screen" id="screen-ob-step1">
+    <div class="ob-step-screen">
+      <div class="ob-step-top-bar">
+        <button class="ob-back-btn" onclick="go('splash')">‹</button>
+        <button class="ob-skip-btn" onclick="go('home')">Skip for now</button>
+      </div>
+      <div class="ob-step-prog">
+        <div class="ob-step-seg done"></div>
+        <div class="ob-step-seg"></div>
+        <div class="ob-step-seg"></div>
+      </div>
+      <div class="ob-step-header">
+        <div class="ob-step-label">Step 1 of 3 · Your Customers</div>
+        <div class="ob-step-h1">Add your first 3 customers</div>
+        <div class="ob-step-sub">Your route gets built around them. Tap each slot to add — takes 30 seconds.</div>
+      </div>
+      <div class="ob-step-body">
+        <div class="ob-slot" id="ob-slot-0" onclick="fillSlot(0)">
+          <div class="ob-slot-num">1</div>
+          <div class="ob-slot-content">
+            <div class="ob-slot-title">Tap to add first customer</div>
+            <div class="ob-slot-hint">Residential or commercial — any property type</div>
+          </div>
+          <div class="ob-slot-action">+</div>
+        </div>
+        <div class="ob-slot" id="ob-slot-1" onclick="fillSlot(1)">
+          <div class="ob-slot-num">2</div>
+          <div class="ob-slot-content">
+            <div class="ob-slot-title">Tap to add second customer</div>
+            <div class="ob-slot-hint">Stops are ordered by distance automatically</div>
+          </div>
+          <div class="ob-slot-action">+</div>
+        </div>
+        <div class="ob-slot" id="ob-slot-2" onclick="fillSlot(2)">
+          <div class="ob-slot-num">3</div>
+          <div class="ob-slot-content">
+            <div class="ob-slot-title">Tap to add third customer</div>
+            <div class="ob-slot-hint">One more — then we build your route</div>
+          </div>
+          <div class="ob-slot-action">+</div>
+        </div>
+        <div class="ob-prog-wrap">
+          <div class="ob-prog-bar"><div class="ob-prog-fill" id="ob-step1-fill"></div></div>
+          <div class="ob-prog-label" id="ob-step1-count">0 of 3 added</div>
+        </div>
+        <!-- Route size question — appears after 3 customers filled -->
+        <div id="ob-route-size-q" style="display:none;margin-top:16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">How many stops do you run per week?</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div class="ob-size-btn" id="ob-size-solo" onclick="selectRouteSize('solo')">
+              <div style="font-size:20px;margin-bottom:4px;">🏃</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">1–15 stops</div>
+              <div style="font-size:11px;color:var(--sub);">Solo operator</div>
+            </div>
+            <div class="ob-size-btn" id="ob-size-small" onclick="selectRouteSize('small')">
+              <div style="font-size:20px;margin-bottom:4px;">📋</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">16–50 stops</div>
+              <div style="font-size:11px;color:var(--sub);">Small crew</div>
+            </div>
+            <div class="ob-size-btn" id="ob-size-growth" onclick="selectRouteSize('growth')">
+              <div style="font-size:20px;margin-bottom:4px;">📈</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">51–150 stops</div>
+              <div style="font-size:11px;color:var(--sub);">Growing team</div>
+            </div>
+            <div class="ob-size-btn" id="ob-size-enterprise" onclick="selectRouteSize('enterprise')">
+              <div style="font-size:20px;margin-bottom:4px;">🏢</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">150+ stops</div>
+              <div style="font-size:11px;color:var(--sub);">Multi-truck</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-step-footer">
+        <button class="ob-cta-btn locked" id="ob-step1-cta">Add 3 customers to continue</button>
+        <div class="ob-cta-hint">You can import a full list or add more after setup</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: ONBOARD STEP 2 — Route Build ══ -->
+  <div class="screen" id="screen-ob-step2">
+    <div class="ob-step-screen">
+      <div class="ob-step-top-bar">
+        <button class="ob-back-btn" onclick="go('ob-step1')">‹</button>
+        <button class="ob-skip-btn" onclick="go('home')">Skip</button>
+      </div>
+      <div class="ob-step-prog">
+        <div class="ob-step-seg done"></div>
+        <div class="ob-step-seg done"></div>
+        <div class="ob-step-seg"></div>
+      </div>
+      <div class="ob-step-header">
+        <div class="ob-step-label">Step 2 of 3 · Your Route</div>
+        <div class="ob-step-h1">Building your first route...</div>
+        <div class="ob-step-sub">PestFlow is finding the fastest path between your 3 customers.</div>
+      </div>
+      <div class="ob-step-body">
+        <div class="ob-map-preview">
+          <div class="ob-map-emoji">🗺️</div>
+          <div class="ob-map-status" id="ob-map-status">Calculating fastest path...</div>
+        </div>
+        <div id="ob-route-stops">
+          <div class="ob-route-stop-row" id="ob-stop-0">
+            <div class="ob-route-num">1</div>
+            <div>
+              <div class="ob-route-name">Sarah Mitchell</div>
+              <div class="ob-route-addr">📍 1240 Oak Ridge Dr · 8:00 AM</div>
+            </div>
+          </div>
+          <div class="ob-route-stop-row" id="ob-stop-1">
+            <div class="ob-route-num">2</div>
+            <div>
+              <div class="ob-route-name">Riverside Apartments</div>
+              <div class="ob-route-addr">📍 421 Riverside Dr · 9:30 AM · 12 min drive</div>
+            </div>
+          </div>
+          <div class="ob-route-stop-row" id="ob-stop-2">
+            <div class="ob-route-num">3</div>
+            <div>
+              <div class="ob-route-name">Thornton Bakery</div>
+              <div class="ob-route-addr">📍 88 Main St · 11:00 AM · 9 min drive</div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-savings-reveal" id="ob-savings-reveal">
+          <div class="ob-savings-eyebrow">✨ Route optimized — weekly savings</div>
+          <div class="ob-savings-big">2h 15min saved<br>every week</div>
+          <div class="ob-savings-stats">
+            <div><div class="ob-savings-stat-val">8.3 mi</div><div class="ob-savings-stat-label">Shorter</div></div>
+            <div><div class="ob-savings-stat-val">$47</div><div class="ob-savings-stat-label">Fuel saved</div></div>
+            <div><div class="ob-savings-stat-val">3 jobs</div><div class="ob-savings-stat-label">One run</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-step-footer">
+        <button class="ob-cta-btn locked" id="ob-step2-cta">Building your route...</button>
+        <div class="ob-cta-hint">Re-optimized automatically every morning</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: REWARD ══ -->
+  <div class="screen" id="screen-ob-reward">
+    <div class="ob-reward-screen">
+      <div class="ob-reward-emoji">🎉</div>
+      <div class="ob-reward-eyebrow">Your route is ready</div>
+      <div class="ob-reward-time">2h 15m</div>
+      <div class="ob-reward-saved-label">saved every single week</div>
+      <div class="ob-reward-desc">Based on your 3 customers, PestFlow found the fastest path — and recalculates it automatically every morning.</div>
+      <div class="ob-reward-stats-grid">
+        <div class="ob-reward-stat-card">
+          <div class="ob-reward-stat-val">8.3 mi</div>
+          <div class="ob-reward-stat-label">Miles saved</div>
+        </div>
+        <div class="ob-reward-stat-card">
+          <div class="ob-reward-stat-val">$47</div>
+          <div class="ob-reward-stat-label">Fuel back</div>
+        </div>
+        <div class="ob-reward-stat-card">
+          <div class="ob-reward-stat-val">$2,444</div>
+          <div class="ob-reward-stat-label">Per year</div>
+        </div>
+      </div>
+      <button class="ob-reward-cta" onclick="go('paywall')">Lock In My Plan — Enter Card →</button>
+      <div class="ob-reward-soft" onclick="go('paywall')">Your route disappears unless you confirm →</div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: PAYWALL ══ -->
+  <div class="screen" id="screen-paywall">
+    <div class="ob-paywall-screen">
+      <div class="ob-timer-banner">
+        <div class="ob-timer-left">
+          <div class="ob-timer-label">⚠ Your data deletes in</div>
+          <div class="ob-timer-desc">Route &amp; customers cleared unless you confirm</div>
+        </div>
+        <div class="ob-timer-clock" id="ob-timer-clock">47:32:18</div>
+      </div>
+      <div class="ob-paywall-body">
+        <div style="height:16px;"></div>
+        <div class="ob-paywall-title">Try PestFlow Free for 7 Days</div>
+        <div class="ob-paywall-sub">$1 Today — Card required, you won't be charged full price until day 8. Cancel anytime.</div>
+
+        <!-- Billing toggle -->
+        <div class="ob-plan-toggle" style="margin-bottom:14px;">
+          <button class="ob-plan-opt" id="ob-plan-monthly" onclick="selectPlan('monthly')">Monthly</button>
+          <button class="ob-plan-opt sel" id="ob-plan-annual" onclick="selectPlan('annual')">Yearly &nbsp;<span style="font-size:11px;color:#22c55e;font-weight:700;">Save 20%</span></button>
+        </div>
+
+        <!-- Route slider -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">How many routes do you have?</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="range" min="1" max="75" value="1" id="pw-route-slider" oninput="updateRouteSlider(this.value)" style="flex:1;accent-color:var(--green);">
+            <div id="pw-route-label" style="font-size:16px;font-weight:700;color:var(--green);min-width:40px;text-align:right;">1</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-top:4px;"><span>1</span><span>75+</span></div>
+        </div>
+
+        <!-- Plan cards -->
+        <div id="pw-plan-cards">
+          <!-- Basic -->
+          <div class="pw-tier-card" id="pw-card-basic" onclick="selectTier('basic')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:var(--text);">Basic</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">Everything to run a smarter business</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:var(--sub);">$1 today, then</div>
+                <div style="display:flex;align-items:baseline;gap:2px;"><span id="pw-basic-price" style="font-size:22px;font-weight:700;color:var(--text);">$50</span><span style="font-size:13px;color:var(--sub);">/mo</span></div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:4px;" id="pw-basic-feats">
+              <div class="pw-feat">Unlimited Admin Users</div>
+              <div class="pw-feat">Invoices &amp; Work Orders</div>
+              <div class="pw-feat">Basic Routing (25 stops)</div>
+              <div class="pw-feat">Square &amp; Stripe</div>
+              <div class="pw-feat">Job &amp; Customer Mapping</div>
+              <div class="pw-feat">Broadcast Messaging</div>
+            </div>
+          </div>
+
+          <!-- Pro -->
+          <div class="pw-tier-card selected" id="pw-card-pro" onclick="selectTier('pro')">
+            <div style="position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:0 0 8px 8px;letter-spacing:0.05em;">MOST POPULAR</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-top:6px;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:var(--text);">Pro</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">All Basic + power-ups</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:var(--sub);">$1 today, then</div>
+                <div style="display:flex;align-items:baseline;gap:2px;"><span id="pw-pro-price" style="font-size:22px;font-weight:700;color:var(--green);">$100</span><span style="font-size:13px;color:var(--sub);">/mo</span></div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <div class="pw-feat">Customer Online Portal</div>
+              <div class="pw-feat">Online Booking</div>
+              <div class="pw-feat">Stripe &amp; Square Subs</div>
+              <div class="pw-feat">Routing with Drive Matrix</div>
+              <div class="pw-feat">Review Generation</div>
+              <div class="pw-feat">e-Signatures &amp; Docs</div>
+            </div>
+          </div>
+
+          <!-- Growth -->
+          <div class="pw-tier-card" id="pw-card-growth" onclick="selectTier('growth')">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:var(--text);">Growth</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">All Pro + scale tools</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:11px;color:var(--sub);">$1 today, then</div>
+                <div style="display:flex;align-items:baseline;gap:2px;"><span id="pw-growth-price" style="font-size:22px;font-weight:700;color:var(--text);">$150</span><span style="font-size:13px;color:var(--sub);">/mo</span></div>
+              </div>
+            </div>
+            <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+              <div class="pw-feat">Map Estimation Tools</div>
+              <div class="pw-feat">Drive Time &amp; Best Avail</div>
+              <div class="pw-feat">Job Magnet</div>
+              <div class="pw-feat">Dynamic Estimates</div>
+              <div class="pw-feat">Sales Pipeline</div>
+              <div class="pw-feat">Custom Fields &amp; Statuses</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stripe embedded payment UI -->
+        <div class="ob-card-section" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Payment Details</div>
+            <div style="display:flex;gap:4px;margin-left:auto;align-items:center;">
+              <div style="background:#635bff;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;">stripe</div>
+              <div style="background:#00aeef;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;">square</div>
+            </div>
+          </div>
+          <!-- Stripe card element mock -->
+          <div style="border:1.5px solid var(--border);border-radius:10px;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:14px;color:#aaa;">Card number</span>
+              <div style="display:flex;gap:4px;">
+                <div style="width:28px;height:18px;background:#1a1f71;border-radius:3px;"></div>
+                <div style="width:28px;height:18px;background:#eb001b;border-radius:3px;opacity:0.8;"></div>
+                <div style="width:28px;height:18px;background:#f79e1b;border-radius:3px;opacity:0.6;margin-left:-10px;"></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);">
+              <div style="padding:12px 14px;border-right:1px solid var(--border);font-size:14px;color:#aaa;">MM / YY</div>
+              <div style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;color:#aaa;">CVC</span><span style="font-size:16px;">🔒</span></div>
+            </div>
+            <div style="padding:12px 14px;font-size:14px;color:#aaa;">Name on card</div>
+          </div>
+          <div style="font-size:11px;color:var(--sub);text-align:center;margin-top:8px;">🔒 Secured by Stripe · PCI DSS compliant</div>
+        </div>
+
+        <div class="ob-trust-row" style="margin-top:10px;">
+          <div class="ob-trust-item">⭐ 4.9 Rating</div>
+          <div class="ob-trust-item">↩ Cancel Anytime</div>
+          <div class="ob-trust-item">📞 Free Setup</div>
+        </div>
+        <div style="height:8px;"></div>
+      </div>
+      <div class="ob-paywall-footer">
+        <button class="ob-paywall-cta" id="pw-cta-btn" onclick="go('ob-success')">Start Free → $1 Today</button>
+        <div class="ob-paywall-cta-hint">Only $1 charged today · Full price starts day 8 · Cancel anytime</div>
+        <div class="ob-remind-later" onclick="go('home')">Remind me later <span style="font-size:11px;color:#9ca3af;">(trial data may be lost)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN: SUCCESS ══ -->
+  <div class="screen" id="screen-ob-success">
+    <div class="ob-success-screen">
+      <div class="ob-success-ring">✓</div>
+      <div class="ob-success-title">You're in.<br>Everything's saved.</div>
+      <div class="ob-success-sub">Your route, customers, and pest templates are locked in. PestFlow starts working for you right now.</div>
+      <div class="ob-success-stats">
+        <div class="ob-success-stat">
+          <div class="ob-success-stat-val">2h 15m</div>
+          <div class="ob-success-stat-label">Saved per week</div>
+        </div>
+        <div class="ob-success-stat">
+          <div class="ob-success-stat-val">$2,444</div>
+          <div class="ob-success-stat-label">Saved per year</div>
+        </div>
+        <div class="ob-success-stat">
+          <div class="ob-success-stat-val">3</div>
+          <div class="ob-success-stat-label">Customers ready</div>
+        </div>
+        <div class="ob-success-stat">
+          <div class="ob-success-stat-val">14 days</div>
+          <div class="ob-success-stat-label">Free trial starts now</div>
+        </div>
+      </div>
+      <button class="ob-reward-cta" onclick="go('home')">Go to My Dashboard →</button>
+    </div>
+  </div>
+
   <!-- ══ SCREEN: HOME ══ -->
-  <div class="screen active" id="screen-home">
+  <div class="screen" id="screen-home">
     <div class="topbar">
       <div class="topbar-logo-row">
         <div class="logo-box"><img src="./pestflow-logo.png" alt="PestFlow"></div>
@@ -609,6 +1122,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
           <div class="inv-bal-stat"><span style="font-size:14px;">🕐</span><div><div class="inv-bal-stat-label">Overdue</div><div class="inv-bal-stat-val">$720</div></div></div>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 4px;">
+        <div style="background:#635bff;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;">stripe</div>
+        <div style="background:#00aeef;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;">square</div>
+        <span style="font-size:11px;color:var(--green);font-weight:600;">● Connected</span>
+        <span style="font-size:11px;color:var(--sub);margin-left:auto;">Payments & Subscriptions</span>
+      </div>
       <div class="inv-filter-row">
         <button class="inv-filter active">All</button>
         <button class="inv-filter">Unpaid</button>
@@ -703,8 +1222,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="history-item"><div style="display:flex;align-items:center;"><div class="history-dot"></div><div><div class="history-name">Termite Inspection</div><div class="history-date">Mar 10, 2024</div></div></div><span class="badge badge-green">Completed</span></div>
         <div class="history-item"><div style="display:flex;align-items:center;"><div class="history-dot"></div><div><div class="history-name">Quarterly Pest Control</div><div class="history-date">Dec 18, 2023</div></div></div><span class="badge badge-green">Completed</span></div>
       </div>
-      <button class="cta-btn" onclick="go('invoice-detail')">✓ Mark as Complete</button>
-      <div class="cta-btn-outline" onclick="go('new-invoice')">📄 Create Invoice</div>
+      <button class="cta-btn" onclick="go('invoice-detail')">✓ Mark Complete &amp; Send Invoice</button>
+      <div class="cta-btn-outline" onclick="go('new-invoice')">📄 Create Invoice for This Job</div>
     </div>
   </div>
 
@@ -754,7 +1273,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="history-item"><div><div class="history-name">Mar 12 · Rodent Control</div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;font-weight:700;color:var(--text);">$285</span><span class="badge badge-green">Completed</span></div></div>
         <div class="history-item"><div><div class="history-name">Dec 08 · Quarterly Inspection</div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:14px;font-weight:700;color:var(--text);">$160</span><span class="badge badge-green">Completed</span></div></div>
       </div>
-      <button class="cta-btn" onclick="go('new-job')">+ New Job</button>
+      <button class="cta-btn" onclick="go('new-job')">+ Schedule Next Service</button>
     </div>
   </div>
 
@@ -797,10 +1316,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       </div>
       <div class="info-section">
         <div style="padding:14px 16px 8px;font-size:16px;font-weight:700;color:var(--text);">Payment</div>
-        <div style="padding:10px 16px 14px;">
-          <div style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--red-light);border-radius:10px;">
+        <div style="padding:0 16px 14px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--red-light);border-radius:10px;margin-bottom:12px;">
             <span>⚠️</span>
             <div><div style="font-size:14px;font-weight:700;color:var(--red);">Payment Overdue</div><div style="font-size:12px;color:var(--red);">Due Oct 28, 2024</div><div style="font-size:12px;color:var(--sub);margin-top:2px;">🔔 Reminder sent Oct 29</div></div>
+          </div>
+          <!-- Collect payment options -->
+          <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Collect Payment Via</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <button onclick="this.classList.toggle('selected')" style="padding:12px 8px;border-radius:10px;border:2px solid #635bff;background:#f5f3ff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+              <div style="background:#635bff;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;">stripe</div>
+              <div style="font-size:11px;font-weight:600;color:#635bff;">Card / ACH</div>
+            </button>
+            <button onclick="this.classList.toggle('selected')" style="padding:12px 8px;border-radius:10px;border:2px solid #00aeef;background:#f0faff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
+              <div style="background:#00aeef;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;">square</div>
+              <div style="font-size:11px;font-weight:600;color:#0090c8;">Card / Cash</div>
+            </button>
+          </div>
+          <!-- Send payment link -->
+          <div style="background:var(--green-light);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+            <span style="font-size:18px;">🔗</span>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:var(--green);">Send Payment Link</div>
+              <div style="font-size:11px;color:var(--sub);">Text or email secure link · Powered by Stripe</div>
+            </div>
+            <span style="font-size:18px;color:var(--green);">›</span>
           </div>
         </div>
       </div>
@@ -808,8 +1348,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div style="padding:14px 16px 8px;font-size:16px;font-weight:700;color:var(--text);">Notes</div>
         <div style="padding:0 16px 14px;font-size:14px;color:var(--sub);line-height:1.5;">Quarterly service per contract. Next scheduled treatment: Jan 2025.</div>
       </div>
-      <button class="cta-btn">💳 Record Payment</button>
-      <div class="cta-btn-outline">↗ Send Reminder</div>
+      <button class="cta-btn">✓ Mark Paid — $420.00</button>
+      <div class="cta-btn-outline">📧 Send Overdue Notice</div>
     </div>
   </div>
 
@@ -846,7 +1386,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="form-section-title">NOTES</div>
         <div class="form-field"><div class="form-input placeholder" style="min-height:80px;align-items:flex-start;padding-top:10px;">Add service notes, special instructions...</div></div>
       </div>
-      <button class="cta-btn">+ Create Job</button>
+      <button class="cta-btn">Save &amp; Schedule Job</button>
       <div class="cta-btn-outline">Save as Draft</div>
     </div>
   </div>
@@ -881,8 +1421,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="form-field"><div class="form-input placeholder" style="min-height:80px;align-items:flex-start;padding-top:10px;">Internal notes about this customer, access instructions, pets on property...</div></div>
         <div style="padding:8px 16px;font-size:12px;color:var(--sub);">ℹ️ These notes are internal only and not visible to the customer.</div>
       </div>
-      <button class="cta-btn">+ Add Customer</button>
-      <div class="cta-btn-outline">Cancel</div>
+      <button class="cta-btn">Save Customer to My List</button>
+      <div class="cta-btn-outline">Discard &amp; Go Back</div>
     </div>
   </div>
 
@@ -936,8 +1476,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="form-section-title">Notes</div>
         <div class="form-field"><div class="form-input placeholder" style="min-height:60px;align-items:flex-start;padding-top:10px;">Payment terms, service notes...</div></div>
       </div>
-      <button class="cta-btn">↗ Send Invoice</button>
-      <div class="cta-btn-outline">Save as Draft</div>
+      <button class="cta-btn">Send Invoice to Sarah →</button>
+      <div class="cta-btn-outline">Save Draft</div>
     </div>
   </div>
 
@@ -951,7 +1491,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
     <div class="screen-body no-nav">
       <div class="route-map">🗺️</div>
       <div style="display:flex;justify-content:center;margin-bottom:10px;">
-        <span class="badge badge-green" style="font-size:12px;">✓ Optimized · Saves 8 mi vs. original order</span>
+        <span class="badge badge-green" style="font-size:12px;">✓ Route Optimized — saves 2h 15min this week</span>
       </div>
       <div class="route-stats">
         <div class="route-stat"><div class="route-stat-val">24.3 mi</div><div class="route-stat-label">📏 Distance</div></div>
@@ -964,7 +1504,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       <div class="route-stop" onclick="go('job-detail')"><div class="route-num">3</div><div class="route-info"><div class="route-name">Linda Hayes</div><div class="route-addr">📍 26 Willow Creek Ct</div><div class="route-time">🕐 11:00 AM · Quarterly visit</div></div><span style="font-size:12px;color:var(--sub);">Rodent</span></div>
       <div class="route-stop" onclick="go('job-detail')"><div class="route-num">4</div><div class="route-info"><div class="route-name">Robert Kim</div><div class="route-addr">📍 3320 Maple Grove Ave</div><div class="route-time">🕐 1:15 PM · Initial inspection</div></div><span style="font-size:12px;color:var(--sub);">Inspection</span></div>
       <div class="route-stop" onclick="go('job-detail')"><div class="route-num">5</div><div class="route-info"><div class="route-name">Amelia Brooks</div><div class="route-addr">📍 59 Sunset Blvd, Suite B</div><div class="route-time">🕐 3:00 PM · Follow-up</div></div><span style="font-size:12px;color:var(--sub);">Ant</span></div>
-      <button class="cta-btn" style="margin-top:8px;">↗ Start Route</button>
+      <button class="cta-btn" style="margin-top:8px;">▶ Start Route — 5 Stops, 1h 42m</button>
     </div>
   </div>
 
@@ -1084,6 +1624,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 <script>
 const NAV_IDS = ['home','schedule','jobs','customers','invoices'];
 const DETAIL_IDS = ['job-detail','new-job','customer-detail','add-customer','new-invoice','route','invoice-detail','more','settings'];
+const OB_IDS = ['splash','ob-step1','ob-step2','ob-reward','paywall','ob-success'];
 
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1097,24 +1638,184 @@ function go(id) {
     const n = document.getElementById('nav-' + nid);
     if (n) n.classList.toggle('active', nid === id);
   });
-  const isDetail = DETAIL_IDS.includes(id);
   const nav = document.getElementById('bottom-nav');
-  // Show nav on main screens + more, hide on detail screens (except more)
-  if (id === 'more') {
+  if (OB_IDS.includes(id)) {
+    nav.style.display = 'none';
+  } else if (id === 'more') {
     nav.style.display = 'flex';
-    const n = document.getElementById('nav-invoices');
     NAV_IDS.forEach(nid => { const nn = document.getElementById('nav-' + nid); if(nn) nn.classList.remove('active'); });
-  } else if (isDetail) {
+  } else if (DETAIL_IDS.includes(id)) {
     nav.style.display = 'none';
   } else {
     nav.style.display = 'flex';
   }
+  if (id === 'ob-step2') setTimeout(startRouteBuild, 400);
+  if (id === 'paywall') { renderPaywall(); startTimer(); }
   if (window.parent !== window) window.parent.postMessage({ activeScreen: id }, '*');
 }
 
 window.addEventListener('message', e => {
   if (e.data && e.data.screen) go(e.data.screen);
 });
+
+// ── Route size tiers ──
+const ROUTE_TIERS = {
+  solo:       { icon:'🏃', label:'Solo Operator', desc:'1–15 stops/week',    annualPrice:'$29', monthlyPrice:'$46', annualName:'Starter Annual',    monthlyName:'Starter Monthly',    annualSave:'Billed $348/yr — save $204 vs monthly', stops:'Up to 15 stops/week', techs:'1 technician account',   annualBadge:'BEST FOR SOLO OPERATORS' },
+  small:      { icon:'📋', label:'Small Crew',     desc:'16–50 stops/week',  annualPrice:'$49', monthlyPrice:'$79', annualName:'Growth Annual',     monthlyName:'Growth Monthly',     annualSave:'Billed $588/yr — save $360 vs monthly', stops:'Up to 50 stops/week', techs:'Up to 3 technicians',    annualBadge:'MOST POPULAR' },
+  growth:     { icon:'📈', label:'Growing Team',   desc:'51–150 stops/week', annualPrice:'$89', monthlyPrice:'$139', annualName:'Pro Annual',        monthlyName:'Pro Monthly',        annualSave:'Billed $1,068/yr — save $600 vs monthly',stops:'Up to 150 stops/week',techs:'Up to 8 technicians',    annualBadge:'BEST VALUE' },
+  enterprise: { icon:'🏢', label:'Multi-Truck',    desc:'150+ stops/week',   annualPrice:'$149',monthlyPrice:'$229', annualName:'Enterprise Annual', monthlyName:'Enterprise Monthly', annualSave:'Billed $1,788/yr — save $960 vs monthly',stops:'Unlimited stops',     techs:'Unlimited technicians', annualBadge:'BEST FOR SCALE' }
+};
+let selectedRouteSize = 'solo';
+
+function selectRouteSize(size) {
+  selectedRouteSize = size;
+  document.querySelectorAll('.ob-size-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('ob-size-' + size).classList.add('selected');
+  // unlock CTA to go to step 2
+  const cta = document.getElementById('ob-step1-cta');
+  cta.classList.remove('locked');
+  cta.textContent = '✓ Continue — Build My Route →';
+  cta.onclick = () => go('ob-step2');
+}
+
+// ── Paywall: plan data (matches PricingWidget.tsx) ──
+const PW_PLANS = {
+  basic:  { basePrice: 50,  perRoute: 50 },
+  pro:    { basePrice: 100, perRoute: 50 },
+  growth: { basePrice: 150, perRoute: 50 }
+};
+let pwRoutes = 1;
+let pwBilling = 'annual';
+let pwTier = 'pro';
+
+function getRoutePrice(tier, routes, billing) {
+  const p = PW_PLANS[tier];
+  const monthly = p.basePrice + (routes - 1) * p.perRoute;
+  return billing === 'annual' ? Math.round(monthly * 0.8) : monthly;
+}
+
+function renderPaywall() {
+  updateRouteSlider(1);
+  selectTier('pro');
+}
+
+function updateRouteSlider(val) {
+  val = parseInt(val);
+  pwRoutes = val;
+  const label = document.getElementById('pw-route-label');
+  if (label) label.textContent = val >= 75 ? '75+' : val;
+  // Update prices on all three cards
+  ['basic','pro','growth'].forEach(t => {
+    const el = document.getElementById('pw-' + t + '-price');
+    if (el) {
+      if (val >= 75) {
+        el.textContent = 'Custom';
+      } else {
+        el.textContent = '$' + getRoutePrice(t, val, pwBilling);
+      }
+    }
+  });
+  const cta = document.getElementById('pw-cta-btn');
+  if (cta && val >= 75) {
+    cta.textContent = 'Contact Sales';
+  } else if (cta) {
+    cta.textContent = 'Start Free → $1 Today';
+  }
+}
+
+// ── Step 1: Customer slots ──
+let custFilled = 0;
+const custData = [
+  { name: 'Sarah Mitchell',       hint: 'Residential · 1240 Oak Ridge Dr', initials: 'SM' },
+  { name: 'Riverside Apartments', hint: 'Commercial · 421 Riverside Dr',   initials: 'RA' },
+  { name: 'Thornton Bakery',      hint: 'Commercial · 88 Main St',          initials: 'TB' }
+];
+
+function fillSlot(index) {
+  if (index !== custFilled) return;
+  const slot = document.getElementById('ob-slot-' + index);
+  const c = custData[index];
+  slot.classList.add('filled');
+  slot.querySelector('.ob-slot-num').textContent = c.initials;
+  slot.querySelector('.ob-slot-title').textContent = c.name;
+  slot.querySelector('.ob-slot-hint').textContent = '✓ ' + c.hint;
+  slot.querySelector('.ob-slot-action').textContent = '✓';
+  custFilled++;
+  const pct = (custFilled / 3) * 100;
+  document.getElementById('ob-step1-fill').style.width = pct + '%';
+  document.getElementById('ob-step1-count').textContent = custFilled + ' of 3 added';
+  const cta = document.getElementById('ob-step1-cta');
+  if (custFilled >= 3) {
+    // Show route size question
+    document.getElementById('ob-route-size-q').style.display = 'block';
+    cta.textContent = 'Select your route size above';
+    cta.classList.add('locked');
+  } else {
+    const rem = 3 - custFilled;
+    cta.textContent = 'Add ' + rem + ' more customer' + (rem > 1 ? 's' : '') + ' to continue';
+  }
+}
+
+// ── Step 2: Route build animation ──
+function startRouteBuild() {
+  const stops = document.querySelectorAll('.ob-route-stop-row');
+  stops.forEach(s => s.classList.remove('show'));
+  const reveal = document.getElementById('ob-savings-reveal');
+  if (reveal) reveal.classList.remove('show');
+  const cta = document.getElementById('ob-step2-cta');
+  if (cta) { cta.classList.add('locked'); cta.textContent = 'Building your route...'; cta.onclick = null; }
+  const lbl = document.getElementById('ob-map-status');
+  if (lbl) lbl.textContent = '🔄 Calculating fastest path...';
+  stops.forEach((stop, i) => {
+    setTimeout(() => {
+      stop.classList.add('show');
+      if (i === stops.length - 1) {
+        if (lbl) lbl.textContent = '✓ Optimized — 3 stops · 8.3 mi saved';
+        setTimeout(() => {
+          if (reveal) reveal.classList.add('show');
+          if (cta) {
+            cta.classList.remove('locked');
+            cta.textContent = "See What You'll Save Every Week →";
+            cta.onclick = () => go('ob-reward');
+          }
+        }, 500);
+      }
+    }, 350 + i * 600);
+  });
+}
+
+function selectTier(tier) {
+  pwTier = tier;
+  ['basic','pro','growth'].forEach(t => {
+    const card = document.getElementById('pw-card-' + t);
+    if (card) card.classList.toggle('selected', t === tier);
+  });
+}
+
+// ── Paywall: countdown timer ──
+let timerInterval = null;
+function startTimer() {
+  let secs = 47 * 3600 + 32 * 60 + 18;
+  const fmt = n => String(n).padStart(2, '0');
+  const tick = () => {
+    if (secs <= 0) { clearInterval(timerInterval); return; }
+    secs--;
+    const el = document.getElementById('ob-timer-clock');
+    if (el) el.textContent = fmt(Math.floor(secs/3600)) + ':' + fmt(Math.floor((secs%3600)/60)) + ':' + fmt(secs%60);
+  };
+  if (timerInterval) clearInterval(timerInterval);
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+// ── Paywall: billing toggle ──
+function selectPlan(plan) {
+  pwBilling = plan;
+  document.getElementById('ob-plan-monthly').classList.toggle('sel', plan === 'monthly');
+  document.getElementById('ob-plan-annual').classList.toggle('sel', plan === 'annual');
+  // Re-render prices with new billing period
+  updateRouteSlider(pwRoutes);
+}
 
 // Check for demo param
 const demo = new URLSearchParams(location.search).get('demo');
