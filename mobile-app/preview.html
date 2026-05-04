@@ -84,17 +84,16 @@
   .main {
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 24px 40px;
+    padding: 20px 40px 20px;
     overflow: hidden;
   }
   .phone-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform-origin: center center;
-    transform: scale(var(--phone-scale, 0.88));
+    transform-origin: top center;
   }
   .phone {
     width: 390px;
@@ -239,13 +238,21 @@
 </div>
 
 <script>
-// Scale phone to fit viewport height
+// Scale phone to fit viewport
 function setScale() {
-  const availH = window.innerHeight - 80; // 80px for label + url bar
-  const phoneH = 844 + 14*2; // phone height + padding
-  const scale = Math.min(1, availH / phoneH);
-  document.querySelector('.phone-wrap').style.setProperty('--phone-scale', scale);
-  document.querySelector('.phone-wrap').style.transform = `scale(${scale})`;
+  const sidebar = 220;
+  const padH = 120; // url bar + label + breathing room
+  const padW = 80;
+  const availH = window.innerHeight - padH;
+  const availW = window.innerWidth - sidebar - padW;
+  const phoneH = 872; // 844 + 14px padding top/bottom
+  const phoneW = 418; // 390 + 14px padding left/right
+  const scale = Math.min(0.95, availH / phoneH, availW / phoneW);
+  const wrap = document.querySelector('.phone-wrap');
+  if (wrap) {
+    wrap.style.transform = `scale(${scale})`;
+    wrap.style.transformOrigin = 'top center';
+  }
 }
 setScale();
 window.addEventListener('resize', setScale);
