@@ -46,7 +46,7 @@ export function Pricing() {
           className="w-full overflow-hidden"
         >
           <iframe
-            src="https://pestflow-smart-pricing.lovable.app/embed/pricing"
+            src="https://testflow.org/embed/pricing"
             scrolling="no"
             style={{
               width: "100%",
