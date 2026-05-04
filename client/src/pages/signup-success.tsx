@@ -41,7 +41,7 @@ function goToPricing(featureId?: string) {
   const routes = parseInt(popupData.routeSize || "1", 10);
   const validRoutes = isNaN(routes) || routes < 1 ? 1 : Math.min(routes, 74);
   const featureParam = featureId ? `&feature=${featureId}` : "";
-  window.location.href = `https://pestflow-smart-pricing.lovable.app?routes=${validRoutes}${featureParam}`;
+  window.location.href = `https://testflow.org?routes=${validRoutes}${featureParam}`;
 }
 
 export default function SignupSuccess() {
