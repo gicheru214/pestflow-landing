@@ -50,7 +50,7 @@ export function Pricing() {
             scrolling="no"
             style={{
               width: "100%",
-              height: "800px",
+              height: "900px",
               border: "none",
               display: "block",
               overflow: "hidden",
