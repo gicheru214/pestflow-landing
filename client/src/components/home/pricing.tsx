@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 export function Pricing() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!event.origin.includes("lovable.app")) return;
+      if (!event.origin.includes("lovable.app") && !event.origin.includes("testflow.org")) return;
       const data = event.data;
       if (!data) return;
       const url: string | undefined =
