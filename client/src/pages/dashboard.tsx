@@ -131,7 +131,7 @@ export default function Dashboard() {
             <p className="font-medium">
               ⏳ Your trial data will be deleted in 48 hours —{" "}
               <a
-                href="https://pestflow-smart-pricing.lovable.app"
+                href="https://testflow.org"
                 className="underline underline-offset-2 font-semibold hover:text-amber-900"
               >
                 confirm a plan to keep it
