@@ -4,24 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PestFlow</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg: #f5f7f2;
+  --bg: #f8fafc;
   --surface: #ffffff;
-  --green: #2d7a3a;
-  --green-light: #e8f5eb;
-  --green-mid: #3d9e4f;
-  --text: #1a1f1a;
-  --sub: #6b7280;
-  --border: #e4e8e0;
-  --radius: 12px;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --green-mid: #22c55e;
+  --text: #0f172a;
+  --sub: #64748b;
+  --border: #e2e8f0;
+  --radius: 14px;
   --orange: #f59e0b;
   --orange-light: #fef3c7;
   --blue: #3b82f6;
   --blue-light: #eff6ff;
   --red: #ef4444;
   --red-light: #fee2e2;
-  --nav-h: 72px;
+  --nav-h: 68px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:#111;display:flex;justify-content:center;align-items:center;min-height:100vh;}
@@ -55,11 +58,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .fab svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
 
 /* Cards / surfaces */
-.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
 .px{padding:0 16px;}
-.sec-hd{display:flex;align-items:center;justify-content:space-between;margin:16px 16px 10px;}
-.sec-title{font-size:17px;font-weight:700;color:var(--text);}
-.sec-link{font-size:14px;font-weight:600;color:var(--green);cursor:pointer;}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin:20px 16px 10px;}
+.sec-title{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.2px;}
+.sec-link{font-size:13px;font-weight:600;color:var(--green);cursor:pointer;}
 
 /* Badges */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;}
@@ -72,16 +75,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 
 /* Stats */
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 16px;margin-bottom:20px;}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:14px 12px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;flex-direction:column;align-items:center;}
-.stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;font-size:18px;}
-.stat-num{font-size:26px;font-weight:700;color:var(--text);}
-.stat-label{font-size:12px;color:var(--sub);margin-top:2px;text-align:center;}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:16px 12px;border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;align-items:center;}
+.stat-icon{width:6px;height:6px;border-radius:50%;margin-bottom:8px;}
+.stat-num{font-size:28px;font-weight:800;color:var(--text);letter-spacing:-1px;line-height:1;}
+.stat-label{font-size:11px;color:var(--sub);margin-top:4px;text-align:center;font-weight:500;}
 
 /* Quick actions */
 .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:20px;}
-.qa-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
-.qa-icon{width:36px;height:36px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px;}
-.qa-label{font-size:14px;font-weight:600;color:var(--text);}
+.qa-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--shadow-sm);}
+.qa-icon{width:36px;height:36px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qa-icon svg{width:18px;height:18px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.qa-label{font-size:14px;font-weight:600;color:var(--text);letter-spacing:-0.1px;}
 
 /* Schedule timeline */
 .sched-list{padding:0 16px;}
@@ -472,15 +476,237 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 .ob-success-stat-label{font-size:12px;color:rgba(255,255,255,0.58);margin-top:3px;}
 
 @keyframes ob-pop{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+
+/* ══ S1: SMART TOAST ══ */
+.pf-toast{position:absolute;bottom:calc(var(--nav-h) + 12px);left:12px;right:12px;background:var(--text);border-radius:14px;padding:14px 16px;z-index:500;display:flex;align-items:flex-start;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.22);transform:translateY(20px);opacity:0;transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s;pointer-events:none;}
+.pf-toast.show{transform:translateY(0);opacity:1;pointer-events:auto;}
+.pf-toast.xp-toast{background:var(--green);}
+.pf-toast-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
+.pf-toast-body{flex:1;}
+.pf-toast-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.pf-toast-msg{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.45;}
+.pf-toast-x{font-size:18px;color:rgba(255,255,255,0.4);cursor:pointer;flex-shrink:0;padding:2px;background:none;border:none;}
+.pf-xp-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);opacity:0;background:var(--green);border-radius:50%;width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:600;pointer-events:none;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;}
+.pf-xp-burst.pop{transform:translate(-50%,-50%) scale(1);opacity:1;}
+.pf-xp-burst.fade{transform:translate(-50%,-50%) scale(1.1);opacity:0;}
+.pf-xp-burst-lbl{font-size:10px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:0.06em;}
+.pf-xp-burst-val{font-size:30px;font-weight:900;color:#fff;line-height:1;}
+.pf-lvlup-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.65);z-index:700;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.pf-lvlup-overlay.show{opacity:1;pointer-events:auto;}
+.pf-lvlup-card{background:var(--green);border-radius:20px;padding:32px 28px;text-align:center;width:300px;transform:scale(0.85);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.pf-lvlup-overlay.show .pf-lvlup-card{transform:scale(1);}
+.pf-lvlup-emoji{font-size:48px;margin-bottom:12px;display:block;animation:ob-pop 0.5s ease;}
+.pf-lvlup-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.6);text-transform:uppercase;margin-bottom:6px;}
+.pf-lvlup-title{font-size:24px;font-weight:900;color:#fff;margin-bottom:6px;}
+.pf-lvlup-sub{font-size:14px;color:rgba(255,255,255,0.75);margin-bottom:24px;}
+.pf-lvlup-cta{width:100%;padding:14px;background:#fff;border-radius:12px;font-size:15px;font-weight:800;color:var(--green);border:none;cursor:pointer;}
+
+/* ══ S2: FOMO BANNERS ══ */
+.pf-fomo{margin:0 16px 14px;border-radius:var(--radius);padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;border:1.5px solid transparent;}
+.pf-fomo.risk{background:#fff8f0;border-color:#fde68a;}
+.pf-fomo.opp{background:var(--blue-light);border-color:#bfdbfe;}
+.pf-fomo.social{background:#f5f3ff;border-color:#ddd6fe;}
+.pf-fomo-icon{font-size:22px;flex-shrink:0;}
+.pf-fomo-body{flex:1;}
+.pf-fomo-ey{font-size:10px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:2px;}
+.pf-fomo-ey.risk{color:#b45309;}.pf-fomo-ey.opp{color:#1d4ed8;}.pf-fomo-ey.social{color:#7c3aed;}
+.pf-fomo-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.pf-fomo-sub{font-size:12px;color:var(--sub);line-height:1.4;}
+.pf-fomo-action{font-size:13px;font-weight:700;color:var(--green);white-space:nowrap;flex-shrink:0;}
+
+/* ══ S3: XP STRIP & GAMIFICATION ══ */
+.pf-xp-strip{margin:0 16px 14px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.pf-xp-lvl{width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.pf-xp-lvl-num{font-size:15px;font-weight:900;color:#fff;line-height:1;}
+.pf-xp-lvl-sub{font-size:8px;color:rgba(255,255,255,0.7);font-weight:600;letter-spacing:0.04em;}
+.pf-xp-info{flex:1;}
+.pf-xp-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.pf-xp-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-bottom:3px;}
+.pf-xp-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.pf-xp-sub-txt{font-size:11px;color:var(--sub);}
+.pf-streak{display:flex;flex-direction:column;align-items:center;gap:2px;flex-shrink:0;}
+.pf-streak-num{font-size:15px;font-weight:900;color:#f59e0b;}
+.pf-streak-lbl{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.05em;}
+.pf-ob-xp{display:flex;align-items:center;gap:10px;background:var(--green-light);border:1px solid #c3e6cb;border-radius:10px;padding:10px 14px;margin-top:10px;opacity:0;transform:translateY(6px);transition:opacity 0.4s,transform 0.4s;}
+.pf-ob-xp.show{opacity:1;transform:translateY(0);}
+.pf-ob-xp-pill{background:var(--green);color:#fff;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;flex-shrink:0;}
+.pf-ob-xp-txt{font-size:13px;color:var(--green);font-weight:600;}
+.pf-xp-hint{display:flex;align-items:center;gap:6px;padding:0 16px 10px;font-size:13px;color:var(--green);font-weight:600;}
+
+/* Achievements screen */
+.pf-ach-hero{background:var(--green);padding:20px 16px 24px;text-align:center;}
+.pf-ach-lv-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border-radius:999px;padding:6px 16px;margin-bottom:12px;}
+.pf-ach-lv-txt{font-size:13px;font-weight:700;color:#fff;}
+.pf-ach-xp{font-size:36px;font-weight:900;color:#fff;line-height:1;margin-bottom:4px;}
+.pf-ach-xp-sub{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:16px;}
+.pf-ach-bar{height:8px;background:rgba(255,255,255,0.2);border-radius:4px;overflow:hidden;margin:0 24px;}
+.pf-ach-bar-fill{height:100%;background:#fff;border-radius:4px;}
+.pf-ach-bar-lbls{display:flex;justify-content:space-between;padding:4px 24px 0;font-size:11px;color:rgba(255,255,255,0.55);}
+.pf-badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px;margin-bottom:20px;}
+.pf-badge-item{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.pf-badge-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--border);}
+.pf-badge-circle.earned{background:var(--green-light);border-color:var(--green);}
+.pf-badge-circle.locked{background:#f3f4f6;filter:grayscale(1);opacity:0.5;}
+.pf-badge-lbl{font-size:10px;font-weight:600;color:var(--sub);text-align:center;line-height:1.3;}
+.pf-badge-lbl.earned{color:var(--green);}
+.pf-lb-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--border);}
+.pf-lb-rank{font-size:14px;font-weight:800;color:var(--sub);width:20px;flex-shrink:0;}
+.pf-lb-rank.gold{color:#f59e0b;}
+.pf-lb-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.pf-lb-info{flex:1;}
+.pf-lb-name{font-size:14px;font-weight:600;color:var(--text);}
+.pf-lb-jobs{font-size:12px;color:var(--sub);}
+.pf-lb-xp{font-size:15px;font-weight:700;color:var(--green);}
+.pf-stat-ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:16px;}
+.pf-stat-ach{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:13px 12px;text-align:center;}
+.pf-stat-ach-icon{font-size:20px;margin-bottom:5px;}
+.pf-stat-ach-val{font-size:22px;font-weight:800;color:var(--text);}
+.pf-stat-ach-lbl{font-size:11px;color:var(--sub);margin-top:2px;}
+.pf-stat-ach-xp{font-size:11px;color:var(--green);font-weight:600;margin-top:3px;}
+
+/* ══ S4: ANCHOR & DECOY ══ */
+.pw-anchor-strike{font-size:13px;color:#9ca3af;text-decoration:line-through;margin-left:4px;}
+.pw-value-note{font-size:11px;color:var(--green);font-weight:600;margin-top:3px;}
+.pw-compare-link{text-align:center;font-size:12px;color:var(--sub);padding:4px 0 10px;cursor:pointer;}
+.pw-compare-link span{color:var(--green);text-decoration:underline;}
+.pw-compare-table{display:none;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+.pw-compare-table.open{display:block;}
+.pw-cmp-hdr{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border);}
+.pw-cmp-col{padding:8px 4px;text-align:center;font-size:10px;font-weight:700;color:var(--sub);}
+.pw-cmp-col.hl{background:var(--green-light);color:var(--green);}
+.pw-cmp-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;border-top:1px solid var(--border);}
+.pw-cmp-cell{padding:7px 4px;text-align:center;font-size:11px;color:var(--sub);}
+.pw-cmp-cell.hl{background:rgba(45,122,58,0.04);font-weight:600;color:var(--text);}
+.pw-cmp-cell.feat{text-align:left;padding-left:10px;font-size:11px;color:var(--text);}
+.pw-ck{color:var(--green);font-size:13px;font-weight:800;}
+.pw-cx{color:#d1d5db;font-size:13px;}
+
+/* ══ S5: VALUE STACK ══ */
+.pw-vs-section{background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:14px 16px;margin-bottom:14px;}
+.pw-vs-title{font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--sub);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.pw-vs-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px;}
+.pw-vs-row:last-child{margin-bottom:0;}
+.pw-vs-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.pw-vs-text{font-size:13px;color:var(--text);font-weight:500;line-height:1.35;}
+.pw-free-bar{display:flex;align-items:center;gap:8px;background:#f3f4f6;border-radius:8px;padding:10px 12px;margin-bottom:12px;}
+.pw-free-bar-txt{font-size:12px;color:var(--sub);line-height:1.35;}
+.pw-without-toggle{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;color:var(--sub);cursor:pointer;margin-bottom:8px;}
+.pw-without-toggle span{color:var(--green);font-weight:600;text-decoration:underline;}
+.pw-without-list{display:none;background:#fff5f5;border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+.pw-without-list.open{display:block;}
+.pw-without-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px;}
+.pw-without-row:last-child{margin-bottom:0;}
+.pw-without-x{color:#ef4444;font-weight:800;font-size:13px;flex-shrink:0;margin-top:1px;}
+.pw-without-text{font-size:12px;color:#ef4444;line-height:1.35;}
+.pw-without-cost{font-size:11px;color:#9ca3af;margin-top:1px;}
+
+/* ══ S6: SOCIAL PROOF ══ */
+.pw-rating-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:12px;}
+.pw-rating-stars{font-size:13px;}
+.pw-rating-score{font-size:16px;font-weight:800;color:var(--text);}
+.pw-rating-rev{font-size:12px;color:var(--sub);}
+.pw-rating-badge{font-size:10px;font-weight:700;background:var(--green-light);color:var(--green);padding:3px 8px;border-radius:999px;margin-left:auto;white-space:nowrap;}
+.pf-social-ticker{background:#111;border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.pf-ticker-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;animation:pf-pulse 1.5s infinite;}
+.pf-ticker-txt{font-size:13px;color:rgba(255,255,255,0.85);font-weight:600;transition:opacity 0.3s;}
+.pf-ticker-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;}
+@keyframes pf-pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.pw-test-wrap{margin-bottom:12px;}
+.pw-test-card{background:var(--surface);border-radius:12px;border:1px solid var(--border);padding:14px;display:none;}
+.pw-test-card.active{display:block;}
+.pw-test-quote{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:10px;font-style:italic;}
+.pw-test-bottom{display:flex;align-items:center;gap:10px;}
+.pw-test-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.pw-test-name{font-size:13px;font-weight:700;color:var(--text);}
+.pw-test-sub{font-size:11px;color:var(--sub);}
+.pw-test-stars{font-size:11px;color:#f59e0b;margin-left:auto;}
+.pw-test-dots{display:flex;justify-content:center;gap:5px;margin-top:8px;}
+.pw-test-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;}
+.pw-test-dot.active{background:var(--green);}
+.pw-activity-feed{margin-bottom:12px;}
+.pw-act-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);animation:pw-fadein 0.4s ease;}
+.pw-act-row:last-child{border-bottom:none;}
+.pw-act-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.pw-act-txt{font-size:12px;color:var(--sub);line-height:1.35;}
+.pw-act-time{font-size:11px;color:#9ca3af;margin-left:auto;flex-shrink:0;}
+@keyframes pw-fadein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.pw-local-count{text-align:center;font-size:12px;color:var(--sub);padding:4px 0 10px;}
+.pw-local-count b{color:var(--green);}
+.pw-trust-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 14px;font-size:11px;color:var(--sub);margin-bottom:14px;}
+.pw-trust-item{display:flex;align-items:center;gap:4px;}
+
+/* ── Missing classes for new features ── */
+/* XP Strip (simplified layout) */
+.pf-xp-strip{margin:0 16px 14px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:13px 15px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.pf-xp-strip-left{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+.pf-xp-strip-level{font-size:12px;font-weight:800;color:var(--green);}
+.pf-xp-strip-label{font-size:11px;color:var(--sub);}
+.pf-xp-strip-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.pf-xp-strip-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.pf-xp-strip-next{font-size:11px;color:var(--sub);white-space:nowrap;flex-shrink:0;}
+/* Badge (used in achievements grid) */
+.pf-badge{display:flex;flex-direction:column;align-items:center;padding:12px 6px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);text-align:center;}
+.pf-badge.earned{border-color:var(--green);background:var(--green-light);}
+/* Leaderboard me row */
+.pf-lb-me{background:var(--green-light);border-radius:8px;}
+.pf-lb-me .pf-lb-rank,.pf-lb-me .pf-lb-name{color:var(--green);font-weight:700;}
+/* FOMO CTA */
+.pf-fomo-cta{font-size:13px;font-weight:700;color:var(--green);white-space:nowrap;flex-shrink:0;cursor:pointer;}
+/* VS Section layout */
+.pw-vs-header{display:flex;gap:8px;margin-bottom:10px;}
+.pw-vs-bad{flex:1;font-size:12px;color:#ef4444;line-height:1.4;}
+.pw-vs-good{flex:1;font-size:12px;color:var(--green);line-height:1.4;}
+/* pf-ob-xp override — always visible in-place */
+.pf-ob-xp{opacity:1 !important;transform:none !important;display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid #c3e6cb;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--green);font-weight:600;}
+/* Stat ach grid (4 columns for achievements screen) */
+.pf-stat-ach-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;padding:16px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
 </style>
 </head>
 <body>
 <div id="shell">
 
+  <!-- ══ SCREEN: LOGIN ══ -->
+  <div class="screen" id="screen-login">
+    <div style="display:flex;flex-direction:column;flex:1;background:var(--bg);overflow-y:auto;padding:40px 24px;">
+      <div style="display:flex;justify-content:center;margin-bottom:32px;">
+        <div style="background:#fff;border-radius:16px;padding:12px 20px;box-shadow:var(--shadow-sm);">
+          <img src="./pestflow-logo.png" alt="PestFlow" style="height:40px;display:block;">
+        </div>
+      </div>
+      <div id="auth-mode-title" style="font-size:24px;font-weight:800;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px;">Welcome back</div>
+      <div style="font-size:14px;color:var(--sub);margin-bottom:28px;">Sign in to your PestFlow account</div>
+      <div id="auth-error" style="display:none;background:var(--red-light);color:var(--red);padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px;"></div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;">Email</div>
+          <input id="auth-email" type="email" placeholder="you@example.com" autocomplete="email"
+            style="width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;">
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;">Password</div>
+          <input id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password"
+            style="width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;color:var(--text);background:#fff;outline:none;-webkit-appearance:none;"
+            onkeydown="if(event.key==='Enter')doSignIn()">
+        </div>
+      </div>
+      <button id="auth-btn" onclick="doSignIn()"
+        style="width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:14px;">
+        Sign In
+      </button>
+      <div id="auth-toggle" style="text-align:center;font-size:14px;color:var(--sub);">
+        Don't have an account? <span style="color:var(--green);font-weight:700;cursor:pointer;" onclick="switchToSignUp()">Get Started Free</span>
+      </div>
+      <div style="text-align:center;margin-top:20px;font-size:13px;color:var(--sub);cursor:pointer;" onclick="go('splash')">‹ Back</div>
+    </div>
+  </div>
+
   <!-- Status bar -->
   <div class="status-bar">
     <span class="status-time">9:41</span>
-    <span class="status-icons">▲▲▲▲ ☁ 🔋</span>
+    <span class="status-icons" style="display:flex;align-items:center;gap:6px;">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="4" width="3" height="8" rx="1"/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1"/><rect x="9" y="1" width="3" height="11" rx="1"/><rect x="13.5" y="0" width="2.5" height="12" rx="1" opacity="0.3"/></svg>
+      <svg width="16" height="12" viewBox="0 0 18 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="14" height="10" rx="2"/><rect x="15" y="3.5" width="2" height="5" rx="1" fill="currentColor" stroke="none"/><rect x="2.5" y="2.5" width="10" height="7" rx="1" fill="currentColor" stroke="none"/></svg>
+    </span>
   </div>
 
   <!-- ══ SCREEN: SPLASH ══ -->
@@ -507,8 +733,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       </div>
       <div class="ob-splash-bottom">
         <div class="ob-social-proof">⭐ 4.9 · Trusted by 2,400+ pest control operators</div>
-        <button class="ob-main-cta" onclick="go('ob-step1')">Get Started Free — No Card Needed →</button>
-        <div class="ob-signin-link">Already have an account? <span onclick="go('home')">Sign in</span></div>
+        <button class="ob-main-cta" onclick="go('login')">Get Started Free — No Card Needed →</button>
+        <div class="ob-signin-link">Already have an account? <span onclick="go('login')">Sign in</span></div>
         <div class="ob-terms">14-day free trial · Cancel anytime · No spam, ever</div>
       </div>
     </div>
@@ -555,6 +781,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
             <div class="ob-slot-hint">One more — then we build your route</div>
           </div>
           <div class="ob-slot-action">+</div>
+        </div>
+        <div id="ob-xp-reward" style="display:none;margin:12px 0 0;text-align:center;">
+          <div class="pf-ob-xp">🎉 +50 XP earned! <strong>Networker</strong> badge unlocked!</div>
         </div>
         <div class="ob-prog-wrap">
           <div class="ob-prog-bar"><div class="ob-prog-fill" id="ob-step1-fill"></div></div>
@@ -678,6 +907,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
           <div class="ob-reward-stat-label">Per year</div>
         </div>
       </div>
+      <div style="margin-bottom:14px;text-align:center;">
+        <span style="display:inline-block;background:var(--green);color:#fff;font-size:13px;font-weight:800;padding:8px 20px;border-radius:999px;">🏆 +150 XP earned — Route Builder badge unlocked!</span>
+      </div>
       <button class="ob-reward-cta" onclick="go('paywall')">Lock In My Plan — Enter Card →</button>
       <div class="ob-reward-soft" onclick="go('paywall')">Your route disappears unless you confirm →</div>
     </div>
@@ -721,7 +953,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
             <div style="display:flex;justify-content:space-between;align-items:flex-start;">
               <div>
                 <div style="font-size:15px;font-weight:700;color:var(--text);">Basic</div>
-                <div style="font-size:11px;color:var(--sub);margin-top:2px;">Everything to run a smarter business</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">Basic scheduling &amp; invoicing only</div>
               </div>
               <div style="text-align:right;">
                 <div style="font-size:11px;color:var(--sub);">$1 today, then</div>
@@ -766,7 +998,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
             <div style="display:flex;justify-content:space-between;align-items:flex-start;">
               <div>
                 <div style="font-size:15px;font-weight:700;color:var(--text);">Growth</div>
-                <div style="font-size:11px;color:var(--sub);margin-top:2px;">All Pro + scale tools</div>
+                <div style="font-size:11px;color:var(--sub);margin-top:2px;">Enterprise features — 8+ truck operations</div>
               </div>
               <div style="text-align:right;">
                 <div style="font-size:11px;color:var(--sub);">$1 today, then</div>
@@ -812,7 +1044,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
           <div style="font-size:11px;color:var(--sub);text-align:center;margin-top:8px;">🔒 Secured by Stripe · PCI DSS compliant</div>
         </div>
 
-        <div class="ob-trust-row" style="margin-top:10px;">
+        <!-- S6: Social Proof — Rating bar -->
+        <div class="pw-rating-bar" style="margin-top:12px;">
+          <span style="font-size:18px;font-weight:800;color:var(--text);">4.9</span>
+          <div style="display:flex;gap:2px;color:#f59e0b;">★★★★★</div>
+          <span style="font-size:12px;color:var(--sub);">from 1,240 pest pros</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--green);font-weight:700;">Verified ✓</span>
+        </div>
+
+        <!-- S6: Social proof ticker -->
+        <div class="pf-social-ticker" id="pw-ticker">
+          <span style="font-size:14px;">🐛</span>
+          <span id="pw-ticker-text" style="font-size:13px;color:var(--text);flex:1;">Carlos from Austin just signed up</span>
+          <span style="font-size:11px;color:var(--sub);">2m ago</span>
+        </div>
+
+        <!-- S5: Value stack — "Without PestFlow" vs "With PestFlow" -->
+        <div class="pw-vs-section" style="margin-top:14px;">
+          <div class="pw-vs-header">
+            <div style="flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--sub);">WITHOUT PESTFLOW</div>
+            <div style="flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--green);">WITH PESTFLOW</div>
+          </div>
+          <div class="pw-vs-row">
+            <div class="pw-vs-bad">❌ Paper routes, missed stops</div>
+            <div class="pw-vs-good">✅ Optimized route in 1 tap</div>
+          </div>
+          <div class="pw-vs-row">
+            <div class="pw-vs-bad">❌ Chase invoices by hand</div>
+            <div class="pw-vs-good">✅ Auto-reminders + Stripe/Square</div>
+          </div>
+          <div class="pw-vs-row">
+            <div class="pw-vs-bad">❌ Customers fall through cracks</div>
+            <div class="pw-vs-good">✅ CRM + recurring plans built in</div>
+          </div>
+        </div>
+
+        <!-- S6: 3 Testimonials -->
+        <div class="pw-test-card" style="margin-top:14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#e8f5eb;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);">CG</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">Carlos G. · Austin, TX</div>
+              <div style="color:#f59e0b;font-size:12px;">★★★★★</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5;">"Switched from paper routes. Save 2+ hours weekly and my invoices now get paid 3× faster. Worth every penny."</div>
+        </div>
+
+        <!-- S6: Activity feed -->
+        <div class="pw-activity-feed" style="margin-top:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--sub);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;">Recent Activity</div>
+          <div style="display:flex;flex-direction:column;gap:6px;" id="pw-activity-list">
+            <div style="font-size:12px;color:var(--text);">🐛 <strong>Maria L.</strong> from Houston started trial · 4m ago</div>
+            <div style="font-size:12px;color:var(--text);">💵 <strong>James P.</strong> collected $840 this week · 12m ago</div>
+            <div style="font-size:12px;color:var(--text);">⭐ <strong>Carlos V.</strong> got a 5-star review · 18m ago</div>
+          </div>
+        </div>
+
+        <!-- S6: Local count + trust row -->
+        <div style="text-align:center;font-size:12px;color:var(--sub);margin:12px 0 4px;">
+          <span style="color:var(--green);font-weight:700;">47 pest pros</span> in your area use PestFlow this month
+        </div>
+        <div class="ob-trust-row" style="margin-top:4px;">
           <div class="ob-trust-item">⭐ 4.9 Rating</div>
           <div class="ob-trust-item">↩ Cancel Anytime</div>
           <div class="ob-trust-item">📞 Free Setup</div>
@@ -866,25 +1159,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
     </div>
     <div class="screen-body">
       <div style="padding:4px 16px 16px;">
-        <div style="font-size:26px;font-weight:700;color:var(--text);">Good Morning, Marcus 👋</div>
+        <div style="font-size:26px;font-weight:800;color:var(--text);letter-spacing:-0.5px;">Good morning, Marcus</div>
         <div style="font-size:14px;color:var(--sub);margin-top:4px;">Tuesday, October 15, 2024</div>
+      </div>
+      <!-- S3: XP Strip -->
+      <div class="pf-xp-strip">
+        <div class="pf-xp-strip-left">
+          <span class="pf-xp-strip-level">⚡ Lv 2</span>
+          <span class="pf-xp-strip-label">Route Ranger · 350 XP</span>
+        </div>
+        <div class="pf-xp-strip-bar"><div class="pf-xp-strip-fill" style="width:58%;"></div></div>
+        <span class="pf-xp-strip-next">+250 to Lv 3</span>
       </div>
       <div class="stats-row">
         <div class="stat-card">
-          <div class="stat-icon" style="background:var(--green-light);">🐛</div>
-          <div class="stat-num">6</div>
+          <div class="stat-icon" style="background:var(--green);"></div>
+          <div class="stat-num" id="stat-jobs-today">—</div>
           <div class="stat-label">Today's Jobs</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:#e8f5eb;">✅</div>
-          <div class="stat-num">4</div>
+          <div class="stat-icon" style="background:#22c55e;"></div>
+          <div class="stat-num" id="stat-completed">—</div>
           <div class="stat-label">Completed</div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" style="background:var(--orange-light);">🕐</div>
-          <div class="stat-num">2</div>
+          <div class="stat-icon" style="background:var(--orange);"></div>
+          <div class="stat-num" id="stat-pending">—</div>
           <div class="stat-label">Pending</div>
         </div>
+      </div>
+      <!-- S2: FOMO Revenue-at-Risk Banner -->
+      <div class="pf-fomo risk" style="margin:0 16px 16px;">
+        <div class="pf-fomo-icon">⚠️</div>
+        <div class="pf-fomo-body">
+          <div class="pf-fomo-title">$720 overdue — aging daily</div>
+          <div class="pf-fomo-sub">3 invoices unpaid. Tap to send auto-reminders now.</div>
+        </div>
+        <div class="pf-fomo-cta" onclick="go('invoices')">Fix →</div>
       </div>
       <div class="sec-hd">
         <span class="sec-title">Today's Schedule</span>
@@ -924,10 +1235,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       </div>
       <div class="sec-hd"><span class="sec-title">Quick Actions</span></div>
       <div class="qa-grid">
-        <div class="qa-btn" onclick="go('new-job')"><div class="qa-icon">➕</div><span class="qa-label">New Job</span></div>
-        <div class="qa-btn" onclick="go('add-customer')"><div class="qa-icon">👤</div><span class="qa-label">Add Customer</span></div>
-        <div class="qa-btn" onclick="go('new-invoice')"><div class="qa-icon">📄</div><span class="qa-label">Create Invoice</span></div>
-        <div class="qa-btn" onclick="go('route')"><div class="qa-icon">📍</div><span class="qa-label">View Map</span></div>
+        <div class="qa-btn" onclick="go('new-job')"><div class="qa-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="qa-label">New Job</span></div>
+        <div class="qa-btn" onclick="go('add-customer')"><div class="qa-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><span class="qa-label">Add Customer</span></div>
+        <div class="qa-btn" onclick="go('new-invoice')"><div class="qa-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="qa-label">Invoice</span></div>
+        <div class="qa-btn" onclick="go('route')"><div class="qa-icon"><svg viewBox="0 0 24 24"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div><span class="qa-label">Route Map</span></div>
+        <div class="qa-btn" onclick="go('achievements')" style="grid-column:1/-1;background:linear-gradient(135deg,#e8f5eb,#d1f0d8);border-color:#a8d8b0;">
+          <div class="qa-icon" style="background:#fff;">🏆</div>
+          <span class="qa-label" style="color:var(--green);">My Achievements · 350 XP <span style="font-size:12px;color:var(--sub);">Level 2</span></span>
+          <span style="margin-left:auto;font-size:18px;color:var(--green);">›</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1033,46 +1349,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <button class="filter-tab">In Progress</button>
         <button class="filter-tab">Completed</button>
       </div>
-      <div class="sec-hd"><span class="sec-title">Active Jobs — 3</span><span class="sec-link">Sort</span></div>
-      <div class="job-card" onclick="go('job-detail')">
-        <div class="job-card-top"><span class="job-num">#JOB-1042</span><span class="badge badge-inprogress">In Progress</span></div>
-        <div class="job-name">Sarah Mitchell</div>
-        <div class="job-service">🐛 Termite Treatment</div>
-        <div class="job-meta">🕐 Today · 10:30 AM</div>
-        <div class="job-meta">📍 1284 Oak Ridge Dr, Austin</div>
-        <div class="job-tech-row"><div class="mini-avatar">JD</div><span style="font-size:13px;color:var(--sub);">James Daniels</span><span class="job-chevron" style="margin-left:auto;">›</span></div>
-      </div>
-      <div class="job-card" onclick="go('job-detail')">
-        <div class="job-card-top"><span class="job-num">#JOB-1043</span><span class="badge badge-gray">Upcoming</span></div>
-        <div class="job-name">Robert Chen</div>
-        <div class="job-service">🐭 Rodent Control</div>
-        <div class="job-meta">🕐 Tomorrow · 2:00 PM</div>
-        <div class="job-meta">📍 892 Maple St, Round Rock</div>
-        <div class="job-tech-row"><div class="mini-avatar" style="background:#a855f7;">EM</div><span style="font-size:13px;color:var(--sub);">Emily Martinez</span><span class="job-chevron" style="margin-left:auto;">›</span></div>
-      </div>
-      <div class="job-card" onclick="go('job-detail')">
-        <div class="job-card-top"><span class="job-num">#JOB-1044</span><span class="badge badge-gray">Upcoming</span></div>
-        <div class="job-name">Linda Patterson</div>
-        <div class="job-service">🐜 Ant &amp; Roach Spray</div>
-        <div class="job-meta">🕐 Thu Mar 14 · 9:00 AM</div>
-        <div class="job-meta">📍 456 Cedar Ln, Pflugerville</div>
-        <div class="job-tech-row"><div class="mini-avatar">JD</div><span style="font-size:13px;color:var(--sub);">James Daniels</span><span class="job-chevron" style="margin-left:auto;">›</span></div>
-      </div>
-      <div class="sec-hd"><span class="sec-title">Recent Completed</span><span class="sec-link">View all</span></div>
-      <div class="job-card" onclick="go('job-detail')">
-        <div class="job-card-top"><span class="job-num">#JOB-1039</span><span class="badge badge-green">Completed</span></div>
-        <div class="job-name">Marcus Webb</div>
-        <div class="job-meta">🐛 Mosquito Treatment · Mar 10</div>
-        <div class="job-meta">📍 2105 Riverbend Rd, Austin</div>
-        <div style="text-align:right;margin-top:4px;">›</div>
-      </div>
-      <div class="job-card" onclick="go('job-detail')">
-        <div class="job-card-top"><span class="job-num">#JOB-1037</span><span class="badge badge-green">Completed</span></div>
-        <div class="job-name">Diana Rodriguez</div>
-        <div class="job-meta">🐛 Bed Bug Inspection · Mar 8</div>
-        <div class="job-meta">📍 78 Elm Court, Cedar Park</div>
-        <div style="text-align:right;margin-top:4px;">›</div>
-      </div>
+      <div class="sec-hd"><span class="sec-title" id="jobs-count-label">Jobs</span><span class="sec-link">Sort</span></div>
+      <div id="jobs-list"><div style="text-align:center;padding:40px 20px;color:var(--sub);">Sign in to see your jobs</div></div>
     </div>
   </div>
 
@@ -1089,21 +1367,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 14px;">
         <div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">👥</span>
-          <div><div style="font-size:11px;color:var(--sub);">Total</div><div style="font-size:20px;font-weight:700;color:var(--text);">48</div></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
+          <div><div style="font-size:11px;color:var(--sub);">Total</div><div style="font-size:20px;font-weight:700;color:var(--text);" id="customers-total">—</div></div>
         </div>
         <div class="card" style="padding:12px;display:flex;align-items:center;gap:10px;">
-          <span style="font-size:20px;">✅</span>
-          <div><div style="font-size:11px;color:var(--sub);">Active</div><div style="font-size:20px;font-weight:700;color:var(--text);">35</div></div>
+          <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div><div style="font-size:11px;color:var(--sub);">Active</div><div style="font-size:20px;font-weight:700;color:var(--text);" id="customers-active">—</div></div>
         </div>
       </div>
       <div class="sec-hd"><span class="sec-title">All Customers</span><span class="sec-link">↕ Sort</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar">RA</div><div class="cust-info"><div class="cust-name">Riverside Apartments</div><div class="cust-sub">421 Riverside Dr, Building C</div><div class="cust-meta"><span>📅 Mar 12</span><span>🔧 24 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar" style="background:#6366f1;">GV</div><div class="cust-info"><div class="cust-name">Green Valley HOA</div><div class="cust-sub">Green Valley Community</div><div class="cust-meta"><span>📅 Mar 08</span><span>🔧 18 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar" style="background:#f59e0b;">TB</div><div class="cust-info"><div class="cust-name">Thornton Bakery</div><div class="cust-sub">88 Main St, Downtown</div><div class="cust-meta"><span>📅 Mar 15</span><span>🔧 9 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar" style="background:#a855f7;">MP</div><div class="cust-info"><div class="cust-name">Mike &amp; Sarah Patel</div><div class="cust-sub">1247 Oakwood Lane</div><div class="cust-meta"><span>📅 Feb 28</span><span>🔧 6 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar" style="background:#0ea5e9;">OS</div><div class="cust-info"><div class="cust-name">Oakwood School District</div><div class="cust-sub">3 Campus Locations</div><div class="cust-meta"><span>📅 Mar 10</span><span>🔧 31 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
-      <div class="cust-card" onclick="go('customer-detail')"><div class="cust-avatar" style="background:#ec4899;">JL</div><div class="cust-info"><div class="cust-name">Jenna Liu</div><div class="cust-sub">512 Birchwood Ave</div><div class="cust-meta"><span>📅 Mar 04</span><span>🔧 4 jobs</span></div></div><span style="color:var(--sub);">›</span></div>
+      <div id="customers-list"><div style="text-align:center;padding:40px 20px;color:var(--sub);">Sign in to see your customers</div></div>
     </div>
   </div>
 
@@ -1116,17 +1389,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
     <div class="screen-body">
       <div class="inv-balance-card">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><span style="font-size:16px;">📋</span><span style="font-size:13px;color:rgba(255,255,255,0.8);">Outstanding Balance</span></div>
-        <div class="inv-bal-amount">$3,240.00</div>
+        <div class="inv-bal-amount" id="inv-outstanding">$—</div>
         <div class="inv-bal-row">
-          <div class="inv-bal-stat"><span style="font-size:14px;">↗</span><div><div class="inv-bal-stat-label">Paid This Month</div><div class="inv-bal-stat-val">$8,150</div></div></div>
-          <div class="inv-bal-stat"><span style="font-size:14px;">🕐</span><div><div class="inv-bal-stat-label">Overdue</div><div class="inv-bal-stat-val">$720</div></div></div>
+          <div class="inv-bal-stat"><span style="font-size:14px;">↗</span><div><div class="inv-bal-stat-label">Paid This Month</div><div class="inv-bal-stat-val" id="inv-paid-month">$—</div></div></div>
+          <div class="inv-bal-stat"><span style="font-size:14px;">🕐</span><div><div class="inv-bal-stat-label">Overdue</div><div class="inv-bal-stat-val" id="inv-overdue">$—</div></div></div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 4px;">
         <div style="background:#635bff;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;">stripe</div>
         <div style="background:#00aeef;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;">square</div>
         <span style="font-size:11px;color:var(--green);font-weight:600;">● Connected</span>
-        <span style="font-size:11px;color:var(--sub);margin-left:auto;">Payments & Subscriptions</span>
+        <span style="font-size:11px;color:var(--sub);margin-left:auto;">Payments &amp; Subscriptions</span>
+      </div>
+      <!-- S2: FOMO Aging Banner -->
+      <div class="pf-fomo risk" style="margin:8px 16px 4px;">
+        <div class="pf-fomo-icon">🕐</div>
+        <div class="pf-fomo-body">
+          <div class="pf-fomo-title">$720 is 14 days overdue</div>
+          <div class="pf-fomo-sub">Auto-reminders turned off. Clients forget — enable now.</div>
+        </div>
+        <div class="pf-fomo-cta" onclick="showToast('💵','Auto-reminders enabled!','Clients with overdue invoices will get notified automatically.')">Enable</div>
       </div>
       <div class="inv-filter-row">
         <button class="inv-filter active">All</button>
@@ -1135,37 +1417,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <button class="inv-filter">Overdue</button>
         <button class="inv-filter">Draft</button>
       </div>
-      <div class="sec-hd"><span class="sec-title">Recent Invoices</span><span class="sec-link">↕ Sort</span></div>
-      <div class="inv-card" onclick="go('invoice-detail')">
-        <div class="inv-card-top"><span class="inv-num">#INV-2041</span><span class="inv-amount">$420.00</span></div>
-        <div class="inv-name">Sarah Mitchell</div>
-        <div class="inv-desc">Quarterly Termite Treatment</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="inv-due">📅 Due Oct 28</div><span class="badge badge-red">Overdue</span></div>
-      </div>
-      <div class="inv-card" onclick="go('invoice-detail')">
-        <div class="inv-card-top"><span class="inv-num">#INV-2040</span><span class="inv-amount">$285.00</span></div>
-        <div class="inv-name">James Patterson</div>
-        <div class="inv-desc">Rodent Control &amp; Bait Stations</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="inv-due">📅 Due Nov 12</div><span class="badge badge-orange">Unpaid</span></div>
-      </div>
-      <div class="inv-card" onclick="go('invoice-detail')">
-        <div class="inv-card-top"><span class="inv-num">#INV-2039</span><span class="inv-amount">$160.00</span></div>
-        <div class="inv-name">Linda Hayes</div>
-        <div class="inv-desc">General Pest Inspection</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="inv-due">📅 Paid Oct 18</div><span class="badge badge-green">Paid</span></div>
-      </div>
-      <div class="inv-card" onclick="go('invoice-detail')">
-        <div class="inv-card-top"><span class="inv-num">#INV-2038</span><span class="inv-amount">$1,250.00</span></div>
-        <div class="inv-name">Marcus Chen</div>
-        <div class="inv-desc">Bed Bug Heat Treatment</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="inv-due">📅 Due Nov 05</div><span class="badge badge-orange">Unpaid</span></div>
-      </div>
-      <div class="inv-card" onclick="go('invoice-detail')">
-        <div class="inv-card-top"><span class="inv-num">#INV-2037</span><span class="inv-amount">$210.00</span></div>
-        <div class="inv-name">Olivia Brennan</div>
-        <div class="inv-desc">Ant &amp; Cockroach Service</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;"><div class="inv-due">📅 Paid Oct 10</div><span class="badge badge-green">Paid</span></div>
-      </div>
+      <div class="sec-hd"><span class="sec-title">Invoices</span><span class="sec-link">↕ Sort</span></div>
+      <div id="invoices-list"><div style="text-align:center;padding:40px 20px;color:var(--sub);">Sign in to see your invoices</div></div>
     </div>
   </div>
 
@@ -1222,7 +1475,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="history-item"><div style="display:flex;align-items:center;"><div class="history-dot"></div><div><div class="history-name">Termite Inspection</div><div class="history-date">Mar 10, 2024</div></div></div><span class="badge badge-green">Completed</span></div>
         <div class="history-item"><div style="display:flex;align-items:center;"><div class="history-dot"></div><div><div class="history-name">Quarterly Pest Control</div><div class="history-date">Dec 18, 2023</div></div></div><span class="badge badge-green">Completed</span></div>
       </div>
-      <button class="cta-btn" onclick="go('invoice-detail')">✓ Mark Complete &amp; Send Invoice</button>
+      <!-- S2: FOMO Recurring Opportunity -->
+      <div class="pf-fomo opp" style="margin:0 16px 12px;">
+        <div class="pf-fomo-icon">🔁</div>
+        <div class="pf-fomo-body">
+          <div class="pf-fomo-title">Sarah's next quarterly is in 87 days</div>
+          <div class="pf-fomo-sub">Auto-schedule now — locks in $420 recurring revenue.</div>
+        </div>
+        <div class="pf-fomo-cta" onclick="showToast('📅','Next visit scheduled!','Quarterly follow-up locked in for Sarah Mitchell — +50 XP earned.')">Lock In</div>
+      </div>
+      <!-- S3: XP Hint -->
+      <div class="pf-ob-xp" style="margin:0 16px 8px;">🏆 Complete this job → earn <strong>+75 XP</strong> toward Level 3</div>
+      <button class="cta-btn" onclick="completeJob()">✓ Mark Complete &amp; Send Invoice</button>
       <div class="cta-btn-outline" onclick="go('new-invoice')">📄 Create Invoice for This Job</div>
     </div>
   </div>
@@ -1316,31 +1580,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
       </div>
       <div class="info-section">
         <div style="padding:14px 16px 8px;font-size:16px;font-weight:700;color:var(--text);">Payment</div>
-        <div style="padding:0 16px 14px;">
-          <div style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--red-light);border-radius:10px;margin-bottom:12px;">
+        <div style="padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:12px;background:var(--red-light);border-radius:10px;">
             <span>⚠️</span>
-            <div><div style="font-size:14px;font-weight:700;color:var(--red);">Payment Overdue</div><div style="font-size:12px;color:var(--red);">Due Oct 28, 2024</div><div style="font-size:12px;color:var(--sub);margin-top:2px;">🔔 Reminder sent Oct 29</div></div>
+            <div><div style="font-size:14px;font-weight:700;color:var(--red);">Overdue · Due Oct 28, 2024</div><div style="font-size:12px;color:var(--sub);margin-top:2px;">🔔 Auto-reminder sent Oct 29</div></div>
           </div>
-          <!-- Collect payment options -->
-          <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">Collect Payment Via</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-            <button onclick="this.classList.toggle('selected')" style="padding:12px 8px;border-radius:10px;border:2px solid #635bff;background:#f5f3ff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
-              <div style="background:#635bff;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;">stripe</div>
-              <div style="font-size:11px;font-weight:600;color:#635bff;">Card / ACH</div>
-            </button>
-            <button onclick="this.classList.toggle('selected')" style="padding:12px 8px;border-radius:10px;border:2px solid #00aeef;background:#f0faff;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;">
-              <div style="background:#00aeef;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;letter-spacing:0.05em;">square</div>
-              <div style="font-size:11px;font-weight:600;color:#0090c8;">Card / Cash</div>
-            </button>
-          </div>
-          <!-- Send payment link -->
-          <div style="background:var(--green-light);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
-            <span style="font-size:18px;">🔗</span>
+          <!-- Stripe: Send payment link -->
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:1.5px solid #635bff;background:#f5f3ff;cursor:pointer;">
+            <div style="background:#635bff;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;flex-shrink:0;">stripe</div>
             <div style="flex:1;">
-              <div style="font-size:13px;font-weight:700;color:var(--green);">Send Payment Link</div>
-              <div style="font-size:11px;color:var(--sub);">Text or email secure link · Powered by Stripe</div>
+              <div style="font-size:14px;font-weight:700;color:#4f46e5;">Send Stripe Invoice Link</div>
+              <div style="font-size:11px;color:var(--sub);">Texts/emails a secure pay link · Card &amp; ACH</div>
             </div>
-            <span style="font-size:18px;color:var(--green);">›</span>
+            <span style="font-size:18px;color:#635bff;">›</span>
+          </div>
+          <!-- Square: Charge in person -->
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:1.5px solid #00aeef;background:#f0faff;cursor:pointer;">
+            <div style="background:#00aeef;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;flex-shrink:0;">square</div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#0369a1;">Charge with Square</div>
+              <div style="font-size:11px;color:var(--sub);">Tap to pay · Card reader · Cash</div>
+            </div>
+            <span style="font-size:18px;color:#00aeef;">›</span>
           </div>
         </div>
       </div>
@@ -1421,7 +1682,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="form-field"><div class="form-input placeholder" style="min-height:80px;align-items:flex-start;padding-top:10px;">Internal notes about this customer, access instructions, pets on property...</div></div>
         <div style="padding:8px 16px;font-size:12px;color:var(--sub);">ℹ️ These notes are internal only and not visible to the customer.</div>
       </div>
-      <button class="cta-btn">Save Customer to My List</button>
+      <div class="pf-ob-xp" style="margin:0 16px 8px;">🏆 Add this customer → earn <strong>+50 XP</strong> · 3 customers unlocks the Networker badge</div>
+      <button class="cta-btn" onclick="addCustomerAction()">Save Customer to My List</button>
       <div class="cta-btn-outline">Discard &amp; Go Back</div>
     </div>
   </div>
@@ -1472,11 +1734,47 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div style="padding:10px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:14px;color:var(--sub);"><span>Tax 0%</span><span>$0.00</span></div>
         <div class="total-row"><span class="total-label">Total</span><span class="total-val">$420.00</span></div>
       </div>
-      <div class="form-section" style="margin-bottom:16px;">
+      <div class="form-section">
         <div class="form-section-title">Notes</div>
         <div class="form-field"><div class="form-input placeholder" style="min-height:60px;align-items:flex-start;padding-top:10px;">Payment terms, service notes...</div></div>
       </div>
-      <button class="cta-btn">Send Invoice to Sarah →</button>
+      <!-- Payment collection -->
+      <div class="form-section" style="margin-bottom:16px;">
+        <div class="form-section-title">Collect Payment Via</div>
+        <div style="padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;">
+          <!-- Stripe option -->
+          <div id="inv-pay-stripe" onclick="selectInvPay('stripe')" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:2px solid #635bff;background:#f5f3ff;cursor:pointer;">
+            <svg width="32" height="20" viewBox="0 0 60 25" fill="none" style="flex-shrink:0;"><rect width="60" height="25" rx="4" fill="#635BFF"/><text x="8" y="17" font-family="sans-serif" font-size="13" font-weight="800" fill="white" letter-spacing="0.5">stripe</text></svg>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:#3730a3;">Stripe</div>
+              <div style="font-size:11px;color:var(--sub);">Send hosted link · Card &amp; ACH</div>
+            </div>
+            <div id="inv-pay-stripe-check" style="width:20px;height:20px;border-radius:50%;background:#635bff;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;">✓</div>
+          </div>
+          <!-- Square option -->
+          <div id="inv-pay-square" onclick="selectInvPay('square')" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:2px solid var(--border);background:var(--bg);cursor:pointer;">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;"><rect width="32" height="32" rx="6" fill="#000"/><rect x="7" y="7" width="18" height="18" rx="3" fill="white"/></svg>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--text);">Square</div>
+              <div style="font-size:11px;color:var(--sub);">Tap to pay · Card reader · Cash</div>
+            </div>
+            <div id="inv-pay-square-check" style="width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;">✓</div>
+          </div>
+          <!-- Manual option -->
+          <div id="inv-pay-manual" onclick="selectInvPay('manual')" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;border:2px solid var(--border);background:var(--bg);cursor:pointer;">
+            <div style="width:32px;height:32px;border-radius:6px;background:#f1f5f9;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:700;color:var(--text);">Record Manually</div>
+              <div style="font-size:11px;color:var(--sub);">Cash, check — mark paid yourself</div>
+            </div>
+            <div id="inv-pay-manual-check" style="width:20px;height:20px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;">✓</div>
+          </div>
+        </div>
+      </div>
+      <div class="pf-ob-xp" style="margin:0 16px 8px;">🏆 Send this invoice → earn <strong>+100 XP</strong> · Unlocks the First Invoice badge</div>
+      <button class="cta-btn" id="inv-send-btn" onclick="sendInvoiceAction()">Send via Stripe → $420.00</button>
       <div class="cta-btn-outline">Save Draft</div>
     </div>
   </div>
@@ -1497,6 +1795,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="route-stat"><div class="route-stat-val">24.3 mi</div><div class="route-stat-label">📏 Distance</div></div>
         <div class="route-stat"><div class="route-stat-val">1h 42m</div><div class="route-stat-label">🕐 Drive</div></div>
         <div class="route-stat"><div class="route-stat-val">5 stops</div><div class="route-stat-label">📍 Stops</div></div>
+      </div>
+      <!-- S2: FOMO Nearby Jobs -->
+      <div class="pf-fomo social" style="margin:0 16px 12px;">
+        <div class="pf-fomo-icon">📍</div>
+        <div class="pf-fomo-body">
+          <div class="pf-fomo-title">2 unscheduled jobs near your route</div>
+          <div class="pf-fomo-sub">Add them today — saves 14 min of driving.</div>
+        </div>
+        <div class="pf-fomo-cta" onclick="go('new-job')">Add</div>
       </div>
       <div class="sec-hd"><span class="sec-title">Stops on Route</span><span class="sec-link">↕ Reorder</span></div>
       <div class="route-stop" onclick="go('job-detail')"><div class="route-num">1</div><div class="route-info"><div class="route-name">Sarah Mitchell</div><div class="route-addr">📍 412 Oak Ridge Dr</div><div class="route-time">🕐 8:00 AM</div></div><span class="badge badge-green">Done</span></div>
@@ -1527,6 +1834,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
         <div class="more-list-item" onclick="go('settings')"><span class="more-list-icon">📊</span><span class="more-list-label">Reports &amp; Analytics</span><span class="more-list-chevron">›</span></div>
         <div class="more-list-item" onclick="go('settings')"><span class="more-list-icon">👥</span><span class="more-list-label">Team Management</span><span class="more-list-chevron">›</span></div>
         <div class="more-list-item" onclick="go('settings')"><span class="more-list-icon">📋</span><span class="more-list-label">Service Plans</span><span class="more-list-chevron">›</span></div>
+        <div class="more-list-item" onclick="go('achievements')"><span class="more-list-icon">🏆</span><span class="more-list-label">Achievements &amp; Leaderboard</span><span style="margin-left:auto;font-size:11px;background:var(--green);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700;">350 XP</span><span class="more-list-chevron">›</span></div>
         <div class="more-list-item" onclick="go('settings')"><span class="more-list-icon">⚙️</span><span class="more-list-label">Settings</span><span class="more-list-chevron">›</span></div>
       </div>
     </div>
@@ -1595,6 +1903,68 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
     </div>
   </div>
 
+  <!-- ══ SCREEN: ACHIEVEMENTS ══ -->
+  <div class="screen" id="screen-achievements">
+    <div class="detail-header">
+      <button class="back-btn" onclick="go('more')">‹ More</button>
+      <span class="detail-title">Achievements</span>
+      <span></span>
+    </div>
+    <div class="screen-body no-nav">
+      <div class="pf-ach-hero">
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:4px;">Your Progress</div>
+        <div style="font-size:36px;font-weight:800;color:#fff;" id="ach-xp-total">350 XP</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:12px;">Level 2 · Route Ranger</div>
+        <div style="background:rgba(255,255,255,0.2);border-radius:6px;height:8px;margin:0 0 6px;overflow:hidden;">
+          <div style="background:#fff;height:100%;border-radius:6px;width:58%;transition:width 0.6s;"></div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.65);">250 XP to Level 3 · Route Pro</div>
+      </div>
+      <div class="pf-stat-ach-grid">
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);" id="ach-jobs-done">4</div><div style="font-size:11px;color:var(--sub);">Jobs Done</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);">3</div><div style="font-size:11px;color:var(--sub);">Streak Days</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);">1</div><div style="font-size:11px;color:var(--sub);">Invoices Sent</div></div>
+        <div style="text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);">#12</div><div style="font-size:11px;color:var(--sub);">Leaderboard</div></div>
+      </div>
+      <div class="sec-hd"><span class="sec-title">Badges Earned</span></div>
+      <div class="pf-badge-grid">
+        <div class="pf-badge earned"><div style="font-size:28px;">🐛</div><div style="font-size:11px;font-weight:700;color:var(--text);margin-top:4px;">Exterminator</div><div style="font-size:10px;color:var(--sub);">First job done</div></div>
+        <div class="pf-badge earned"><div style="font-size:28px;">👥</div><div style="font-size:11px;font-weight:700;color:var(--text);margin-top:4px;">Networker</div><div style="font-size:10px;color:var(--sub);">3 customers added</div></div>
+        <div class="pf-badge earned"><div style="font-size:28px;">🗺️</div><div style="font-size:11px;font-weight:700;color:var(--text);margin-top:4px;">Route Runner</div><div style="font-size:10px;color:var(--sub);">Route optimized</div></div>
+        <div class="pf-badge"><div style="font-size:28px;filter:grayscale(1);opacity:0.4;">💵</div><div style="font-size:11px;font-weight:700;color:var(--sub);margin-top:4px;">First Invoice</div><div style="font-size:10px;color:var(--sub);">Send an invoice</div></div>
+        <div class="pf-badge"><div style="font-size:28px;filter:grayscale(1);opacity:0.4;">🔥</div><div style="font-size:11px;font-weight:700;color:var(--sub);margin-top:4px;">7-Day Streak</div><div style="font-size:10px;color:var(--sub);">7 days active</div></div>
+        <div class="pf-badge"><div style="font-size:28px;filter:grayscale(1);opacity:0.4;">⭐</div><div style="font-size:11px;font-weight:700;color:var(--sub);margin-top:4px;">5-Star Job</div><div style="font-size:10px;color:var(--sub);">Get a review</div></div>
+      </div>
+      <div class="sec-hd"><span class="sec-title">Leaderboard · This Month</span></div>
+      <div style="padding:0 16px 8px;">
+        <div class="pf-lb-row"><span class="pf-lb-rank">1</span><span class="pf-lb-name">Carlos V.</span><span class="pf-lb-xp">1,840 XP</span></div>
+        <div class="pf-lb-row"><span class="pf-lb-rank">2</span><span class="pf-lb-name">Amanda L.</span><span class="pf-lb-xp">1,320 XP</span></div>
+        <div class="pf-lb-row pf-lb-me"><span class="pf-lb-rank">12</span><span class="pf-lb-name">You · Marcus R.</span><span class="pf-lb-xp">350 XP</span></div>
+      </div>
+      <div style="height:20px;"></div>
+    </div>
+  </div>
+
+  <!-- ══ GLOBAL OVERLAYS ══ -->
+  <div class="pf-toast" id="pf-toast">
+    <div class="pf-toast-icon" id="pf-toast-icon">🎉</div>
+    <div class="pf-toast-body">
+      <div class="pf-toast-title" id="pf-toast-title">Great work!</div>
+      <div class="pf-toast-msg" id="pf-toast-msg"></div>
+    </div>
+    <button class="pf-toast-x" onclick="dismissToast()">×</button>
+  </div>
+  <div class="pf-xp-burst" id="pf-xp-burst"></div>
+  <div class="pf-lvlup-overlay" id="pf-lvlup-overlay" onclick="this.classList.remove('show')">
+    <div class="pf-lvlup-card">
+      <span class="pf-lvlup-emoji">🏆</span>
+      <div class="pf-lvlup-eyebrow">Achievement Unlocked</div>
+      <div class="pf-lvlup-title">Level Up!</div>
+      <div class="pf-lvlup-sub" id="pf-lvlup-msg">You reached Level 3 · Route Pro</div>
+      <button class="pf-lvlup-cta" onclick="document.getElementById('pf-lvlup-overlay').classList.remove('show')">Awesome! Keep going →</button>
+    </div>
+  </div>
+
   <!-- ══ BOTTOM NAV ══ -->
   <div id="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="go('home')">
@@ -1623,8 +1993,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sa
 
 <script>
 const NAV_IDS = ['home','schedule','jobs','customers','invoices'];
-const DETAIL_IDS = ['job-detail','new-job','customer-detail','add-customer','new-invoice','route','invoice-detail','more','settings'];
-const OB_IDS = ['splash','ob-step1','ob-step2','ob-reward','paywall','ob-success'];
+const DETAIL_IDS = ['job-detail','new-job','customer-detail','add-customer','new-invoice','route','invoice-detail','more','settings','achievements'];
+const OB_IDS = ['splash','ob-step1','ob-step2','ob-reward','paywall','ob-success','login'];
+
+// ── S3: Gamification state ──
+const PF = { xp: 350, level: 2, jobsDone: 4, invoicesSent: 1 };
+
+function awardXP(amount, label) {
+  PF.xp += amount;
+  showXPBurst('+' + amount + ' XP');
+  const el = document.getElementById('ach-xp-total');
+  if (el) el.textContent = PF.xp + ' XP';
+  const fill = document.querySelector('.pf-xp-strip-fill');
+  if (fill) fill.style.width = Math.min(100, ((PF.xp - 200) / 450) * 100) + '%';
+  const strip = document.querySelector('.pf-xp-strip-label');
+  if (strip) strip.textContent = 'Route Ranger · ' + PF.xp + ' XP';
+  if (PF.xp >= 600 && PF.level < 3) {
+    PF.level = 3;
+    const msg = document.getElementById('pf-lvlup-msg');
+    if (msg) msg.textContent = 'You reached Level 3 · Route Pro';
+    setTimeout(() => document.getElementById('pf-lvlup-overlay').classList.add('show'), 800);
+  }
+}
+
+function showXPBurst(text) {
+  const el = document.getElementById('pf-xp-burst');
+  if (!el) return;
+  el.textContent = text;
+  el.style.left = '50%';
+  el.style.top = '45%';
+  el.style.display = 'block';
+  el.classList.add('pop');
+  setTimeout(() => { el.classList.remove('pop'); el.style.display = 'none'; }, 1200);
+}
+
+// ── S1: Toast ──
+let toastTimer = null;
+function showToast(icon, title, msg, isXP) {
+  const t = document.getElementById('pf-toast');
+  const ti = document.getElementById('pf-toast-icon');
+  const tt = document.getElementById('pf-toast-title');
+  const tm = document.getElementById('pf-toast-msg');
+  if (!t) return;
+  if (toastTimer) clearTimeout(toastTimer);
+  if (ti) ti.textContent = icon || '🎉';
+  if (tt) tt.textContent = title || 'Nice work!';
+  if (tm) tm.textContent = msg || '';
+  t.classList.toggle('xp-toast', !!isXP);
+  t.classList.add('show');
+  toastTimer = setTimeout(() => dismissToast(), 4000);
+}
+function dismissToast() {
+  const t = document.getElementById('pf-toast');
+  if (t) t.classList.remove('show');
+}
+
+// ── Action handlers ──
+function completeJob() {
+  PF.jobsDone++;
+  const el = document.getElementById('ach-jobs-done');
+  if (el) el.textContent = PF.jobsDone;
+  awardXP(75, 'Job completed');
+  showToast('✅', 'Job marked complete! +75 XP', 'Invoice sent to Sarah Mitchell automatically.', true);
+  setTimeout(() => go('invoices'), 1500);
+}
+
+function sendInvoiceAction() {
+  PF.invoicesSent++;
+  awardXP(100, 'Invoice sent');
+  showToast('💵', 'Invoice sent! +100 XP', 'Sarah Mitchell will receive a payment request via email.', true);
+  setTimeout(() => go('invoices'), 1500);
+}
+
+function addCustomerAction() {
+  awardXP(50, 'Customer added');
+  showToast('👥', 'Customer saved! +50 XP', 'Added to your route — optimized path updated.', true);
+  setTimeout(() => go('customers'), 1500);
+}
 
 function go(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1650,13 +2095,39 @@ function go(id) {
     nav.style.display = 'flex';
   }
   if (id === 'ob-step2') setTimeout(startRouteBuild, 400);
-  if (id === 'paywall') { renderPaywall(); startTimer(); }
+  if (id === 'paywall') { renderPaywall(); startTimer(); startPaywallTicker(); }
   if (window.parent !== window) window.parent.postMessage({ activeScreen: id }, '*');
 }
 
 window.addEventListener('message', e => {
   if (e.data && e.data.screen) go(e.data.screen);
 });
+
+// ── S6: Paywall social proof ticker ──
+const PW_TICKER_MSGS = [
+  ['🐛','Carlos from Austin just signed up','2m ago'],
+  ['💵','Maria collected $1,240 this week','5m ago'],
+  ['⭐','James got a 5-star Google review','8m ago'],
+  ['🗺️','Sandra saved 2h on her route today','11m ago'],
+  ['📅','Kevin scheduled 12 jobs in 3 minutes','14m ago'],
+];
+let tickerIdx = 0, tickerInterval = null;
+function startPaywallTicker() {
+  if (tickerInterval) clearInterval(tickerInterval);
+  tickerIdx = 0;
+  showTickerMsg();
+  tickerInterval = setInterval(showTickerMsg, 3500);
+}
+function showTickerMsg() {
+  const el = document.getElementById('pw-ticker-text');
+  const row = document.getElementById('pw-ticker');
+  if (!el || !row) return;
+  const [icon, text, time] = PW_TICKER_MSGS[tickerIdx % PW_TICKER_MSGS.length];
+  row.querySelector('span:first-child').textContent = icon;
+  el.textContent = text;
+  row.querySelector('span:last-child').textContent = time;
+  tickerIdx++;
+}
 
 // ── Route size tiers ──
 const ROUTE_TIERS = {
@@ -1746,8 +2217,12 @@ function fillSlot(index) {
   document.getElementById('ob-step1-count').textContent = custFilled + ' of 3 added';
   const cta = document.getElementById('ob-step1-cta');
   if (custFilled >= 3) {
-    // Show route size question
+    // Show route size question + XP reward
     document.getElementById('ob-route-size-q').style.display = 'block';
+    const xpReward = document.getElementById('ob-xp-reward');
+    if (xpReward) xpReward.style.display = 'block';
+    awardXP(50, 'Customers added');
+    showToast('👥', 'Networker badge unlocked! +50 XP', 'Your route is now being built around your customers.', true);
     cta.textContent = 'Select your route size above';
     cta.classList.add('locked');
   } else {
@@ -1816,6 +2291,290 @@ function selectPlan(plan) {
   // Re-render prices with new billing period
   updateRouteSlider(pwRoutes);
 }
+
+// ── New Invoice: payment method selector ──
+let invPayMethod = 'stripe';
+function selectInvPay(method) {
+  invPayMethod = method;
+  const opts = { stripe: '#635bff', square: '#00aeef', manual: '#6b7280' };
+  ['stripe','square','manual'].forEach(m => {
+    const el = document.getElementById('inv-pay-' + m);
+    const chk = document.getElementById('inv-pay-' + m + '-check');
+    const active = m === method;
+    const col = opts[m];
+    if (el) {
+      el.style.borderColor = active ? col : 'var(--border)';
+      el.style.background = active ? (m === 'stripe' ? '#f5f3ff' : m === 'square' ? '#f0faff' : '#f3f4f6') : 'var(--bg)';
+    }
+    if (chk) chk.style.background = active ? col : 'var(--border)';
+  });
+  const btn = document.getElementById('inv-send-btn');
+  if (btn) {
+    if (method === 'stripe') btn.textContent = 'Send via Stripe → $420.00';
+    else if (method === 'square') btn.textContent = 'Charge via Square → $420.00';
+    else btn.textContent = 'Save & Mark Sent → $420.00';
+  }
+}
+
+// ── Invoice filter tabs ──
+document.querySelectorAll('.inv-filter').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.inv-filter').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+
+function switchToSignUp() {
+  const title = document.getElementById('auth-mode-title');
+  if (title) title.textContent = 'Create your account';
+  const btn = document.getElementById('auth-btn');
+  if (btn) { btn.textContent = 'Get Started'; btn.onclick = doSignUp; }
+  const toggle = document.getElementById('auth-toggle');
+  if (toggle) toggle.innerHTML = 'Already have an account? <span style="color:var(--green);font-weight:700;cursor:pointer;" onclick="switchToSignIn()">Sign In</span>';
+  const passInput = document.getElementById('auth-pass');
+  if (passInput) passInput.setAttribute('autocomplete','new-password');
+  clearAuthError();
+}
+function switchToSignIn() {
+  const title = document.getElementById('auth-mode-title');
+  if (title) title.textContent = 'Welcome back';
+  const btn = document.getElementById('auth-btn');
+  if (btn) { btn.textContent = 'Sign In'; btn.onclick = doSignIn; }
+  const toggle = document.getElementById('auth-toggle');
+  if (toggle) toggle.innerHTML = 'Don\'t have an account? <span style="color:var(--green);font-weight:700;cursor:pointer;" onclick="switchToSignUp()">Get Started Free</span>';
+  clearAuthError();
+}
+
+// ══════════════════════════════════════════════════
+// SUPABASE BACKEND — same project as desktop app
+// ══════════════════════════════════════════════════
+const SB_URL = 'https://mdfrdcqrqqwytbtriapu.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kZnJkY3FycXF3eXRidHJpYXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwOTQ1MjEsImV4cCI6MjA5MTY3MDUyMX0.uLxkSkTTttBv8DCIWpY8OxqnQjJELZwjgsRc3xSouh8';
+let sb = null;
+let currentUser = null;
+let currentCompanyId = null;
+let currentCompanyName = null;
+
+function initSupabase() {
+  if (window.supabase) {
+    sb = window.supabase.createClient(SB_URL, SB_KEY, {
+      auth: { storage: localStorage, persistSession: true, autoRefreshToken: true }
+    });
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        loadCompany().then(() => {
+          if (document.getElementById('screen-splash').classList.contains('active') ||
+              document.getElementById('screen-login').classList.contains('active')) {
+            go('home');
+          }
+        });
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        currentCompanyId = null;
+        go('splash');
+      }
+    });
+    checkSession();
+  }
+}
+
+async function checkSession() {
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadCompany();
+    go('home');
+  }
+}
+
+async function loadCompany() {
+  if (!sb || !currentUser) return;
+  const { data } = await sb.from('companies').select('id,name').eq('user_id', currentUser.id).single();
+  if (data) {
+    currentCompanyId = data.id;
+    currentCompanyName = data.name;
+    document.querySelectorAll('.brand').forEach(el => el.textContent = data.name);
+    const greetEl = document.querySelector('#screen-home .screen-body [style*="Good morning"]');
+    if (greetEl) greetEl.textContent = 'Good morning';
+  }
+}
+
+// ── Auth UI ──
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+function clearAuthError() {
+  const el = document.getElementById('auth-error');
+  if (el) { el.textContent = ''; el.style.display = 'none'; }
+}
+
+async function doSignIn() {
+  if (!sb) return;
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-pass').value;
+  if (!email || !pass) { showAuthError('Enter email and password'); return; }
+  const btn = document.getElementById('auth-btn');
+  btn.textContent = 'Signing in...'; btn.disabled = true;
+  clearAuthError();
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.textContent = 'Sign In'; btn.disabled = false;
+  if (error) showAuthError(error.message);
+}
+
+async function doSignUp() {
+  if (!sb) return;
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-pass').value;
+  if (!email || !pass) { showAuthError('Enter email and password'); return; }
+  const btn = document.getElementById('auth-btn');
+  btn.textContent = 'Creating account...'; btn.disabled = true;
+  clearAuthError();
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  btn.textContent = 'Get Started'; btn.disabled = false;
+  if (error) { showAuthError(error.message); return; }
+  if (data.user && !data.session) {
+    showAuthError('Check your email to confirm your account, then sign in.');
+    document.getElementById('auth-btn').textContent = 'Sign In';
+    document.getElementById('auth-btn').onclick = doSignIn;
+    document.getElementById('auth-toggle').innerHTML = '';
+  }
+}
+
+// ── Data loaders ──
+async function loadHome() {
+  if (!currentCompanyId || !sb) return;
+  const today = new Date().toISOString().split('T')[0];
+  const { data: todayJobs } = await sb.from('jobs').select('id,status')
+    .eq('company_id', currentCompanyId)
+    .gte('scheduled_date', today + 'T00:00:00')
+    .lte('scheduled_date', today + 'T23:59:59');
+  if (todayJobs) {
+    const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+    setEl('stat-jobs-today', todayJobs.length);
+    setEl('stat-completed', todayJobs.filter(j => j.status === 'completed').length);
+    setEl('stat-pending', todayJobs.filter(j => j.status !== 'completed').length);
+  }
+}
+
+async function loadJobs() {
+  if (!currentCompanyId || !sb) return;
+  const el = document.getElementById('jobs-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--sub);">Loading...</div>';
+  const { data, error } = await sb.from('jobs').select('*, customers(name,address)')
+    .eq('company_id', currentCompanyId)
+    .order('scheduled_date', { ascending: false })
+    .limit(30);
+  if (error || !data) { el.innerHTML = '<div style="padding:20px;color:var(--red);">Error loading jobs</div>'; return; }
+  if (data.length === 0) {
+    el.innerHTML = "<div style=\"text-align:center;padding:40px 20px;color:var(--sub);\">No jobs yet.<br><span style=\"color:var(--green);font-weight:600;cursor:pointer;\" onclick=\"go('new-job')\">+ Create your first job</span></div>";
+    return;
+  }
+  const lbl = document.getElementById('jobs-count-label');
+  if (lbl) lbl.textContent = data.length + ' Jobs';
+  const statusMap = { completed:'badge-green', in_progress:'badge-inprogress', pending:'badge-gray', cancelled:'badge-red', upcoming:'badge-gray' };
+  const labelMap = { completed:'Completed', in_progress:'In Progress', pending:'Upcoming', cancelled:'Cancelled', upcoming:'Upcoming' };
+  el.innerHTML = data.map(job => {
+    const cust = job.customers;
+    const date = job.scheduled_date ? new Date(job.scheduled_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+    const sc = statusMap[job.status] || 'badge-gray';
+    const sl = labelMap[job.status] || job.status;
+    const num = '#JOB-' + job.id.slice(-6).toUpperCase();
+    return `<div class="job-card" onclick="go('job-detail')">
+      <div class="job-card-top"><span class="job-num">${num}</span><span class="badge ${sc}">${sl}</span></div>
+      <div class="job-name">${cust ? cust.name : 'Unknown Customer'}</div>
+      <div class="job-service">${job.type || 'General Service'}${job.price ? ' · $' + Number(job.price).toFixed(2) : ''}</div>
+      ${date ? '<div class="job-meta">' + date + '</div>' : ''}
+      ${cust && cust.address ? '<div class="job-meta">' + cust.address + '</div>' : ''}
+      <div style="text-align:right;margin-top:4px;">›</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadCustomers() {
+  if (!currentCompanyId || !sb) return;
+  const el = document.getElementById('customers-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--sub);">Loading...</div>';
+  const { data, error } = await sb.from('customers').select('*')
+    .eq('company_id', currentCompanyId)
+    .order('name');
+  if (error || !data) { el.innerHTML = '<div style="padding:20px;color:var(--red);">Error loading customers</div>'; return; }
+  if (data.length === 0) {
+    el.innerHTML = "<div style=\"text-align:center;padding:40px 20px;color:var(--sub);\">No customers yet.<br><span style=\"color:var(--green);font-weight:600;cursor:pointer;\" onclick=\"go('add-customer')\">+ Add your first customer</span></div>";
+    return;
+  }
+  const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+  setEl('customers-total', data.length);
+  setEl('customers-active', data.length); // all = active for now
+  const colors = ['#16a34a','#6366f1','#f59e0b','#a855f7','#0ea5e9','#ec4899','#ef4444','#14b8a6'];
+  el.innerHTML = data.map(c => {
+    const initials = c.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+    const color = colors[c.name.charCodeAt(0) % colors.length];
+    return `<div class="cust-card" onclick="go('customer-detail')">
+      <div class="cust-avatar" style="background:${color};">${initials}</div>
+      <div class="cust-info">
+        <div class="cust-name">${c.name}</div>
+        ${c.address ? '<div class="cust-sub">' + c.address + '</div>' : ''}
+        <div class="cust-meta">${[c.phone, c.email].filter(Boolean).join(' · ')}</div>
+      </div>
+      <span style="color:var(--sub);">›</span>
+    </div>`;
+  }).join('');
+}
+
+async function loadInvoices() {
+  if (!currentCompanyId || !sb) return;
+  const el = document.getElementById('invoices-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--sub);">Loading...</div>';
+  const { data, error } = await sb.from('invoices').select('*')
+    .eq('company_id', currentCompanyId)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  if (error || !data) { el.innerHTML = '<div style="padding:20px;color:var(--red);">Error loading invoices</div>'; return; }
+  if (data.length === 0) {
+    el.innerHTML = "<div style=\"text-align:center;padding:40px 20px;color:var(--sub);\">No invoices yet.<br><span style=\"color:var(--green);font-weight:600;cursor:pointer;\" onclick=\"go('new-invoice')\">+ Create your first invoice</span></div>";
+    return;
+  }
+  const outstanding = data.filter(i=>['unpaid','overdue'].includes(i.status)).reduce((s,i)=>s+i.amount,0);
+  const now = new Date();
+  const paidThisMonth = data.filter(i=>i.status==='paid'&&i.paid_at&&new Date(i.paid_at).getMonth()===now.getMonth()&&new Date(i.paid_at).getFullYear()===now.getFullYear()).reduce((s,i)=>s+i.amount,0);
+  const overdue = data.filter(i=>i.status==='overdue').reduce((s,i)=>s+i.amount,0);
+  const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+  setEl('inv-outstanding', '$' + outstanding.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}));
+  setEl('inv-paid-month', '$' + paidThisMonth.toLocaleString());
+  setEl('inv-overdue', '$' + overdue.toLocaleString());
+  const statusClass = { paid:'badge-green', unpaid:'badge-orange', overdue:'badge-red', draft:'badge-gray' };
+  const statusLabel = { paid:'Paid', unpaid:'Unpaid', overdue:'Overdue', draft:'Draft' };
+  el.innerHTML = data.map(inv => {
+    const sc = statusClass[inv.status] || 'badge-gray';
+    const sl = statusLabel[inv.status] || inv.status;
+    const due = inv.due_date ? new Date(inv.due_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : null;
+    return `<div class="inv-card" onclick="go('invoice-detail')">
+      <div class="inv-card-top"><span class="inv-num">${inv.invoice_number || '#INV'}</span><span class="inv-amount">$${Number(inv.amount).toFixed(2)}</span></div>
+      <div class="inv-name">${inv.customer_name || '—'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+        ${due ? '<div class="inv-due">' + (inv.status==='paid'?'Paid ':'Due ') + due + '</div>' : '<div></div>'}
+        <span class="badge ${sc}">${sl}</span>
+      </div>
+      ${inv.stripe_hosted_url ? '<div style="font-size:10px;color:#635bff;font-weight:700;margin-top:4px;">stripe link sent</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── Sign out ──
+async function signOut() {
+  if (!sb) return;
+  await sb.auth.signOut();
+}
+
+// ── Init on load ──
+window.addEventListener('DOMContentLoaded', initSupabase);
 
 // Check for demo param
 const demo = new URLSearchParams(location.search).get('demo');
