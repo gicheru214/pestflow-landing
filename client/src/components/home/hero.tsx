@@ -44,15 +44,24 @@ export function Hero() {
             PEST CONTROL SOFTWARE
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-8xl text-white font-heading leading-[1.1] drop-shadow-lg"
+            className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-white font-heading leading-[1.05] drop-shadow-lg"
           >
-            Software for <br />
-            <span className="text-emerald-400">pest control</span> businesses
+            Run your <span className="text-emerald-400">pest control</span> business <br className="hidden sm:block" />
+            from the truck.
           </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="text-base sm:text-lg md:text-xl text-slate-200 max-w-3xl leading-relaxed drop-shadow"
+          >
+            Drag-and-drop route board, recurring billing, technician GPS, automated review requests, and a branded customer portal — built for pest control owners scaling past $1M.
+          </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
