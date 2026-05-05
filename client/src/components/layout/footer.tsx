@@ -53,7 +53,14 @@ export function Footer() {
         <div className="pt-8 border-t text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} PestFlow. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="/admin" className="hover:text-primary transition-colors cursor-pointer">Admin</Link>
+            <a
+              href="https://app.pestflow.org/admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors cursor-pointer"
+            >
+              Admin
+            </a>
           </div>
         </div>
       </div>
