@@ -82,7 +82,7 @@ export function AutoPopup() {
       if (nearBottom) {
         if (scrollTimer) return;
         scrollTimer = setTimeout(() => {
-          setStep("guide");
+          setStep("identity");
           setShowClose(true);
           setOpen(true);
           analytics.track(EVENTS.LANDING.POPUP_SHOWN);
