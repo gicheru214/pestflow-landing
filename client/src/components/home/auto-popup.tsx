@@ -338,12 +338,12 @@ export function AutoPopup() {
 
                   <Button
                     onClick={handleGuideSubmit}
-                    className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
+                    className="w-full min-h-[48px] h-auto py-3 px-4 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1 whitespace-normal leading-snug"
                   >
-                    Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
+                    Start My Free Quiz On How To Make A Higher Income <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-0.5">
-                    500+ owners already scaling with this. No spam — we don't do that.
+                    Includes the $1M Playbook. 500+ owners already inside. No spam.
                   </p>
                 </div>
               </motion.div>
