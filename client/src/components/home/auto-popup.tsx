@@ -196,6 +196,64 @@ export function AutoPopup() {
         )}
         <div className="max-h-[88vh] overflow-y-auto">
           <AnimatePresence mode="wait">
+            {/* ── STEP 0: Identity gate ── */}
+            {step === "identity" && (
+              <motion.div
+                key="identity"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="p-5 sm:p-7 flex flex-col items-center"
+              >
+                <img
+                  src={logoImage}
+                  alt="PestFlow"
+                  className="h-12 sm:h-14 w-auto object-contain mb-3"
+                />
+
+                <div className="bg-emerald-500/15 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-4">
+                  <span className="text-emerald-400 text-[11px] font-semibold tracking-wide uppercase">One Quick Question</span>
+                </div>
+
+                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-2 leading-snug">
+                  Are you a pest control business owner?
+                </h2>
+                <p className="text-slate-400 text-xs sm:text-sm text-center mb-5 leading-relaxed">
+                  Be honest. The next page is built for owners ready to make more money. If that's not you, no harm done.
+                </p>
+
+                <div className="w-full space-y-3">
+                  <Button
+                    onClick={() => {
+                      const data = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+                      localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...data, isOwner: true, wantsMore: true }));
+                      analytics.track(EVENTS.LANDING.POPUP_SHOWN, { gate: "owner_yes" });
+                      setStep("guide");
+                    }}
+                    className="w-full min-h-[56px] h-auto py-3 px-4 text-sm sm:text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl whitespace-normal text-left leading-snug"
+                  >
+                    Yes — I'm a pest control owner and I want to make more money
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      analytics.track(EVENTS.LANDING.POPUP_DISMISSED, { gate: "owner_no" });
+                      setOpen(false);
+                    }}
+                    className="w-full min-h-[52px] h-auto py-3 px-4 text-xs sm:text-sm font-medium bg-transparent border-white/15 text-slate-400 hover:bg-white/5 hover:text-slate-200 rounded-xl whitespace-normal text-left leading-snug"
+                  >
+                    No — I'm not a pest control owner. Even if I was, I don't want to make more money
+                  </Button>
+                </div>
+
+                <p className="text-[11px] text-slate-500 text-center mt-4">
+                  500+ pest control owners already inside.
+                </p>
+              </motion.div>
+            )}
+
             {/* ── STEP 1: Guide offer + contact info ── */}
             {step === "guide" && (
               <motion.div
