@@ -40,11 +40,11 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "details" | "offer";
+type Step = "identity" | "guide" | "details" | "offer";
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>("guide");
+  const [step, setStep] = useState<Step>("identity");
   const [routeCount, setRouteCount] = useState(5);
   const [showClose, setShowClose] = useState(false);
 
