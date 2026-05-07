@@ -180,6 +180,10 @@ export function AutoPopup() {
 
   const handleClose = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED);
+    const data = snapshotRef.current;
+    if (data && (data.email || data.phone || data.companyName)) {
+      pushPartial({ ...data, reason: "dismissed" });
+    }
     setOpen(false);
   };
 
