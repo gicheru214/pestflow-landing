@@ -60,7 +60,9 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "details" | "offer" | "business";
+type Step = "guide" | "details" | "offer";
+
+const ADMIN_URL = "https://app.pestflow.org/admin";
 
 const ROUTE_QUESTIONS = [
   {
