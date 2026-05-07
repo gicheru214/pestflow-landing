@@ -300,87 +300,105 @@ export function AutoPopup() {
               </motion.div>
             )}
 
-            {/* ── STEP 2: Owner / manager + route size ── */}
-            {step === "details" && (
-              <motion.div
-                key="details"
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="p-6 sm:p-8 flex flex-col items-center"
-              >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="h-28 w-auto object-contain mb-6"
-                />
-                <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">
-                  One Quick Question
-                </h2>
-                <p className="text-slate-400 text-sm text-center mb-8">
-                  Are you a pest control business owner or manager?
-                </p>
-                <div className="w-full grid grid-cols-2 gap-3 mb-8">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="h-14 text-base border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-                    onClick={() => handleQualification(false)}
-                  >
-                    No
-                  </Button>
-                  <Button
-                    size="lg"
-                    className="h-14 text-base bg-emerald-600 hover:bg-emerald-500 text-white"
-                    onClick={() => handleQualification(true)}
-                  >
-                    Yes
-                  </Button>
-                </div>
-                <h3 className="text-lg sm:text-xl font-semibold text-white text-center mb-4">
-                  How many routes do you run?
-                </h3>
-                <p className="text-slate-400 text-sm text-center mb-6">
-                  We'll tailor your experience to your team size.
-                </p>
-                <div className="w-full space-y-6 mb-8">
-                  <div className="text-center">
-                    <span className="text-5xl font-bold text-emerald-400">{routeCount}</span>
-                    <span className="text-xl text-slate-400 ml-2">routes</span>
-                  </div>
-                  <div className="px-2">
-                    <Slider
-                      value={[routeCount]}
-                      onValueChange={(v) => setRouteCount(v[0])}
-                      min={1}
-                      max={50}
-                      step={1}
-                      className="w-full [&_[role=slider]]:bg-emerald-500 [&_[role=slider]]:border-emerald-400"
-                    />
-                    <div className="flex justify-between text-xs text-slate-500 mt-2">
-                      <span>1</span>
-                      <span>25</span>
-                      <span>50+</span>
+            {/* ── STEP 2: Route quiz to customize Growth Guide ── */}
+            {step === "details" && (() => {
+              const q = ROUTE_QUESTIONS[questionIdx];
+              const total = ROUTE_QUESTIONS.length;
+              const progressPct = ((questionIdx + (routeAnswers[q.key] ? 1 : 0)) / total) * 100;
+              const handleAnswer = (answer: string) => {
+                const next = { ...routeAnswers, [q.key]: answer };
+                setRouteAnswers(next);
+                const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+                localStorage.setItem(
+                  "pestflow_popup_data",
+                  JSON.stringify({ ...currentData, ...next })
+                );
+                if (questionIdx < total - 1) {
+                  setTimeout(() => setQuestionIdx(questionIdx + 1), 180);
+                } else {
+                  setTimeout(() => setStep("offer"), 220);
+                }
+              };
+              return (
+                <motion.div
+                  key="details"
+                  variants={slideVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  className="flex flex-col"
+                >
+                  {/* Sticky funnel header */}
+                  <div className="sticky top-0 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 border-b border-emerald-400/40">
+                    <p className="text-[11px] font-semibold tracking-wider uppercase text-emerald-100/90">
+                      Customize your Growth Guide
+                    </p>
+                    <p className="text-sm font-bold text-white leading-tight mt-0.5">
+                      Answer 4 quick questions for max-impact results
+                    </p>
+                    <div className="mt-2 h-1.5 w-full bg-emerald-900/40 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-white rounded-full"
+                        initial={false}
+                        animate={{ width: `${progressPct}%` }}
+                        transition={{ duration: 0.35 }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[10px] text-emerald-100/80 mt-1 font-medium">
+                      <span>Step {questionIdx + 1} of {total}</span>
+                      <span>Next: your free trial</span>
                     </div>
                   </div>
-                </div>
 
-                <Button
-                  onClick={() => {
-                    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-                    localStorage.setItem(
-                      "pestflow_popup_data",
-                      JSON.stringify({ ...currentData, routeSize: `${routeCount}` })
-                    );
-                    setStep("offer");
-                  }}
-                  className="w-full h-12 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg"
-                >
-                  Continue <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </motion.div>
-            )}
+                  {/* Question body */}
+                  <div className="p-5 sm:p-6 flex flex-col">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={q.key}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <h3 className="text-base sm:text-lg font-bold text-white mb-1 leading-snug">
+                          {q.label}
+                        </h3>
+                        <p className="text-slate-400 text-xs mb-4">
+                          We use this to tune the Growth Guide to your routes.
+                        </p>
+                        <div className="space-y-2">
+                          {q.options.map((opt) => {
+                            const selected = routeAnswers[q.key] === opt;
+                            return (
+                              <button
+                                key={opt}
+                                onClick={() => handleAnswer(opt)}
+                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all text-sm font-medium ${
+                                  selected
+                                    ? "bg-emerald-600 border-emerald-400 text-white"
+                                    : "bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-emerald-500/50"
+                                }`}
+                              >
+                                {opt}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {questionIdx > 0 && (
+                      <button
+                        onClick={() => setQuestionIdx(questionIdx - 1)}
+                        className="mt-4 text-xs text-slate-500 hover:text-slate-300 self-start"
+                      >
+                        ← Back
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })()}
 
             {/* ── STEP 4: Offer / CTA ── */}
             {step === "offer" && (
