@@ -90,7 +90,7 @@ const ROUTE_QUESTIONS = [
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const initialStep = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("popup_step")) as Step | null;
-  const validInitial: Step[] = ["details", "offer", "business"];
+  const validInitial: Step[] = ["details", "offer"];
   const [step, setStep] = useState<Step>(validInitial.includes(initialStep as Step) ? (initialStep as Step) : "guide");
   const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>({});
   const [questionIdx, setQuestionIdx] = useState(0);
