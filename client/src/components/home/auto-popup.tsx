@@ -166,12 +166,6 @@ export function AutoPopup() {
     setStep("details");
   };
 
-  const handleQualification = (isOwner: boolean) => {
-    const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-    localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...currentData, isOwner }));
-    setStep("offer");
-  };
-
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
     localStorage.setItem("pestflow_popup_submitted", "true");
