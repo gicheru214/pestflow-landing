@@ -561,6 +561,127 @@ export function AutoPopup() {
                 </p>
               </motion.div>
             )}
+
+            {/* ── STEP 5: Business details (formerly /onboarding) ── */}
+            {step === "business" && (
+              <motion.div
+                key="business"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="flex flex-col"
+              >
+                {/* Sticky funnel header */}
+                <div className="sticky top-0 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 border-b border-emerald-400/40">
+                  <p className="text-[11px] font-semibold tracking-wider uppercase text-emerald-100/90">
+                    Last step — set up your account
+                  </p>
+                  <p className="text-sm font-bold text-white leading-tight mt-0.5">
+                    Tell us about your business so we can personalize PestFlow
+                  </p>
+                  <div className="mt-2 h-1.5 w-full bg-emerald-900/40 rounded-full overflow-hidden">
+                    <div className="h-full bg-white rounded-full" style={{ width: "90%" }} />
+                  </div>
+                  <div className="flex justify-between text-[10px] text-emerald-100/80 mt-1 font-medium">
+                    <span>Final step</span>
+                    <span>Next: your dashboard</span>
+                  </div>
+                </div>
+
+                <div className="p-4 sm:p-5 space-y-3">
+                  <div>
+                    <label className="text-xs font-medium text-slate-400 mb-1 block">
+                      Company name <span className="text-red-400">*</span>
+                    </label>
+                    <Input
+                      value={companyName}
+                      onChange={(e) => { setCompanyName(e.target.value); setCompanyError(""); }}
+                      onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_company" })}
+                      placeholder="Acme Pest Control"
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${companyError ? "border-red-500" : ""}`}
+                    />
+                    {companyError && <p className="text-red-400 text-xs mt-0.5">{companyError}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs font-medium text-slate-400 mb-1 block">
+                        Technicians <span className="text-red-400">*</span>
+                      </label>
+                      <Input
+                        value={technicians}
+                        onChange={(e) => { setTechnicians(e.target.value); setTechError(""); }}
+                        onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_techs" })}
+                        type="number"
+                        placeholder="e.g. 3"
+                        className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${techError ? "border-red-500" : ""}`}
+                      />
+                      {techError && <p className="text-red-400 text-xs mt-0.5">{techError}</p>}
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-400 mb-1 block">
+                        Website <span className="text-slate-600">(optional)</span>
+                      </label>
+                      <Input
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_website" })}
+                        placeholder="acmepest.com"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-slate-400 mb-1 block">
+                      Business address <span className="text-slate-600">(optional)</span>
+                    </label>
+                    <Input
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_addr" })}
+                      placeholder="123 Main St"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <Input
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_city" })}
+                      placeholder="City"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm"
+                    />
+                    <Input
+                      value={stateField}
+                      onChange={(e) => setStateField(e.target.value)}
+                      onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_state" })}
+                      placeholder="State"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm"
+                    />
+                    <Input
+                      value={zip}
+                      onChange={(e) => setZip(e.target.value)}
+                      onBlur={() => pushPartial({ ...snapshotRef.current, reason: "blur_zip" })}
+                      placeholder="ZIP"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleBusinessSubmit}
+                    className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-2"
+                  >
+                    Finish & Open My Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <p className="text-center text-[11px] text-slate-500">
+                    Your free trial unlocks the moment you finish.
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </DialogContent>
