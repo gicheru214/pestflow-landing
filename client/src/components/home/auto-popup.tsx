@@ -426,6 +426,7 @@ export function AutoPopup() {
                   "pestflow_popup_data",
                   JSON.stringify({ ...currentData, ...next })
                 );
+                pushPartial({ ...snapshotRef.current, ...next, reason: `q_${q.key}` });
                 if (questionIdx < total - 1) {
                   setTimeout(() => setQuestionIdx(questionIdx + 1), 180);
                 } else {
