@@ -403,6 +403,16 @@ export async function registerRoutes(
     }
   });
 
+  // Serve mobile-app files directly — bypasses Vite/wouter catch-all
+  app.get("/mobile-app/:file(*)", (req, res) => {
+    const filePath = path.join(process.cwd(), "mobile-app", req.params.file);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).send("Not found");
+    }
+  });
+
   return httpServer;
 }
 
