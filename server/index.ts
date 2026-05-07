@@ -22,6 +22,9 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
+// Serve mobile-app wireframes/preview as static files
+app.use("/mobile-app", express.static(path.join(process.cwd(), "mobile-app")));
+
 // Remove restrictive COOP/COEP headers that break Meta Pixel detection
 // This fixes the "no pixel detected" error in Meta Events Manager
 app.use((_req, res, next) => {
