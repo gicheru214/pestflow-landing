@@ -103,17 +103,6 @@ export function AutoPopup() {
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  // Business step fields
-  const [companyName, setCompanyName] = useState("");
-  const [website, setWebsite] = useState("");
-  const [technicians, setTechnicians] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [stateField, setStateField] = useState("");
-  const [zip, setZip] = useState("");
-  const [companyError, setCompanyError] = useState("");
-  const [techError, setTechError] = useState("");
-
   // Snapshot every collected field so beforeunload / step transitions can ship it
   const snapshotRef = useRef<Record<string, unknown>>({});
   useEffect(() => {
@@ -125,16 +114,9 @@ export function AutoPopup() {
       phone,
       email,
       ...routeAnswers,
-      companyName,
-      website,
-      technicians,
-      address,
-      city,
-      state: stateField,
-      zip,
       step,
     };
-  }, [name, phone, email, routeAnswers, companyName, website, technicians, address, city, stateField, zip, step]);
+  }, [name, phone, email, routeAnswers, step]);
 
   // Fire-and-forget partial send if user closes/refreshes mid-funnel
   useEffect(() => {
