@@ -66,7 +66,8 @@ const ROUTE_QUESTIONS = [
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>("guide");
+  const initialStep = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("popup_step")) as Step | null;
+  const [step, setStep] = useState<Step>(initialStep === "details" || initialStep === "offer" ? initialStep : "guide");
   const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>({});
   const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
