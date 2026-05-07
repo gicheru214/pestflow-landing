@@ -243,7 +243,14 @@ export function AutoPopup() {
       if (v) params.set(k, v);
     });
     setOpen(false);
-    window.location.href = `${ADMIN_URL}?${params.toString()}`;
+    const target = `${ADMIN_URL}?${params.toString()}`;
+    // eslint-disable-next-line no-console
+    console.log("[popup-redirect]", target);
+    if ((window as any).__captureRedirect) {
+      (window as any).__capturedRedirect = target;
+      return;
+    }
+    window.location.href = target;
   };
 
   const slideVariants = {
