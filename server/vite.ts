@@ -33,6 +33,8 @@ export async function setupVite(server: Server, app: Express) {
 
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
+    // Let /mobile-app/* be handled by Express static middleware
+    if (url.startsWith("/mobile-app/")) return next();
 
     try {
       const clientTemplate = path.resolve(
