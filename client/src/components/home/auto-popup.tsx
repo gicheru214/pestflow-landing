@@ -88,7 +88,8 @@ const ROUTE_QUESTIONS = [
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const initialStep = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("popup_step")) as Step | null;
-  const [step, setStep] = useState<Step>(initialStep === "details" || initialStep === "offer" ? initialStep : "guide");
+  const validInitial: Step[] = ["details", "offer", "business"];
+  const [step, setStep] = useState<Step>(validInitial.includes(initialStep as Step) ? (initialStep as Step) : "guide");
   const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>({});
   const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
@@ -99,6 +100,54 @@ export function AutoPopup() {
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  // Business step fields
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [technicians, setTechnicians] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [stateField, setStateField] = useState("");
+  const [zip, setZip] = useState("");
+  const [companyError, setCompanyError] = useState("");
+  const [techError, setTechError] = useState("");
+
+  // Snapshot every collected field so beforeunload / step transitions can ship it
+  const snapshotRef = useRef<Record<string, unknown>>({});
+  useEffect(() => {
+    const parts = name.trim().split(" ");
+    snapshotRef.current = {
+      name,
+      firstName: parts[0] || "",
+      lastName: parts.slice(1).join(" ") || "",
+      phone,
+      email,
+      ...routeAnswers,
+      companyName,
+      website,
+      technicians,
+      address,
+      city,
+      state: stateField,
+      zip,
+      step,
+    };
+  }, [name, phone, email, routeAnswers, companyName, website, technicians, address, city, stateField, zip, step]);
+
+  // Fire-and-forget partial send if user closes/refreshes mid-funnel
+  useEffect(() => {
+    const onLeave = () => {
+      const data = snapshotRef.current;
+      const hasAny = data && (data.email || data.phone || data.name || data.companyName);
+      if (hasAny) pushPartial({ ...data, reason: "unload" });
+    };
+    window.addEventListener("beforeunload", onLeave);
+    window.addEventListener("pagehide", onLeave);
+    return () => {
+      window.removeEventListener("beforeunload", onLeave);
+      window.removeEventListener("pagehide", onLeave);
+    };
+  }, []);
 
   useEffect(() => {
     const submitted = localStorage.getItem("pestflow_popup_submitted");
