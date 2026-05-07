@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+
+// Push whatever we've collected so far to the server, no-blocking.
+// Uses sendBeacon when available so it survives page unload.
+function pushPartial(payload: Record<string, unknown>) {
+  try {
+    const body = JSON.stringify({ type: "popup_partial", ...payload });
+    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
+      const blob = new Blob([body], { type: "application/json" });
+      navigator.sendBeacon("/api/submissions", blob);
+      return;
+    }
+    fetch("/api/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
 
 export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   return (
