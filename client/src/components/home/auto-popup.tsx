@@ -228,57 +228,22 @@ export function AutoPopup() {
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
     pushPartial({ ...snapshotRef.current, reason: "accept_offer" });
-    setStep("business");
-  };
-
-  const handleBusinessSubmit = async () => {
-    let valid = true;
-    if (!companyName.trim()) {
-      setCompanyError("Please enter your company name");
-      valid = false;
-    } else {
-      setCompanyError("");
-    }
-    if (!technicians.trim() || isNaN(Number(technicians))) {
-      setTechError("Enter a number");
-      valid = false;
-    } else {
-      setTechError("");
-    }
-    if (!valid) return;
-
-    const parts = name.trim().split(" ");
-    const firstName = parts[0] || "";
-    const lastName = parts.slice(1).join(" ") || "";
-    const fullPayload = {
-      type: "newsletter",
-      firstName,
-      lastName,
-      email,
-      phone,
-      companyName,
-      website,
-      technicians,
-      address,
-      city,
-      state: stateField,
-      zip,
-      ...routeAnswers,
-    };
-
-    try {
-      await fetch("/api/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fullPayload),
-      });
-    } catch (e) {
-      console.error("Failed to save business details", e);
-    }
     localStorage.setItem("pestflow_popup_submitted", "true");
-    analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
+
+    // Hand off to the real onboarding (app.pestflow.org/admin) with everything
+    // we collected, so admin can pre-fill the rest.
+    const parts = name.trim().split(" ");
+    const params = new URLSearchParams();
+    if (parts[0]) params.set("firstName", parts[0]);
+    const lastName = parts.slice(1).join(" ");
+    if (lastName) params.set("lastName", lastName);
+    if (email) params.set("email", email);
+    if (phone) params.set("phone", phone);
+    Object.entries(routeAnswers).forEach(([k, v]) => {
+      if (v) params.set(k, v);
+    });
     setOpen(false);
-    window.location.href = "/signup-success";
+    window.location.href = `${ADMIN_URL}?${params.toString()}`;
   };
 
   const slideVariants = {
