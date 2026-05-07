@@ -40,12 +40,36 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "identity" | "guide" | "details" | "offer";
+type Step = "guide" | "details" | "offer";
+
+const ROUTE_QUESTIONS = [
+  {
+    key: "routeCount",
+    label: "How many routes do you run each week?",
+    options: ["1–2", "3–5", "6–10", "11–20", "20+"],
+  },
+  {
+    key: "routeMix",
+    label: "What's the mix of work on those routes?",
+    options: ["Mostly residential", "Mostly commercial", "Even split", "One-off / on-demand"],
+  },
+  {
+    key: "routeDensity",
+    label: "How tight are your routes today?",
+    options: ["Dense — back-to-back stops", "Spread out — lots of windshield time", "All over the map"],
+  },
+  {
+    key: "routeBottleneck",
+    label: "What's hurting route revenue the most?",
+    options: ["Cancellations & no-shows", "Slow / missed payments", "Not enough new leads", "Techs running behind"],
+  },
+] as const;
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<Step>("identity");
-  const [routeCount, setRouteCount] = useState(5);
+  const [step, setStep] = useState<Step>("guide");
+  const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>({});
+  const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
 
   const [name, setName] = useState("");
@@ -58,45 +82,30 @@ export function AutoPopup() {
   useEffect(() => {
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
-    const showCount = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
-    if (showCount >= 2) return;
     const seenBefore = localStorage.getItem("pestflow_popup_seen");
     if (seenBefore) setShowClose(true);
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       localStorage.setItem("pestflow_popup_seen", "true");
-      localStorage.setItem("pestflow_popup_show_count", String(showCount + 1));
     }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    let scrollTimer: ReturnType<typeof setTimeout> | null = null;
     const handleScroll = () => {
       const submitted = localStorage.getItem("pestflow_popup_submitted");
       if (submitted || open) return;
-      const showCount = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
-      if (showCount >= 2) return;
       const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
       if (nearBottom) {
-        if (scrollTimer) return;
-        scrollTimer = setTimeout(() => {
-          setStep("identity");
-          setShowClose(true);
-          setOpen(true);
-          analytics.track(EVENTS.LANDING.POPUP_SHOWN);
-          const count = parseInt(localStorage.getItem("pestflow_popup_show_count") || "0", 10);
-          localStorage.setItem("pestflow_popup_show_count", String(count + 1));
-          scrollTimer = null;
-        }, 1500);
+        setStep("guide");
+        setShowClose(true);
+        setOpen(true);
+        analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       }
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimer) clearTimeout(scrollTimer);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [open]);
 
   const handleClose = () => {
@@ -196,64 +205,6 @@ export function AutoPopup() {
         )}
         <div className="max-h-[88vh] overflow-y-auto">
           <AnimatePresence mode="wait">
-            {/* ── STEP 0: Identity gate ── */}
-            {step === "identity" && (
-              <motion.div
-                key="identity"
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="p-5 sm:p-7 flex flex-col items-center"
-              >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="h-12 sm:h-14 w-auto object-contain mb-3"
-                />
-
-                <div className="bg-emerald-500/15 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-4">
-                  <span className="text-emerald-400 text-[11px] font-semibold tracking-wide uppercase">One Quick Question</span>
-                </div>
-
-                <h2 className="text-lg sm:text-xl font-bold text-white text-center mb-2 leading-snug">
-                  Are you a pest control business owner?
-                </h2>
-                <p className="text-slate-400 text-xs sm:text-sm text-center mb-5 leading-relaxed">
-                  Be honest. The next page is built for owners ready to make more money. If that's not you, no harm done.
-                </p>
-
-                <div className="w-full space-y-3">
-                  <Button
-                    onClick={() => {
-                      const data = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-                      localStorage.setItem("pestflow_popup_data", JSON.stringify({ ...data, isOwner: true, wantsMore: true }));
-                      analytics.track(EVENTS.LANDING.POPUP_SHOWN, { gate: "owner_yes" });
-                      setStep("guide");
-                    }}
-                    className="w-full min-h-[56px] h-auto py-3 px-4 text-sm sm:text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl whitespace-normal text-left leading-snug"
-                  >
-                    Yes — I'm a pest control owner and I want to make more money
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      analytics.track(EVENTS.LANDING.POPUP_DISMISSED, { gate: "owner_no" });
-                      setOpen(false);
-                    }}
-                    className="w-full min-h-[52px] h-auto py-3 px-4 text-xs sm:text-sm font-medium bg-transparent border-white/15 text-slate-400 hover:bg-white/5 hover:text-slate-200 rounded-xl whitespace-normal text-left leading-snug"
-                  >
-                    No — I'm not a pest control owner. Even if I was, I don't want to make more money
-                  </Button>
-                </div>
-
-                <p className="text-[11px] text-slate-500 text-center mt-4">
-                  500+ pest control owners already inside.
-                </p>
-              </motion.div>
-            )}
-
             {/* ── STEP 1: Guide offer + contact info ── */}
             {step === "guide" && (
               <motion.div
@@ -338,12 +289,12 @@ export function AutoPopup() {
 
                   <Button
                     onClick={handleGuideSubmit}
-                    className="w-full min-h-[48px] h-auto py-3 px-4 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1 whitespace-normal leading-snug"
+                    className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
                   >
-                    Start My Free Quiz On How To Make A Higher Income <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
+                    Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-0.5">
-                    Includes the $1M Playbook. 500+ owners already inside. No spam.
+                    500+ owners already scaling with this. No spam — we don't do that.
                   </p>
                 </div>
               </motion.div>
