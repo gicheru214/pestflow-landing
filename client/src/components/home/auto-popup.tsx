@@ -89,7 +89,7 @@ export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const initialStep = urlParams.get("popup_step") as Step | null;
-  const validInitial: Step[] = ["details", "quiz", "offer"];
+  const validInitial: Step[] = ["details", "offer"];
   const [step, setStep] = useState<Step>(validInitial.includes(initialStep as Step) ? (initialStep as Step) : "guide");
 
   // When arriving at popup with ?popup_step=offer (return from /quiz.html),
