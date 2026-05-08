@@ -280,9 +280,7 @@ export function AutoPopup() {
   // Listen for the embedded quiz iframe completion message.
   useEffect(() => {
     if (step !== "quiz") return;
-    (window as any).__pf_quiz_listener = "attached";
     const handler = (e: MessageEvent) => {
-      (window as any).__pf_quiz_lastMsg = e.data;
       const data = e.data as { source?: string; event?: string; revenue?: number } | undefined;
       if (!data || data.source !== "pestflow-quiz") return;
       if (data.event === "completed") {
