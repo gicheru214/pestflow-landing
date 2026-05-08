@@ -434,7 +434,9 @@ export function AutoPopup() {
                 if (questionIdx < total - 1) {
                   setTimeout(() => setQuestionIdx(questionIdx + 1), 180);
                 } else {
-                  setTimeout(() => setStep("offer"), 220);
+                  // Last route question answered → hand off to /quiz.html (15-Q Revenue Accelerator).
+                  // The quiz returns to /?popup_step=offer when done.
+                  setTimeout(() => handleRouteQuizComplete(), 220);
                 }
               };
               return (
