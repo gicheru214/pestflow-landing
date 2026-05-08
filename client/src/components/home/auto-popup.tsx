@@ -538,15 +538,10 @@ export function AutoPopup() {
             })()}
 
             {/* ── STEP 3: Inline 15-Q Revenue Accelerator quiz (iframe) ── */}
+            {/* No framer-motion wrap: iframe doesn't need a slide animation, and
+                AnimatePresence's exit-then-enter delays the next step. */}
             {step === "quiz" && (
-              <motion.div
-                key="quiz"
-                variants={slideVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="flex flex-col"
-              >
+              <div key="quiz" className="flex flex-col">
                 <div className="px-4 pt-3 pb-2 flex items-center justify-between border-b border-white/5">
                   <div>
                     <div className="text-emerald-400 text-[10px] font-semibold tracking-wider uppercase">
@@ -571,7 +566,7 @@ export function AutoPopup() {
                   style={{ height: "min(78vh, 720px)" }}
                   loading="lazy"
                 />
-              </motion.div>
+              </div>
             )}
 
             {/* ── STEP 4: Offer / CTA ── */}
