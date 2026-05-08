@@ -531,6 +531,43 @@ export function AutoPopup() {
               );
             })()}
 
+            {/* ── STEP 3: Inline 15-Q Revenue Accelerator quiz (iframe) ── */}
+            {step === "quiz" && (
+              <motion.div
+                key="quiz"
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="flex flex-col"
+              >
+                <div className="px-4 pt-3 pb-2 flex items-center justify-between border-b border-white/5">
+                  <div>
+                    <div className="text-emerald-400 text-[10px] font-semibold tracking-wider uppercase">
+                      Revenue Accelerator
+                    </div>
+                    <div className="text-white text-sm font-bold leading-tight">
+                      15 quick questions · ~4 min
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStep("offer")}
+                    className="text-slate-400 hover:text-emerald-400 text-xs font-medium underline-offset-2 hover:underline"
+                  >
+                    Skip →
+                  </button>
+                </div>
+                <iframe
+                  src={`/quiz.html?embed=1&${buildForwardParams().toString()}`}
+                  title="PestFlow Revenue Accelerator Quiz"
+                  className="w-full border-0 bg-[#0d1117]"
+                  style={{ height: "min(78vh, 720px)" }}
+                  loading="lazy"
+                />
+              </motion.div>
+            )}
+
             {/* ── STEP 4: Offer / CTA ── */}
             {step === "offer" && (
               <motion.div
