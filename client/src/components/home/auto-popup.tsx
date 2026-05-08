@@ -264,13 +264,9 @@ export function AutoPopup() {
     setStep("details");
   };
 
-  const handleAcceptOffer = () => {
-    analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
-    pushPartial({ ...snapshotRef.current, reason: "accept_offer" });
-    localStorage.setItem("pestflow_popup_submitted", "true");
-
-    // Hand off to the real onboarding (app.pestflow.org/admin) with everything
-    // we collected, so admin can pre-fill the rest.
+  // Build the params bundle (name/email/phone + route answers) we forward
+  // through quiz → offer → video → pricing.
+  const buildForwardParams = () => {
     const parts = name.trim().split(" ");
     const params = new URLSearchParams();
     if (parts[0]) params.set("firstName", parts[0]);
@@ -281,8 +277,24 @@ export function AutoPopup() {
     Object.entries(routeAnswers).forEach(([k, v]) => {
       if (v) params.set(k, v);
     });
+    return params;
+  };
+
+  // After 4-Q route quiz: hand off to /quiz.html (15-Q Revenue Accelerator).
+  // Quiz finishes by sending user back to /?popup_step=offer.
+  const handleRouteQuizComplete = () => {
+    pushPartial({ ...snapshotRef.current, reason: "route_quiz_complete" });
     setOpen(false);
-    window.location.href = `${ADMIN_URL}?${params.toString()}`;
+    window.location.href = `/quiz.html?${buildForwardParams().toString()}`;
+  };
+
+  const handleAcceptOffer = () => {
+    analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
+    pushPartial({ ...snapshotRef.current, reason: "accept_offer" });
+    localStorage.setItem("pestflow_popup_submitted", "true");
+    setOpen(false);
+    // Forward to demo video page; "Start Trial" there → app.pestflow.org/pricing
+    window.location.href = `/watch?${buildForwardParams().toString()}`;
   };
 
   const slideVariants = {
