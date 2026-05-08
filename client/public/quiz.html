@@ -241,6 +241,8 @@
 <script>
 /* Forward URL params (popup contact + route answers) onward to popup return. */
 const incomingParams = new URLSearchParams(window.location.search);
+const isEmbed = incomingParams.get('embed') === '1';
+if (isEmbed) document.body.classList.add('embed');
 
 /* Map popup's routeCount bucket → numeric route count for pricing slider. */
 function routeCountToNumber(bucket) {
