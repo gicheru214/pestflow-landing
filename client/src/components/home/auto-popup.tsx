@@ -157,7 +157,7 @@ export function AutoPopup() {
     // If returning from /quiz.html with ?popup_step=offer, open immediately at offer step
     // even if popup_submitted flag is already set.
     const forcedStep = new URLSearchParams(window.location.search).get("popup_step");
-    if (forcedStep === "offer" || forcedStep === "details") {
+    if (forcedStep === "offer" || forcedStep === "details" || forcedStep === "quiz") {
       setShowClose(true);
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
