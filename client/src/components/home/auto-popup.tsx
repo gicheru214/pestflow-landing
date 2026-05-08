@@ -100,16 +100,35 @@ const ROUTE_QUESTIONS = [
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
-  const initialStep = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("popup_step")) as Step | null;
+  const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+  const initialStep = urlParams.get("popup_step") as Step | null;
   const validInitial: Step[] = ["details", "offer"];
   const [step, setStep] = useState<Step>(validInitial.includes(initialStep as Step) ? (initialStep as Step) : "guide");
-  const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>({});
+
+  // When arriving at popup with ?popup_step=offer (return from /quiz.html),
+  // hydrate fields from URL params and the localStorage snapshot saved on guide submit.
+  const cachedPopup = (() => {
+    if (typeof window === "undefined") return {} as any;
+    try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); }
+    catch { return {} as any; }
+  })();
+
+  const seedRouteAnswers: Record<string, string> = {};
+  ["routeCount", "routeMix", "routeDensity", "routeBottleneck"].forEach((k) => {
+    const v = urlParams.get(k) || cachedPopup[k];
+    if (v) seedRouteAnswers[k] = v;
+  });
+
+  const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>(seedRouteAnswers);
   const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const seedName = urlParams.get("firstName") && urlParams.get("lastName")
+    ? `${urlParams.get("firstName")} ${urlParams.get("lastName")}`.trim()
+    : cachedPopup.name || "";
+  const [name, setName] = useState(seedName);
+  const [phone, setPhone] = useState(urlParams.get("phone") || cachedPopup.phone || "");
+  const [email, setEmail] = useState(urlParams.get("email") || cachedPopup.email || "");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
