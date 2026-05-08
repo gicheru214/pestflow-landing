@@ -293,8 +293,10 @@ export function AutoPopup() {
             localStorage.setItem("pestflow_popup_data", JSON.stringify(cached));
           } catch { /* ignore */ }
         }
-        pushPartial({ ...snapshotRef.current, reason: "quiz_complete", quizRevenue: data.revenue });
+        (window as any).__pf_quiz_offer_called = (window as any).__pf_quiz_offer_called ? (window as any).__pf_quiz_offer_called + 1 : 1;
+        try { pushPartial({ ...snapshotRef.current, reason: "quiz_complete", quizRevenue: data.revenue }); } catch (err) { (window as any).__pf_quiz_err = String(err); }
         setStep("offer");
+        (window as any).__pf_quiz_setStep_after = "offer";
       }
     };
     window.addEventListener("message", handler);
