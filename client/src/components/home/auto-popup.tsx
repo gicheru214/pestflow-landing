@@ -540,9 +540,9 @@ export function AutoPopup() {
                   <button
                     type="button"
                     onClick={() => setStep("offer")}
-                    className="text-slate-500 hover:text-emerald-400 text-xs font-medium underline-offset-2 hover:underline"
+                    className="text-slate-600 hover:text-slate-400 text-[10px] font-medium italic leading-tight text-right max-w-[200px]"
                   >
-                    Skip →
+                    No thanks — I don't want to know where I'm leaving money on the table
                   </button>
                 </div>
                 <iframe
