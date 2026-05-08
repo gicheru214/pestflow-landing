@@ -164,6 +164,15 @@ export function AutoPopup() {
   }, []);
 
   useEffect(() => {
+    // If returning from /quiz.html with ?popup_step=offer, open immediately at offer step
+    // even if popup_submitted flag is already set.
+    const forcedStep = new URLSearchParams(window.location.search).get("popup_step");
+    if (forcedStep === "offer" || forcedStep === "details") {
+      setShowClose(true);
+      setOpen(true);
+      analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+      return;
+    }
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
     const seenBefore = localStorage.getItem("pestflow_popup_seen");
