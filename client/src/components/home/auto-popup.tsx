@@ -547,7 +547,7 @@ export function AutoPopup() {
                 </div>
                 <iframe
                   src={`/quiz.html?embed=1&${buildForwardParams().toString()}`}
-                  title="PestFlow Revenue Accelerator Quiz"
+                  title="PestFlow Revenue Audit"
                   className="w-full border-0 bg-[#0d1117]"
                   style={{ height: "min(78vh, 720px)" }}
                   loading="lazy"
