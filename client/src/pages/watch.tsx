@@ -4,7 +4,16 @@ import { ArrowRight } from "lucide-react";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 import { analytics, EVENTS } from "@/lib/analytics";
 
-const PRICING_URL = "https://app.pestflow.org/pricing";
+const DESKTOP_PRICING_URL = "https://app.pestflow.org/pricing";
+const MOBILE_PRICING_URL = "https://app.pestflow.org/mobile/onboard/upgrade";
+
+function isMobileDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  // UA sniff first (catches iOS/Android), then narrow viewport as fallback.
+  const ua = navigator.userAgent || "";
+  if (/Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(ua)) return true;
+  return window.matchMedia("(max-width: 767px)").matches;
+}
 
 // Map popup's routeCount bucket → numeric routes for pricing slider pre-fill.
 function routeCountToNumber(bucket?: string | null): number | null {
