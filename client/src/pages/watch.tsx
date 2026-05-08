@@ -52,7 +52,8 @@ export default function Watch() {
     const routes = routeCountToNumber(incoming.get("routeCount") || cached.routeCount);
     if (routes != null) out.set("routes", String(routes));
 
-    window.location.href = `${PRICING_URL}?${out.toString()}`;
+    const target = isMobileDevice() ? MOBILE_PRICING_URL : DESKTOP_PRICING_URL;
+    window.location.href = `${target}?${out.toString()}`;
   };
 
   return (
