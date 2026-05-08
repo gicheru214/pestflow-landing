@@ -314,8 +314,6 @@ export function AutoPopup() {
     exit: { opacity: 0, x: -30 },
   };
 
-  if (typeof window !== "undefined") (window as any).__pf_render_step = step;
-
   return (
     <Dialog open={open} onOpenChange={showClose ? handleClose : () => {}}>
       <DialogContent
