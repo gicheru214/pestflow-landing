@@ -270,13 +270,34 @@ export function AutoPopup() {
     return params;
   };
 
-  // After 4-Q route quiz: hand off to /quiz.html (15-Q Revenue Accelerator).
-  // Quiz finishes by sending user back to /?popup_step=offer.
+  // After 4-Q route quiz: show /quiz.html (15-Q Revenue Accelerator) inline as iframe.
+  // Quiz finishes by postMessage → we advance to "offer".
   const handleRouteQuizComplete = () => {
     pushPartial({ ...snapshotRef.current, reason: "route_quiz_complete" });
-    setOpen(false);
-    window.location.href = `/quiz.html?${buildForwardParams().toString()}`;
+    setStep("quiz");
   };
+
+  // Listen for the embedded quiz iframe completion message.
+  useEffect(() => {
+    if (step !== "quiz") return;
+    const handler = (e: MessageEvent) => {
+      const data = e.data as { source?: string; event?: string; revenue?: number } | undefined;
+      if (!data || data.source !== "pestflow-quiz") return;
+      if (data.event === "completed") {
+        if (typeof data.revenue === "number") {
+          try {
+            const cached = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
+            cached.quizRevenue = data.revenue;
+            localStorage.setItem("pestflow_popup_data", JSON.stringify(cached));
+          } catch { /* ignore */ }
+        }
+        pushPartial({ ...snapshotRef.current, reason: "quiz_complete", quizRevenue: data.revenue });
+        setStep("offer");
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [step]);
 
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
