@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PestFlow — Revenue Accelerator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a1410;
+    --panel: #0f1f14;
+    --surface: #16291c;
+    --surface-2: #1b3624;
+    --border: #234a31;
+    --green: #40916c;
+    --green-bright: #6de040;
+    --green-soft: #a8d890;
+    --text: #e8f5e9;
+    --sub: #8fb99a;
+    --dim: #4a7c59;
+    --gold: #f9c74f;
+    --orange: #e07a30;
+    --money: #6de040;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: #050a08;
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+  @media (min-width: 900px) {
+    .stage { padding: 56px 32px 96px; max-width: 880px; }
+  }
+
+  /* Top brand bar */
+  .topbrand {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid #14241a;
+    background: #050a08; position: sticky; top: 0; z-index: 50;
+  }
+  .brand { font-size: 17px; font-weight: 800; color: var(--green-bright); letter-spacing: -0.3px; }
+  .brand-sub { font-size: 11px; color: var(--dim); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .topbrand-step { font-size: 12px; color: var(--sub); font-weight: 700; }
+  .topbrand-step b { color: var(--green-bright); }
+
+  .progress-track {
+    height: 6px; background: #1b2e21; border-radius: 4px; overflow: hidden;
+    margin: 8px 0 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--green-bright));
+    border-radius: 4px;
+    transition: width 0.4s;
+  }
+  .progress-meta {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--dim); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  .money-line {
+    margin: 16px 0 18px;
+    background: linear-gradient(135deg, #0c1d12 0%, #112a18 100%);
+    border: 1px solid #1f4029;
+    border-radius: 14px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .money-line::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 90% 0%, rgba(109,224,64,0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .ml-row { display: flex; align-items: baseline; justify-content: space-between; position: relative; }
+  .ml-label { font-size: 10px; font-weight: 800; letter-spacing: 0.18em; color: var(--dim); text-transform: uppercase; }
+  .ml-value {
+    font-size: 22px; font-weight: 900; color: var(--money); letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ml-bar {
+    height: 5px; background: #0a1410; border-radius: 3px; margin-top: 10px; overflow: hidden;
+  }
+  .ml-bar-fill {
+    height: 100%; width: 8%;
+    background: linear-gradient(90deg, var(--gold), var(--green-bright));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 8px rgba(109,224,64,0.5);
+  }
+  .ml-foot { font-size: 10px; color: var(--sub); margin-top: 8px; }
+
+  .q-section-tag {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.22em;
+    color: var(--green-bright); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .q-num { font-size: 11px; color: var(--dim); font-weight: 700; letter-spacing: 0.12em; }
+  .q-text { font-size: 19px; font-weight: 700; line-height: 1.35; margin: 6px 0 16px; }
+  @media (min-width: 900px) { .q-text { font-size: 26px; max-width: 720px; } }
+
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-pill {
+    display: flex; align-items: center;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 14px 16px;
+    cursor: pointer; transition: all 0.12s;
+    font-size: 14px; color: var(--text);
+  }
+  .input-pill:hover { border-color: var(--green); background: var(--surface-2); }
+  .input-pill.selected { border-color: var(--green-bright); background: rgba(109,224,64,0.08); box-shadow: 0 0 0 3px rgba(109,224,64,0.06); }
+  .pill-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--dim); margin-right: 12px; flex-shrink: 0;
+    transition: all 0.12s;
+  }
+  .input-pill.selected .pill-dot { background: var(--green-bright); border-color: var(--green-bright); box-shadow: 0 0 8px rgba(109,224,64,0.5); }
+
+  .num-input {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; font-size: 16px; color: var(--text);
+    font-family: inherit; outline: none;
+  }
+  .num-input:focus { border-color: var(--green-bright); box-shadow: 0 0 0 3px rgba(109,224,64,0.1); }
+  .num-input::placeholder { color: var(--dim); }
+
+  .answer-reveal {
+    margin-top: 18px;
+    border-radius: 14px;
+    border: 1px solid #2a4533;
+    background: linear-gradient(180deg, #112a1a 0%, #0c1f12 100%);
+    overflow: hidden;
+    max-height: 0; opacity: 0;
+    transition: max-height 0.45s ease, opacity 0.4s ease, margin-top 0.3s;
+  }
+  .answer-reveal.show { max-height: 600px; opacity: 1; }
+  .ar-head {
+    background: rgba(109,224,64,0.08);
+    padding: 10px 16px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.2em;
+    color: var(--green-bright); text-transform: uppercase;
+    border-bottom: 1px solid #1f4029;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ar-head::before { content: "▼"; font-size: 8px; }
+  .ar-row { padding: 12px 16px; border-bottom: 1px solid #1a3322; }
+  .ar-row:last-child { border-bottom: none; }
+  .ar-label { font-size: 10px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; color: var(--sub); margin-bottom: 4px; }
+  .ar-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .ar-row.hit { background: rgba(249,199,79,0.05); }
+  .ar-row.hit .ar-label { color: var(--gold); }
+  .ar-row.hit .ar-text strong { color: var(--gold); font-variant-numeric: tabular-nums; }
+  .ar-row.dream { background: rgba(109,224,64,0.05); }
+  .ar-row.dream .ar-label { color: var(--green-bright); }
+  .ar-row.dream .ar-text strong { color: var(--green-bright); font-variant-numeric: tabular-nums; }
+
+  .nav-row { display: flex; gap: 10px; margin-top: 22px; }
+  .btn {
+    border: none; border-radius: 11px; cursor: pointer;
+    font-size: 14px; font-weight: 800; letter-spacing: 0.02em;
+    padding: 14px 22px; transition: all 0.12s; font-family: inherit;
+  }
+  .btn-primary { background: var(--green); color: white; flex: 1; }
+  .btn-primary:hover { background: var(--green-bright); color: #0a1410; }
+  .btn-primary:disabled { background: #1b3624; color: var(--dim); cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--sub); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--green); color: var(--text); }
+
+  .intro-hero { text-align: center; padding: 24px 8px 8px; }
+  .intro-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.25em; color: var(--green-bright); text-transform: uppercase; margin-bottom: 10px; }
+  .intro-title { font-size: 28px; font-weight: 900; line-height: 1.2; letter-spacing: -0.5px; margin-bottom: 12px; }
+  @media (min-width: 900px) { .intro-title { font-size: 44px; max-width: 760px; margin: 0 auto 16px; } }
+  .intro-sub { font-size: 14px; color: var(--sub); line-height: 1.55; margin-bottom: 18px; }
+  @media (min-width: 900px) { .intro-sub { font-size: 17px; max-width: 620px; margin: 0 auto 28px; } }
+  .intro-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+  .istat {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 8px; text-align: center;
+  }
+  .istat-num { font-size: 20px; font-weight: 900; color: var(--green-bright); letter-spacing: -0.3px; }
+  @media (min-width: 900px) { .istat-num { font-size: 28px; } }
+  .istat-lbl { font-size: 10px; color: var(--sub); font-weight: 600; margin-top: 2px; letter-spacing: 0.05em; }
+
+  /* Money particles */
+  #money-rain { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+  .m-particle {
+    position: absolute; will-change: transform, opacity;
+    font-weight: 800; user-select: none;
+    text-shadow: 0 2px 14px rgba(109,224,64,0.55), 0 0 22px rgba(109,224,64,0.25);
+    animation: money-pop var(--dur, 1100ms) cubic-bezier(.22,.71,.39,1) forwards;
+  }
+  .m-particle.ambient {
+    animation: money-drift var(--dur, 7000ms) linear forwards;
+    text-shadow: 0 1px 6px rgba(109,224,64,0.35);
+  }
+  @keyframes money-pop {
+    0%   { transform: translate(-50%, -50%) scale(.6) rotate(0deg);   opacity: 0; }
+    18%  { transform: translate(calc(-50% + var(--midX, 0px)), calc(-50% + var(--midY, -50px))) scale(1) rotate(var(--midR, 6deg)); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--endX, 0px)), calc(-50% + var(--endY, -160px))) scale(.85) rotate(var(--endR, 14deg)); opacity: 0; }
+  }
+  @keyframes money-drift {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    8%   { opacity: var(--opa, .35); }
+    92%  { opacity: var(--opa, .35); }
+    100% { transform: translate(var(--driftX, 30px), var(--driftY, -120vh)) rotate(var(--driftR, 18deg)); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .m-particle, .m-particle.ambient { animation: none; display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="money-rain" aria-hidden="true"></div>
+
+<div class="topbrand">
+  <div>
+    <div class="brand">PestFlow</div>
+    <div class="brand-sub">Revenue Accelerator</div>
+  </div>
+  <div class="topbrand-step">Step <b id="stepLabel">Intro</b> · <b id="stepCount">0 / 15</b></div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<script>
+/* Forward URL params (popup contact + route answers) onward to popup return. */
+const incomingParams = new URLSearchParams(window.location.search);
+
+/* Map popup's routeCount bucket → numeric route count for pricing slider. */
+function routeCountToNumber(bucket) {
+  if (!bucket) return null;
+  if (bucket.indexOf('1') === 0 && bucket.indexOf('2') > 0) return 2;   // "1–2"
+  if (bucket.indexOf('3') === 0) return 4;                              // "3–5"
+  if (bucket.indexOf('6') === 0) return 8;                              // "6–10"
+  if (bucket.indexOf('11') === 0) return 15;                            // "11–20"
+  if (bucket.indexOf('20') === 0) return 25;                            // "20+"
+  return null;
+}
+
+const Q = [
+  { section: 'Retention', kind: 'choice', customOption: true,
+    text: 'How many customers did you lose or cancel last month?',
+    opts: ['0–1', '2–4', '5–8', '9–15', '16+'],
+    avg: 'Most pest control companies run 1.5–2% monthly churn (3–4 of 200 recurring). Top performers stay under 1%.',
+    hit: 'Each lost recurring customer costs <strong>$720–$960/yr</strong> in LTV. You\'re bleeding <strong>$2,000–$4,000/mo</strong>.',
+    revBump: 28000 },
+  { section: 'Retention', kind: 'choice',
+    text: 'For the customers who left, do you know the real reason?',
+    opts: ['No idea — they just stopped paying', 'Sometimes I find out informally', 'Yes, I track every cancellation reason', 'Yes, and I actively re-win them'],
+    avg: '91% of cancellations are preventable. #1 reason: "they felt we no longer cared."',
+    hit: 'Fixing this alone adds 5% retention = <strong>25–95% more profit</strong> (Bain). Thousands in easy recurring revenue every quarter.',
+    revBump: 18000 },
+  { section: 'Efficiency', kind: 'choice',
+    text: 'How many hours/week do you or your team spend on scheduling, invoicing, and admin?',
+    opts: ['Under 5 hrs', '5–10 hrs', '11–15 hrs', '16–25 hrs', '25+ hrs'],
+    avg: '10+ hrs/week on disconnected billing and scheduling is typical for manual shops.',
+    hit: 'At $25/hr admin wage, that\'s <strong>$10,000–$13,000/yr</strong> in labor — plus delayed cash flow and missed jobs.',
+    revBump: 12500 },
+  { section: 'Operations', kind: 'choice',
+    text: 'When a tech no-shows or a job falls through, how long until you find out?',
+    opts: ['End of day or next morning', 'A few hours later, when a customer calls', 'Within an hour via my dispatcher', 'Real-time alerts'],
+    avg: 'Manual systems = end-of-day. Callback rates run 3–6%+.',
+    hit: 'Each missed stop = <strong>$150–$300</strong> + reputation damage. Quietly costs <strong>thousands/mo</strong>.',
+    revBump: 9000 },
+  { section: 'Recurring', kind: 'choice',
+    text: 'How confident are you you\'re catching every customer due for re-service?',
+    opts: ['Honestly, I just rely on memory', 'Spreadsheet — but stuff slips', 'Calendar reminders, mostly catching it', 'Automated — nothing slips'],
+    avg: 'Without automated tracking, companies miss 10–15% of recurring opportunities.',
+    hit: 'Re-service is 70–85% of revenue. Missing 5 customers/mo = <strong>$3,600–$4,800/yr</strong> straight to competitors.',
+    revBump: 4800 },
+  { section: 'Lead Capture', kind: 'choice',
+    text: 'What happens to a lead that comes in after 6pm or on weekends?',
+    opts: ['Voicemail — I call back next day', 'Goes to my cell, I answer when I can', 'Answering service takes a message', 'Auto-booked instantly via online form'],
+    avg: '78% of customers buy from the first company that responds. <5 min response = 21× more likely to close.',
+    hit: 'One missed emergency lead = <strong>$200–$500</strong> + full LTV. You\'re losing <strong>$2,000–$5,000/mo</strong>.',
+    revBump: 36000 },
+  { section: 'Cash Flow', kind: 'choice',
+    text: 'What % of your recurring customers are on autopay?',
+    opts: ['Under 25%', '25–40%', '40–55%', '55–70%', '70%+'],
+    avg: 'Without automation, most shops are under 40–50%. Top subscription operators hit 65%+ with 96–98% collection.',
+    hit: 'Non-autopay = higher churn, late payments, manual chasing. Costs <strong>10–20% of MRR</strong> in leakage.',
+    revBump: 22000 },
+  { section: 'Compliance', kind: 'choice',
+    text: 'Last time a customer asked for their full service/chemical history — how long did it take to pull?',
+    opts: ['15+ minutes (or I couldn\'t find it)', '5–15 minutes digging through paper/files', 'Under 5 minutes from a system', 'Instant — they pull it themselves'],
+    avg: 'Manual pulls = 5–15+ min per request, plus error risk.',
+    hit: 'Delays kill trust, increase callbacks. One bad callback = <strong>$500+</strong> in refunds + reputation damage.',
+    revBump: 7500 },
+  { section: 'Routing', kind: 'choice',
+    text: 'If you could double route density (more stops/day, no extra techs), what would that do?',
+    opts: ['Honestly, my routes are pretty optimized', 'Decent boost — maybe 10–15% more', 'Big — could add a fourth tech\'s worth', 'Game-changing'],
+    avg: 'Optimized routing adds 15–25% more stops/tech (6–8 → 9–11+). Fuel/drive time drops 20–30%.',
+    hit: 'For a 3-tech operation, that\'s <strong>$50K–$100K+ extra annual revenue</strong> with zero new headcount.',
+    revBump: 75000 },
+  { section: 'Vision', kind: 'choice',
+    text: 'In the next 90 days, what would have to be true for this platform to be worth 5× what you pay?',
+    opts: ['Save me 10+ hrs/week', 'Recover lost recurring revenue', 'Capture every after-hours lead', 'All of the above'],
+    avg: 'Operators who set a 5× ROI bar hit it within 90 days when they import their data on day one.',
+    hit: 'The platform pays for itself the first month it prevents 1 cancellation + captures 1 after-hours lead.',
+    revBump: 0 },
+  { section: 'Dream · Retention', kind: 'choice',
+    text: 'How much extra revenue would you gain if you saved just half the customers who left last month?',
+    opts: ['Under $10K/yr', '$10K–$25K/yr', '$25K–$50K/yr', '$50K–$100K/yr', '$100K+/yr'],
+    dream: 'Imagine reclaiming half. With re-service campaigns + cancel-save automation, this becomes routine.',
+    dreamHit: 'Operators who add cancel-save flows recover <strong>40–60%</strong> of would-be cancellations within 30 days.',
+    revBump: 14000 },
+  { section: 'Dream · Time', kind: 'choice',
+    text: 'If you reclaimed 4 of those wasted scheduling hours/week, how much extra revenue could your team book instead?',
+    opts: ['Under $10K/yr', '$10K–$25K/yr', '$25K–$50K/yr', '$50K–$100K/yr', '$100K+/yr'],
+    dream: '4 hrs back × 50 weeks × $200 booked-revenue/hr = <strong>$40,000+</strong> in unbilled capacity unlocked.',
+    dreamHit: 'Auto-routing + auto-invoicing typically saves <strong>6–9 hrs/week</strong> on day one.',
+    revBump: 40000 },
+  { section: 'Dream · Recurring', kind: 'choice',
+    text: 'What would it mean to your bank account if you captured every re-service customer automatically?',
+    opts: ['Under $15K/yr', '$15K–$35K/yr', '$35K–$75K/yr', '$75K–$150K/yr', '$150K+/yr'],
+    dream: 'Every recurring customer auto-rebooked, auto-reminded, auto-charged. No leaks.',
+    dreamHit: 'Operators on automated re-service add <strong>15–22%</strong> to recurring revenue within 6 months.',
+    revBump: 32000 },
+  { section: 'Dream · Routes', kind: 'choice',
+    text: 'If every tech handled 2–3 more stops/day without working more hours, how much extra monthly revenue would that create?',
+    opts: ['Under $5K/mo', '$5K–$12K/mo', '$12K–$25K/mo', '$25K–$50K/mo', '$50K+/mo'],
+    dream: '2 extra stops × $200 avg × 22 working days × 3 techs = <strong>$26,400/mo</strong>.',
+    dreamHit: 'PestFlow customers see route density jump <strong>22%</strong> in week 1.',
+    revBump: 26400 },
+  { section: 'Dream · 12-Month Goal', kind: 'choice',
+    text: 'In the next 12 months, how much total extra revenue would you like this platform to help you generate?',
+    opts: ['$50K–$100K', '$100K–$250K', '$250K–$500K', '$500K–$1M', '$1M+'],
+    dream: 'This is your number. The platform\'s job is to deliver it — measurably, every month.',
+    dreamHit: 'Average top-quartile operator gain in year 1: <strong>$87K–$162K</strong>. Your inputs put you on track.',
+    revBump: 0 }
+];
+
+const state = {
+  step: 'intro',
+  answers: {},
+  revenue: 0
+};
+
+const fmt = n => '$' + Math.round(n).toLocaleString();
+
+function moneyLineHtml() {
+  const pct = Math.min(100, Math.round((state.revenue / 180000) * 100));
+  return `
+    <div class="money-line">
+      <div class="ml-row">
+        <div class="ml-label">Money Line · live</div>
+        <div class="ml-value" id="mlValue">${fmt(state.revenue)}</div>
+      </div>
+      <div class="ml-bar"><div class="ml-bar-fill" style="width:${Math.max(6, pct)}%"></div></div>
+      <div class="ml-foot">Extra revenue you could be capturing this year, based on your answers so far.</div>
+    </div>`;
+}
+
+function progressHtml() {
+  const numericStep = (typeof state.step === 'number') ? state.step + 1 : 0;
+  const pct = (numericStep / 15) * 100;
+  return `
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-meta">
+      <span>Question ${Math.min(numericStep, 15) || 1} of 15</span>
+      <span>${Math.round(pct)}%</span>
+    </div>`;
+}
+
+function introHtml() {
+  return `
+    <div class="intro-hero">
+      <div class="intro-eyebrow">PestFlow · Revenue Accelerator</div>
+      <h1 class="intro-title">Most pest control owners are leaving<br>$47K–$138K on the table every year.</h1>
+      <p class="intro-sub">Answer 15 quick questions and watch your extra revenue number climb in real time. Takes about 4 minutes — no signup required.</p>
+      <div class="intro-stats">
+        <div class="istat"><div class="istat-num">15</div><div class="istat-lbl">Questions</div></div>
+        <div class="istat"><div class="istat-num">~4 min</div><div class="istat-lbl">To complete</div></div>
+        <div class="istat"><div class="istat-num">Live $</div><div class="istat-lbl">Revenue tally</div></div>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-primary" onclick="goTo(0)">Start the quiz →</button>
+      </div>
+    </div>`;
+}
+
+function questionHtml(idx) {
+  const q = Q[idx];
+  const ans = state.answers[idx];
+  const revealed = ans?.revealed;
+
+  const customIdx = q.opts ? q.opts.length : 0;
+  const isCustomSelected = q.customOption && ans?.val === customIdx;
+
+  const pills = q.opts.map((opt,i) => `
+    <div class="input-pill ${ans?.val===i?'selected':''}" onclick="onChoice(${idx}, ${i})">
+      <div class="pill-dot"></div>
+      <div>${opt}</div>
+    </div>`).join('');
+  const customPill = q.customOption ? `
+    <div class="input-pill ${isCustomSelected?'selected':''}" onclick="onChoice(${idx}, ${customIdx})">
+      <div class="pill-dot"></div>
+      <div style="flex:1;">
+        <div>Or enter the exact number</div>
+        ${isCustomSelected ? `<input type="text" inputmode="numeric" class="num-input" style="margin-top:10px;width:100%;"
+                placeholder="e.g. 6"
+                value="${ans?.customVal ?? ''}"
+                onclick="event.stopPropagation()"
+                oninput="onCustomNum(${idx}, this.value)">` : ''}
+      </div>
+    </div>` : '';
+  const inputHtml = `<div class="input-group">${pills}${customPill}</div>`;
+
+  const isDream = !!q.dream;
+  const revealHtml = `
+    <div class="answer-reveal ${revealed?'show':''}">
+      <div class="ar-head">${isDream?'Your Money Dream':'What we see in the data'}</div>
+      <div class="ar-row ${isDream?'dream':''}">
+        <div class="ar-label">${isDream?'Reality check':'Average'}</div>
+        <div class="ar-text">${q.avg || q.dream}</div>
+      </div>
+      <div class="ar-row ${isDream?'dream':'hit'}">
+        <div class="ar-label">${isDream?'What\'s possible':'Revenue hit'}</div>
+        <div class="ar-text">${q.hit || q.dreamHit}</div>
+      </div>
+    </div>`;
+
+  const isLast = idx === 14;
+  const nextAction = revealed
+    ? (isLast ? "finishQuiz()" : `goTo(${idx+1})`)
+    : `revealAnswer(${idx})`;
+  const nextLabel = revealed
+    ? (isLast ? 'Claim my free trial →' : 'Continue →')
+    : 'Show me the answer';
+
+  return `
+    <div>
+      ${progressHtml()}
+      ${moneyLineHtml()}
+      <div class="q-section-tag">${q.section}</div>
+      <div class="q-num">Question ${idx+1} of 15</div>
+      <div class="q-text">${q.text}</div>
+      ${inputHtml}
+      ${revealHtml}
+      <div class="nav-row">
+        ${idx>0 ? `<button class="btn btn-ghost" onclick="goTo(${idx-1})">← Back</button>` : ''}
+        <button class="btn btn-primary" ${ans==null?'disabled':''} onclick="${nextAction}">
+          ${nextLabel}
+        </button>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const stage = document.getElementById('stage');
+  let html;
+  if (state.step === 'intro') html = introHtml();
+  else html = questionHtml(state.step);
+  stage.innerHTML = html;
+
+  const stepLabel = document.getElementById('stepLabel');
+  const stepCount = document.getElementById('stepCount');
+  if (state.step === 'intro') { stepLabel.textContent = 'Intro'; stepCount.textContent = '0 / 15'; }
+  else { stepLabel.textContent = `Q${state.step+1}`; stepCount.textContent = `${state.step+1} / 15`; }
+}
+
+function goTo(step) {
+  state.step = step;
+  const upTo = (typeof step === 'number') ? step : 0;
+  for (let i = 0; i < upTo; i++) {
+    if (state.answers[i] == null || !state.answers[i].revealed) {
+      state.answers[i] = { val: 0, revealed: true };
+    }
+  }
+  state.revenue = 0;
+  Object.entries(state.answers).forEach(([i, a]) => {
+    if (a.revealed) state.revenue += Q[+i].revBump;
+  });
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function onChoice(idx, optIdx) {
+  state.answers[idx] = { val: optIdx, revealed: state.answers[idx]?.revealed || false };
+  render();
+}
+
+function onCustomNum(idx, val) {
+  if (state.answers[idx] == null) return;
+  state.answers[idx].customVal = val.trim();
+}
+
+function revealAnswer(idx) {
+  if (state.answers[idx] == null) return;
+  state.answers[idx].revealed = true;
+  state.revenue += Q[idx].revBump;
+  render();
+}
+
+/* On Q15 done, persist answers + return to popup at offer step.
+   Forward all incoming params (firstName/email/phone/route*) so popup re-hydrates. */
+function finishQuiz() {
+  try {
+    const cached = JSON.parse(localStorage.getItem('pestflow_popup_data') || '{}');
+    cached.quizAnswers = state.answers;
+    cached.quizRevenue = state.revenue;
+    localStorage.setItem('pestflow_popup_data', JSON.stringify(cached));
+  } catch (e) { /* ignore */ }
+
+  const out = new URLSearchParams(incomingParams);
+  out.set('popup_step', 'offer');
+  out.set('quiz_revenue', String(Math.round(state.revenue)));
+  window.location.href = '/?' + out.toString();
+}
+
+/* Money particle system */
+const MONEY_GLYPHS = ['💵','💰','💸','$','$','$','💵'];
+const rainEl = () => document.getElementById('money-rain');
+
+function spawnParticle({ x, y, glyph, size, dur, midX, midY, endX, endY, midR, endR }) {
+  const root = rainEl(); if (!root) return;
+  const el = document.createElement('div');
+  el.className = 'm-particle';
+  el.textContent = glyph;
+  el.style.left = x + 'px';
+  el.style.top  = y + 'px';
+  el.style.fontSize = size + 'px';
+  el.style.color = '#6de040';
+  el.style.setProperty('--dur',  dur + 'ms');
+  el.style.setProperty('--midX', midX + 'px');
+  el.style.setProperty('--midY', midY + 'px');
+  el.style.setProperty('--endX', endX + 'px');
+  el.style.setProperty('--endY', endY + 'px');
+  el.style.setProperty('--midR', midR + 'deg');
+  el.style.setProperty('--endR', endR + 'deg');
+  root.appendChild(el);
+  setTimeout(() => el.remove(), dur + 60);
+}
+
+function moneyBurst(x, y, count = 8) {
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.random() - 0.5) * Math.PI * 1.1;
+    const power = 50 + Math.random() * 110;
+    const drift = (Math.random() - 0.5) * 90;
+    spawnParticle({
+      x, y,
+      glyph: MONEY_GLYPHS[Math.floor(Math.random() * MONEY_GLYPHS.length)],
+      size: 16 + Math.floor(Math.random() * 18),
+      dur: 900 + Math.floor(Math.random() * 600),
+      midX: Math.sin(angle) * power * 0.6,
+      midY: -Math.cos(angle) * power * 0.6 - 30,
+      endX: Math.sin(angle) * power + drift,
+      endY: -Math.cos(angle) * power - 90 - Math.random() * 60,
+      midR: (Math.random() - 0.5) * 20,
+      endR: (Math.random() - 0.5) * 60
+    });
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button, .input-pill');
+  if (!btn) return;
+  if (btn.closest('.topbrand')) return;
+  const r = btn.getBoundingClientRect();
+  const cx = r.left + r.width / 2;
+  const cy = r.top  + r.height / 2;
+  const big = btn.classList.contains('btn-primary');
+  moneyBurst(cx, cy, big ? 18 : 7);
+}, true);
+
+render();
+</script>
+</body>
+</html>
