@@ -60,7 +60,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "details" | "offer";
+type Step = "guide" | "details" | "quiz" | "offer";
 
 const ROUTE_QUESTIONS = [
   {
