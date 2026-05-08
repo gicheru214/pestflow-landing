@@ -16,6 +16,7 @@ import Payment from "@/pages/payment";
 import Materials from "@/pages/materials";
 import Routes from "@/pages/routes";
 import Invoices from "@/pages/invoices";
+import Watch from "@/pages/watch";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 function AppRouter() {
