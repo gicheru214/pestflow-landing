@@ -523,6 +523,19 @@ function finishQuiz() {
   const out = new URLSearchParams(incomingParams);
   out.set('popup_step', 'offer');
   out.set('quiz_revenue', String(Math.round(state.revenue)));
+
+  if (isEmbed) {
+    try {
+      window.parent?.postMessage({
+        source: 'pestflow-quiz',
+        event: 'completed',
+        revenue: Math.round(state.revenue),
+        params: out.toString(),
+      }, '*');
+    } catch (e) { /* ignore */ }
+    return;
+  }
+
   window.location.href = '/?' + out.toString();
 }
 
