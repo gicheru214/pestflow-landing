@@ -536,19 +536,11 @@ export function AutoPopup() {
                 AnimatePresence's exit-then-enter delays the next step. */}
             {step === "quiz" && (
               <div key="quiz" className="flex flex-col">
-                <div className="px-4 pt-3 pb-2 flex items-center justify-between border-b border-white/5">
-                  <div>
-                    <div className="text-emerald-400 text-[10px] font-semibold tracking-wider uppercase">
-                      Revenue Accelerator
-                    </div>
-                    <div className="text-white text-sm font-bold leading-tight">
-                      15 quick questions · ~4 min
-                    </div>
-                  </div>
+                <div className="px-4 pt-2 pb-1 flex items-center justify-end border-b border-white/5">
                   <button
                     type="button"
                     onClick={() => setStep("offer")}
-                    className="text-slate-400 hover:text-emerald-400 text-xs font-medium underline-offset-2 hover:underline"
+                    className="text-slate-500 hover:text-emerald-400 text-xs font-medium underline-offset-2 hover:underline"
                   >
                     Skip →
                   </button>
