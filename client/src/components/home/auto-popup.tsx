@@ -110,9 +110,12 @@ export function AutoPopup() {
   const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
 
-  const seedName = urlParams.get("firstName") && urlParams.get("lastName")
-    ? `${urlParams.get("firstName")} ${urlParams.get("lastName")}`.trim()
-    : cachedPopup.name || "";
+  const seedName = (() => {
+    const f = urlParams.get("firstName");
+    const l = urlParams.get("lastName");
+    if (f || l) return `${f || ""} ${l || ""}`.trim();
+    return cachedPopup.name || "";
+  })();
   const [name, setName] = useState(seedName);
   const [phone, setPhone] = useState(urlParams.get("phone") || cachedPopup.phone || "");
   const [email, setEmail] = useState(urlParams.get("email") || cachedPopup.email || "");
