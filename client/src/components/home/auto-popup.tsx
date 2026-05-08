@@ -62,7 +62,18 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
 
 type Step = "guide" | "details" | "offer";
 
-const ADMIN_URL = "https://app.pestflow.org/admin";
+const PRICING_URL = "https://app.pestflow.org/pricing";
+
+// Map popup's routeCount bucket → numeric routes for pricing slider pre-fill.
+function routeCountToNumber(bucket?: string | null): number | null {
+  if (!bucket) return null;
+  if (bucket.startsWith("1") && bucket.includes("2")) return 2;
+  if (bucket.startsWith("3")) return 4;
+  if (bucket.startsWith("6")) return 8;
+  if (bucket.startsWith("11")) return 15;
+  if (bucket.startsWith("20")) return 25;
+  return null;
+}
 
 const ROUTE_QUESTIONS = [
   {
