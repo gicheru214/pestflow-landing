@@ -51,6 +51,14 @@
   .topbrand-step { font-size: 12px; color: var(--sub); font-weight: 700; }
   .topbrand-step b { color: var(--green-bright); }
 
+  /* Embed mode — stripped chrome for use as iframe inside the landing popup. */
+  body.embed { background: #0d1117; }
+  body.embed .topbrand { display: none; }
+  body.embed .stage { padding: 14px 14px 28px; max-width: 100%; }
+  @media (min-width: 900px) {
+    body.embed .stage { padding: 14px 14px 28px; max-width: 100%; }
+  }
+
   .progress-track {
     height: 6px; background: #1b2e21; border-radius: 4px; overflow: hidden;
     margin: 8px 0 6px;
