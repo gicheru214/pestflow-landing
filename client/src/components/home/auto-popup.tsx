@@ -515,29 +515,7 @@ export function AutoPopup() {
               );
             })()}
 
-            {/* ── STEP 3: Inline 15-Q Revenue Accelerator quiz (iframe) ── */}
-            {/* No framer-motion wrap: iframe doesn't need a slide animation, and
-                AnimatePresence's exit-then-enter delays the next step. */}
-            {step === "quiz" && (
-              <div key="quiz" className="flex flex-col">
-                <div className="px-4 pt-2 pb-1 flex items-center justify-end border-b border-white/5">
-                  <button
-                    type="button"
-                    onClick={() => setStep("offer")}
-                    className="text-slate-600 hover:text-slate-400 text-[10px] font-medium italic leading-tight text-right max-w-[200px]"
-                  >
-                    No thanks — I don't want to know where I'm leaving money on the table
-                  </button>
-                </div>
-                <iframe
-                  src={`/quiz.html?embed=1&${buildForwardParams().toString()}`}
-                  title="PestFlow Revenue Audit"
-                  className="w-full border-0 bg-[#0d1117]"
-                  style={{ height: "min(78vh, 720px)" }}
-                  loading="lazy"
-                />
-              </div>
-            )}
+            {/* STEP 3: quiz — handled by full-page redirect to /quiz.html, no inline render */}
 
             {/* ── STEP 4: Offer / CTA ── */}
             {step === "offer" && (
