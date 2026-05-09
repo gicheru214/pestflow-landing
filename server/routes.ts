@@ -365,10 +365,19 @@ export async function registerRoutes(
   });
 
   // Secure cross-project endpoint — returns all quiz/audit data for admin dashboard
+  app.options("/api/audit-leads", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "x-audit-secret, x-admin-password, content-type");
+    res.sendStatus(204);
+  });
   app.get("/api/audit-leads", async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     const secret = req.headers["x-audit-secret"];
-    const expected = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
-    if (!secret || secret !== expected) {
+    const adminPwd = req.headers["x-admin-password"];
+    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
+    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
+    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
