@@ -270,33 +270,17 @@ export function AutoPopup() {
     return params;
   };
 
-  // After 4-Q route quiz: show /quiz.html (15-Q Revenue Accelerator) inline as iframe.
-  // Quiz finishes by postMessage → we advance to "offer".
+  // After 4-Q route quiz: navigate to /quiz.html full-page Revenue Audit.
+  // Quiz finishes by redirecting back to /?popup_step=offer with all params forwarded.
   const handleRouteQuizComplete = () => {
     pushPartial({ ...snapshotRef.current, reason: "route_quiz_complete" });
-    setStep("quiz");
+    window.location.href = "/quiz.html?" + buildForwardParams().toString();
   };
 
-  // Listen for the embedded quiz iframe completion message.
+  // No-op effect kept to avoid removing step type reference — quiz step
+  // is no longer rendered but "quiz" may appear in URL params from old links.
   useEffect(() => {
     if (step !== "quiz") return;
-    const handler = (e: MessageEvent) => {
-      const data = e.data as { source?: string; event?: string; revenue?: number } | undefined;
-      if (!data || data.source !== "pestflow-quiz") return;
-      if (data.event === "completed") {
-        if (typeof data.revenue === "number") {
-          try {
-            const cached = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-            cached.quizRevenue = data.revenue;
-            localStorage.setItem("pestflow_popup_data", JSON.stringify(cached));
-          } catch { /* ignore */ }
-        }
-        pushPartial({ ...snapshotRef.current, reason: "quiz_complete", quizRevenue: data.revenue });
-        setStep("offer");
-      }
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
   }, [step]);
 
   const handleAcceptOffer = () => {
