@@ -96,7 +96,7 @@ export default function Watch() {
               className="px-10 py-7 text-lg font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 rounded-xl"
               onClick={handleStartTrial}
             >
-              Start My 7-Day Trial — $1 Today <ArrowRight className="ml-2 h-5 w-5" />
+              Start My 7-Day Trial <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="text-xs text-slate-500 mt-3">
               {showCta
