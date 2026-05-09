@@ -183,6 +183,10 @@ export const submissions = pgTable("submissions", {
   state: text("state"),
   zipCode: text("zip_code"),
   submittedAt: timestamp("submitted_at").defaultNow(),
+  // Quiz data
+  routeAnswers: jsonb("route_answers"),
+  quizAnswers: jsonb("quiz_answers"),
+  quizRevenue: integer("quiz_revenue"),
   // Activation tracking
   customersImported: integer("customers_imported").default(0),
   activated: boolean("activated").default(false),
