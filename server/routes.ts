@@ -364,6 +364,21 @@ export async function registerRoutes(
     }
   });
 
+  // Secure cross-project endpoint — returns all quiz/audit data for admin dashboard
+  app.get("/api/audit-leads", async (req, res) => {
+    const secret = req.headers["x-audit-secret"];
+    const expected = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
+    if (!secret || secret !== expected) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const allSubmissions = await storage.getSubmissions();
+      res.json(allSubmissions);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch audit leads" });
+    }
+  });
+
   app.post("/api/submissions", async (req, res) => {
     try {
       const validatedData = insertSubmissionSchema.parse(req.body);
