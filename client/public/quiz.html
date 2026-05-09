@@ -525,6 +525,34 @@ function skipAudit() {
   window.location.href = '/?' + out.toString();
 }
 
+async function submitAuditToBackend() {
+  try {
+    const cached = JSON.parse(localStorage.getItem('pestflow_popup_data') || '{}');
+    const body = {
+      type: 'audit',
+      firstName: incomingParams.get('firstName') || cached.firstName || cached.name?.split(' ')[0] || 'Unknown',
+      lastName: incomingParams.get('lastName') || cached.lastName || cached.name?.split(' ').slice(1).join(' ') || '',
+      email: incomingParams.get('email') || cached.email || '',
+      phone: incomingParams.get('phone') || cached.phone || '',
+      routes: incomingParams.get('routeCount') || cached.routeCount || '',
+      routeAnswers: {
+        routeCount: incomingParams.get('routeCount') || cached.routeCount,
+        routeMix: incomingParams.get('routeMix') || cached.routeMix,
+        routeDensity: incomingParams.get('routeDensity') || cached.routeDensity,
+        routeBottleneck: incomingParams.get('routeBottleneck') || cached.routeBottleneck,
+      },
+      quizAnswers: state.answers,
+      quizRevenue: Math.round(state.revenue),
+    };
+    await fetch('/api/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      keepalive: true,
+    });
+  } catch (e) { /* non-blocking */ }
+}
+
 /* On Q15 done, persist answers + return to popup at offer step.
    Forward all incoming params (firstName/email/phone/route*) so popup re-hydrates. */
 function finishQuiz() {
@@ -534,6 +562,7 @@ function finishQuiz() {
     cached.quizRevenue = state.revenue;
     localStorage.setItem('pestflow_popup_data', JSON.stringify(cached));
   } catch (e) { /* ignore */ }
+  submitAuditToBackend();
 
   const out = new URLSearchParams(incomingParams);
   out.set('popup_step', 'offer');
