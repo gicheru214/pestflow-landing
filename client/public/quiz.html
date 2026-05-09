@@ -519,6 +519,12 @@ function revealAnswer(idx) {
   render();
 }
 
+function skipAudit() {
+  const out = new URLSearchParams(incomingParams);
+  out.set('popup_step', 'offer');
+  window.location.href = '/?' + out.toString();
+}
+
 /* On Q15 done, persist answers + return to popup at offer step.
    Forward all incoming params (firstName/email/phone/route*) so popup re-hydrates. */
 function finishQuiz() {
