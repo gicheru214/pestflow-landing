@@ -446,8 +446,17 @@ function questionHtml(idx) {
     ? (isLast ? 'Claim my free trial →' : 'Continue →')
     : 'Show me the answer';
 
+  const skipHtml = idx === 0 ? `
+    <div style="text-align:right; margin-bottom:10px;">
+      <a href="javascript:void(0)" onclick="skipAudit()"
+         style="font-size:11px; color:#3a5a42; font-style:italic; text-decoration:none;">
+        Skip — I'd rather not know where my shop is bleeding cash
+      </a>
+    </div>` : '';
+
   return `
     <div>
+      ${skipHtml}
       ${progressHtml()}
       ${moneyLineHtml()}
       <div class="q-section-tag">${q.section}</div>
