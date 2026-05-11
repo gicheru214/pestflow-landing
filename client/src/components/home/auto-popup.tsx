@@ -245,6 +245,11 @@ export function AutoPopup() {
           technicians: "N/A",
         }),
       });
+      analytics.identify(email.trim(), {
+        $email: email.trim(),
+        $name: name.trim(),
+        $phone: phone.trim(),
+      });
       analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
       localStorage.setItem("pestflow_popup_submitted", "true");
     } catch (e) {
