@@ -50,8 +50,12 @@ function goToPricing(featureId?: string) {
 
 export default function SignupSuccess() {
   const [, setLocation] = useLocation();
-  const [uiStep, setUiStep] = useState<"confirmed" | "feature-pick" | "loss-aversion">("confirmed");
+  const [uiStep, setUiStep] = useState<"confirmed" | "feature-pick" | "loss-aversion" | "tech-ready">("confirmed");
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
+  const [isTech, setIsTech] = useState(false);
+  const [techEmail, setTechEmail] = useState("");
+  const [techName, setTechName] = useState("");
+  const [techEmployer, setTechEmployer] = useState("");
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -60,23 +64,46 @@ export default function SignupSuccess() {
     const utmSource = urlParams.get('utm_source') || hashParams.get('utm_source') || sessionStorage.getItem('utm_source') || undefined;
     const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign') || undefined;
     const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
+    const type = urlParams.get('type') || hashParams.get('type');
 
-    analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
-    analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: 1.00, currency: 'USD' });
+    analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
+    analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
     analytics.track(EVENTS.ACCOUNT.SIGNUP_COMPLETE);
 
     const anonId = sessionStorage.getItem('pestflow_user_id') || `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     sessionStorage.setItem('pestflow_user_id', anonId);
-    analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
+    analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
 
     if (window.fbq) {
-      window.fbq('track', 'Lead', { value: 10.00, currency: 'USD' });
+      window.fbq('track', 'Lead', { value: type === 'tech' ? 0 : 10.00, currency: 'USD' });
+    }
+
+    if (type === 'tech') {
+      setIsTech(true);
+      setTechEmail(urlParams.get('email') || '');
+      setTechName(urlParams.get('name') || '');
+      setTechEmployer(urlParams.get('employer') || '');
+      const timer = setTimeout(() => setUiStep("tech-ready"), 1500);
+      return () => clearTimeout(timer);
     }
 
     // Auto-advance to feature picker after 1.5s
     const timer = setTimeout(() => setUiStep("feature-pick"), 1500);
     return () => clearTimeout(timer);
   }, [setLocation]);
+
+  const handleTechGoToApp = () => {
+    const params = new URLSearchParams();
+    if (techEmail) params.set('email', techEmail);
+    if (techName) params.set('name', techName);
+    if (techEmployer) params.set('employer', techEmployer);
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    if (isMobileDevice()) {
+      window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
+    } else {
+      window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
+    }
+  };
 
   const handleFeatureSelect = (featureId: string) => {
     setSelectedFeature(featureId);
