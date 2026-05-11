@@ -185,7 +185,7 @@ export default function SignupSuccess() {
         )}
 
         {/* Step 2: Feature picker — "what do you want to try first?" */}
-        {uiStep === "feature-pick" && (
+        {!isTech && uiStep === "feature-pick" && (
           <motion.div
             key="feature-pick"
             initial={{ opacity: 0, y: 20 }}
