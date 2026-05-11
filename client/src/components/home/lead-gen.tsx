@@ -37,6 +37,11 @@ export function LeadGen() {
         })
       });
 
+      analytics.identify(formData.email.trim(), {
+        $email: formData.email.trim(),
+        $name: `${formData.firstName} ${formData.lastName}`.trim(),
+        routes: formData.routes,
+      });
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
       window.location.href = "/onboarding";
     } catch (error) {
