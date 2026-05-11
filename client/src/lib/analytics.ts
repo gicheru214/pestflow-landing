@@ -34,7 +34,7 @@ export const analytics = {
       window.mixpanel.identify(userId);
       if (properties) {
         window.mixpanel.people.set({
-          ...sanitizeProperties(properties),
+          ...properties,
           $last_seen: new Date().toISOString(),
         });
       }
@@ -43,7 +43,7 @@ export const analytics = {
 
   setUserProperties: (properties: Record<string, any>) => {
     if (typeof window !== 'undefined' && window.mixpanel) {
-      window.mixpanel.people.set(sanitizeProperties(properties));
+      window.mixpanel.people.set(properties);
     }
   },
 
