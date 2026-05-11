@@ -185,13 +185,12 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
                   <p className="text-[10px] text-slate-400 mt-1">Any email works — just use your work one if you have it.</p>
                 </Field>
 
-                <Field label="Phone Number" error={errors.phone}>
+                <Field label="Phone Number (optional)" error={errors.phone}>
                   <Input
                     type="tel"
                     placeholder="(555) 000-0000"
                     value={form.phone}
                     onChange={e => set("phone", e.target.value)}
-                    className={errors.phone ? "border-red-400" : ""}
                   />
                 </Field>
 
