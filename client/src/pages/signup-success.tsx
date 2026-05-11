@@ -122,8 +122,50 @@ export default function SignupSuccess() {
       </div>
 
       <AnimatePresence mode="wait">
+
+        {/* Tech: Account ready */}
+        {uiStep === "tech-ready" && (
+          <motion.div
+            key="tech-ready"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.35 }}
+            className="relative z-10 w-full max-w-md"
+          >
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center space-y-5">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style={{ background: "rgba(30,207,200,0.12)" }}>
+                <Wrench className="w-7 h-7" style={{ color: "#1ECFC8" }} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 mb-1">Your free tech account is ready!</h1>
+                <p className="text-slate-500 text-sm">
+                  {techName ? `Welcome, ${techName.split(' ')[0]}! ` : ''}
+                  Set a password and you're in — free, always.
+                </p>
+              </div>
+              {techEmail && (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 font-mono break-all">
+                  {techEmail}
+                </div>
+              )}
+              <button
+                onClick={handleTechGoToApp}
+                className="w-full font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg text-white"
+                style={{ background: "#1ECFC8", boxShadow: "0 6px 20px rgba(30,207,200,0.3)" }}
+              >
+                Set Up My Account
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <p className="text-xs text-slate-400">
+                100% free for field technicians · No credit card ever
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Step 1: Confirmation flash */}
-        {uiStep === "confirmed" && (
+        {!isTech && uiStep === "confirmed" && (
           <motion.div
             key="confirmed"
             initial={{ scale: 0.8, opacity: 0 }}
