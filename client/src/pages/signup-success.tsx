@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { CheckCircle2, Route, Calendar, Receipt, ArrowRight } from "lucide-react";
+import { CheckCircle2, Route, Calendar, Receipt, ArrowRight, Wrench } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
+
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent) || window.innerWidth <= 767;
+}
 
 declare global {
   interface Window {
