@@ -388,6 +388,29 @@ export async function registerRoutes(
     }
   });
 
+  // Tech leads endpoint — returns only type=tech_lead submissions
+  app.options("/api/tech-leads", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "x-admin-password, content-type");
+    res.sendStatus(204);
+  });
+  app.get("/api/tech-leads", async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    const adminPwd = req.headers["x-admin-password"];
+    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
+    if (adminPwd !== expectedAdmin) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      const allSubmissions = await storage.getSubmissions();
+      const techLeads = allSubmissions.filter((s: any) => s.type === "tech_lead");
+      res.json(techLeads);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch tech leads" });
+    }
+  });
+
   app.post("/api/submissions", async (req, res) => {
     try {
       const validatedData = insertSubmissionSchema.parse(req.body);
