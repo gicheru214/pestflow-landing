@@ -194,13 +194,14 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
                   />
                 </Field>
 
-                <Field label="Business You Work For" error={errors.employer}>
+                <Field label="Business You Work For *" error={errors.employer}>
                   <Input
                     placeholder="Green Shield Pest Control"
                     value={form.employer}
                     onChange={e => set("employer", e.target.value)}
                     className={errors.employer ? "border-red-400" : ""}
                   />
+                  <p className="text-[10px] text-slate-400 mt-1">Required — we use this to set up your account.</p>
                 </Field>
 
                 <Field label="Business Owner's Name" error={errors.ownerName}>
