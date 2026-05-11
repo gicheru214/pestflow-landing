@@ -227,7 +227,7 @@ export default function SignupSuccess() {
         )}
 
         {/* Step 3: Loss aversion + CTA to pricing */}
-        {uiStep === "loss-aversion" && (
+        {!isTech && uiStep === "loss-aversion" && (
           <motion.div
             key="loss-aversion"
             initial={{ opacity: 0, y: 20 }}
