@@ -42,7 +42,7 @@ export function Hero({ variant }: { variant?: "tech" } = {}) {
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white font-medium backdrop-blur-md"
           >
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
-            PEST CONTROL SOFTWARE
+            {isTech ? "FREE FOR FIELD TECHNICIANS" : "PEST CONTROL SOFTWARE"}
           </motion.div>
 
           <motion.h1
