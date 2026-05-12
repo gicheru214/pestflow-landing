@@ -35,7 +35,7 @@ export default function TechLanding() {
       <TechPopup />
       <Navbar />
       <main className="flex-grow">
-        <Hero />
+        <Hero variant="tech" />
         <Features />
         <LeadGen />
         <Pricing />
