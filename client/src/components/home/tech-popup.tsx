@@ -3,7 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, Wrench, Building2 } from "lucide-react";
+import { ArrowRight, Wrench, Building2 } from "lucide-react";
 
 function pushTechLead(payload: Record<string, unknown>) {
   try {
@@ -18,13 +18,20 @@ function pushTechLead(payload: Record<string, unknown>) {
 
 type Step = "role" | "lead";
 
-export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+export function TechPopup() {
+  const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("role");
   const [form, setForm] = useState({ name: "", email: "", phone: "", employer: "", ownerName: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Reset step when popup opens
+  // Auto-open after 2s (same pattern as AutoPopup)
+  useEffect(() => {
+    const t = setTimeout(() => setOpen(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Reset step on open
   useEffect(() => { if (open) setStep("role"); }, [open]);
 
   const set = (field: string, value: string) => {
@@ -36,7 +43,6 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Required";
     if (!form.email.trim()) e.email = "Required";
-    // Phone is optional — no validation
     if (!form.employer.trim()) e.employer = "We need the business name to set up your account";
     if (!form.ownerName.trim()) e.ownerName = "Required";
     setErrors(e);
@@ -71,16 +77,16 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
   };
 
   const handleOwnerChoice = () => {
-    onOpenChange(false);
+    setOpen(false);
     window.location.href = "/";
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[420px] p-0 overflow-hidden border-0 rounded-2xl shadow-2xl">
         <AnimatePresence mode="wait">
 
-          {/* Step: Role Gate */}
+          {/* Step 1: Role gate */}
           {step === "role" && (
             <motion.div
               key="role"
@@ -90,10 +96,11 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
               transition={{ duration: 0.25 }}
               className="p-8"
             >
-              {/* Brand bar */}
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#1ECFC8" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
                 </div>
                 <span className="font-bold text-slate-800 text-sm tracking-tight">PestFlow</span>
               </div>
@@ -137,7 +144,7 @@ export function TechPopup({ open, onOpenChange }: { open: boolean; onOpenChange:
             </motion.div>
           )}
 
-          {/* Step: Tech Lead Capture */}
+          {/* Step 2: Tech lead capture */}
           {step === "lead" && (
             <motion.div
               key="lead"
