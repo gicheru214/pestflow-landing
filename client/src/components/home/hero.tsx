@@ -7,7 +7,8 @@ import { useState } from "react";
 import { DemoVideoModal } from "./auto-popup";
 import { analytics, EVENTS } from "@/lib/analytics";
 
-export function Hero() {
+export function Hero({ variant }: { variant?: "tech" } = {}) {
+  const isTech = variant === "tech";
   const [showDemo, setShowDemo] = useState(false);
   const { scrollY } = useScroll();
   const y1 = useTransform(scrollY, [0, 500], [0, 200]);
