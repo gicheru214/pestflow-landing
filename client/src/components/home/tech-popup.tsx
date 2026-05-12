@@ -95,52 +95,54 @@ export function TechPopup() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25 }}
-              className="p-8"
             >
-              <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#1ECFC8" }}>
+              {/* Brand header */}
+              <div className="px-8 py-5 flex items-center gap-3" style={{ background: "#1ECFC8" }}>
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                   </svg>
                 </div>
-                <span className="font-bold text-slate-800 text-sm tracking-tight">PestFlow</span>
+                <span className="font-bold text-white text-sm tracking-tight">PestFlow for Technicians</span>
               </div>
 
-              <h2 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
-                Are you a technician or a business owner?
-              </h2>
-              <p className="text-sm text-slate-500 mb-6">
-                We'll set up the right experience for you.
-              </p>
+              <div className="p-8 pt-6">
+                <h2 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
+                  Are you a technician or a business owner?
+                </h2>
+                <p className="text-sm text-slate-500 mb-6">
+                  Pest control techs use PestFlow free — always. Tell us who you are.
+                </p>
 
-              <div className="space-y-3">
-                <button
-                  onClick={() => setStep("lead")}
-                  className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#1ECFC8] hover:bg-teal-50 transition-all text-left group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center flex-shrink-0 group-hover:bg-teal-200 transition-colors">
-                    <Wrench className="w-5 h-5 text-teal-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-800 text-sm">I'm a Field Technician</div>
-                    <div className="text-xs text-slate-500">Free account — stay organized on the job</div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-teal-500 transition-colors flex-shrink-0" />
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setStep("lead")}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#1ECFC8] hover:bg-teal-50 transition-all text-left group"
+                  >
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors" style={{ background: "#e6fafa" }}>
+                      <Wrench className="w-5 h-5" style={{ color: "#1ECFC8" }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-800 text-sm">I'm a Field Technician</div>
+                      <div className="text-xs text-slate-500">Free account — stay organized on every job</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#1ECFC8] transition-colors flex-shrink-0" />
+                  </button>
 
-                <button
-                  onClick={handleOwnerChoice}
-                  className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#F5A623] hover:bg-amber-50 transition-all text-left group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-200 transition-colors">
-                    <Building2 className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-slate-800 text-sm">I Own a Pest Control Business</div>
-                    <div className="text-xs text-slate-500">Route optimization, invoicing, scheduling</div>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-500 transition-colors flex-shrink-0" />
-                </button>
+                  <button
+                    onClick={handleOwnerChoice}
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#F5A623] hover:bg-amber-50 transition-all text-left group"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-200 transition-colors">
+                      <Building2 className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-800 text-sm">I Own a Pest Control Business</div>
+                      <div className="text-xs text-slate-500">Route optimization, invoicing, scheduling</div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-500 transition-colors flex-shrink-0" />
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
@@ -153,89 +155,95 @@ export function TechPopup() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.25 }}
-              className="p-7"
             >
-              <button
-                onClick={() => setStep("role")}
-                className="text-xs text-slate-400 hover:text-slate-600 mb-4 flex items-center gap-1 transition-colors"
-              >
-                ‹ Back
-              </button>
-
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#1ECFC8" }}>
+              {/* Brand header */}
+              <div className="px-7 py-5 flex items-center gap-3" style={{ background: "#1ECFC8" }}>
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                   <Wrench className="w-4 h-4 text-white" />
                 </div>
-                <span className="font-bold text-slate-800 text-sm">PestFlow Tech — Free</span>
+                <div>
+                  <div className="font-bold text-white text-sm leading-tight">PestFlow Tech — Free</div>
+                  <div className="text-white/80 text-[11px]">Built for field technicians</div>
+                </div>
               </div>
 
-              <h2 className="text-lg font-bold text-slate-900 mb-1 mt-3">Claim your free tech account</h2>
-              <p className="text-xs text-slate-500 mb-5">Takes 30 seconds. No credit card, ever.</p>
+              <div className="p-7 pt-5">
+                <button
+                  onClick={() => setStep("role")}
+                  className="text-xs text-slate-400 hover:text-slate-600 mb-4 flex items-center gap-1 transition-colors"
+                >
+                  ‹ Back
+                </button>
 
-              <div className="space-y-3">
-                <Field label="Your Name" error={errors.name}>
-                  <Input
-                    placeholder="Mike Rodriguez"
-                    value={form.name}
-                    onChange={e => set("name", e.target.value)}
-                    className={errors.name ? "border-red-400" : ""}
-                  />
-                </Field>
+                <h2 className="text-lg font-bold text-slate-900 mb-1">Claim your free tech account</h2>
+                <p className="text-xs text-slate-500 mb-5">Takes 30 seconds. No credit card, ever.</p>
 
-                <Field label="Work Email" error={errors.email}>
-                  <Input
-                    type="email"
-                    placeholder="mike@greenshieldpest.com"
-                    value={form.email}
-                    onChange={e => set("email", e.target.value)}
-                    className={errors.email ? "border-red-400" : ""}
-                  />
-                  <p className="text-[10px] text-slate-400 mt-1">Any email works — just use your work one if you have it.</p>
-                </Field>
+                <div className="space-y-3">
+                  <Field label="Your Name" error={errors.name}>
+                    <Input
+                      placeholder="Mike Rodriguez"
+                      value={form.name}
+                      onChange={e => set("name", e.target.value)}
+                      className={errors.name ? "border-red-400" : ""}
+                    />
+                  </Field>
 
-                <Field label="Phone Number (optional)" error={errors.phone}>
-                  <Input
-                    type="tel"
-                    placeholder="(555) 000-0000"
-                    value={form.phone}
-                    onChange={e => set("phone", e.target.value)}
-                  />
-                </Field>
+                  <Field label="Work Email" error={errors.email}>
+                    <Input
+                      type="email"
+                      placeholder="mike@greenshieldpest.com"
+                      value={form.email}
+                      onChange={e => set("email", e.target.value)}
+                      className={errors.email ? "border-red-400" : ""}
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">Any email works — just use your work one if you have it.</p>
+                  </Field>
 
-                <Field label="Business You Work For *" error={errors.employer}>
-                  <Input
-                    placeholder="Green Shield Pest Control"
-                    value={form.employer}
-                    onChange={e => set("employer", e.target.value)}
-                    className={errors.employer ? "border-red-400" : ""}
-                  />
-                  <p className="text-[10px] text-slate-400 mt-1">Required — we use this to set up your account.</p>
-                </Field>
+                  <Field label="Phone Number" error={errors.phone}>
+                    <Input
+                      type="tel"
+                      placeholder="(555) 000-0000"
+                      value={form.phone}
+                      onChange={e => set("phone", e.target.value)}
+                      className={errors.phone ? "border-red-400" : ""}
+                    />
+                  </Field>
 
-                <Field label="Business Owner's Name" error={errors.ownerName}>
-                  <Input
-                    placeholder="John Smith"
-                    value={form.ownerName}
-                    onChange={e => set("ownerName", e.target.value)}
-                    className={errors.ownerName ? "border-red-400" : ""}
-                  />
-                </Field>
+                  <Field label="Business You Work For" error={errors.employer}>
+                    <Input
+                      placeholder="Green Shield Pest Control"
+                      value={form.employer}
+                      onChange={e => set("employer", e.target.value)}
+                      className={errors.employer ? "border-red-400" : ""}
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">Required — we use this to set up your account.</p>
+                  </Field>
+
+                  <Field label="Business Owner's Name" error={errors.ownerName}>
+                    <Input
+                      placeholder="John Smith"
+                      value={form.ownerName}
+                      onChange={e => set("ownerName", e.target.value)}
+                      className={errors.ownerName ? "border-red-400" : ""}
+                    />
+                  </Field>
+                </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={submitting}
+                  className="w-full mt-5 py-5 text-sm font-bold rounded-xl text-white flex items-center justify-center gap-2"
+                  style={{ background: submitting ? "#a3a3a3" : "#1ECFC8" }}
+                >
+                  {submitting ? "Setting up your account…" : (
+                    <>Claim My Free Account <ArrowRight className="w-4 h-4" /></>
+                  )}
+                </Button>
+
+                <p className="text-[10px] text-center text-slate-400 mt-3">
+                  100% free for field technicians. No card required.
+                </p>
               </div>
-
-              <Button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="w-full mt-5 py-5 text-sm font-bold rounded-xl text-white flex items-center justify-center gap-2"
-                style={{ background: submitting ? "#a3a3a3" : "#1ECFC8" }}
-              >
-                {submitting ? "Setting up your account…" : (
-                  <>Claim My Free Account <ArrowRight className="w-4 h-4" /></>
-                )}
-              </Button>
-
-              <p className="text-[10px] text-center text-slate-400 mt-3">
-                100% free for field technicians. No card required.
-              </p>
             </motion.div>
           )}
 
