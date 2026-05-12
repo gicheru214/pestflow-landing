@@ -64,7 +64,9 @@ export function Hero({ variant }: { variant?: "tech" } = {}) {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="text-base sm:text-lg md:text-xl text-slate-200 max-w-3xl leading-relaxed drop-shadow"
           >
-            Drag-and-drop route board, recurring billing, technician GPS, automated review requests, and a branded customer portal — built for pest control owners scaling past $1M.
+            {isTech
+              ? "Job sheets, customer notes, and your daily schedule — all in your pocket. Free for field technicians, no credit card ever."
+              : "Drag-and-drop route board, recurring billing, technician GPS, automated review requests, and a branded customer portal — built for pest control owners scaling past $1M."}
           </motion.p>
 
           <motion.div 
