@@ -43,6 +43,7 @@ export function TechPopup() {
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Required";
     if (!form.email.trim()) e.email = "Required";
+    if (!form.phone.trim()) e.phone = "Required";
     if (!form.employer.trim()) e.employer = "We need the business name to set up your account";
     if (!form.ownerName.trim()) e.ownerName = "Required";
     setErrors(e);
