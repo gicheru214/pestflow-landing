@@ -51,8 +51,11 @@ export function Hero({ variant }: { variant?: "tech" } = {}) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-4xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl text-white font-heading leading-[1.05] drop-shadow-lg"
           >
-            Run your <span className="text-emerald-400">pest control</span> business <br className="hidden sm:block" />
-            from the truck.
+            {isTech ? (
+              <>Pest control techs <span className="text-emerald-400">work free</span> <br className="hidden sm:block" />with PestFlow.</>
+            ) : (
+              <>Run your <span className="text-emerald-400">pest control</span> business <br className="hidden sm:block" />from the truck.</>
+            )}
           </motion.h1>
 
           <motion.p
