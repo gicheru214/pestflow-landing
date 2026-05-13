@@ -119,6 +119,8 @@ const ROUTE_QUESTIONS = [
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleErr, setGoogleErr] = useState("");
   const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const initialStep = urlParams.get("popup_step") as Step | null;
   const validInitial: Step[] = ["details", "offer"];
