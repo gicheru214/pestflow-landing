@@ -188,15 +188,26 @@ export default function Dashboard() {
                 </Button>
               </Link>
               <Link href="/routes">
-                <Button 
-                  data-testid="button-routes" 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  data-testid="button-routes"
+                  variant="ghost"
+                  size="sm"
                   className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
                   onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'routes' })}
                 >
                   <MapIcon className="h-4 w-4 mr-1.5" />
                   Routes
+                </Button>
+              </Link>
+              <Link href="/automations">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-3 text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.TAB_CLICK, { tab: 'automations' })}
+                >
+                  <Zap className="h-4 w-4 mr-1.5" />
+                  Automations
                 </Button>
               </Link>
             </nav>
