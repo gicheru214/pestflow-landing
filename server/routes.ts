@@ -460,6 +460,76 @@ export async function registerRoutes(
     }
   });
 
+  // ── Google OAuth sign-in ──────────────────────────────────────────────────
+  // Verifies the GIS credential (ID token) via Google's tokeninfo endpoint.
+  // On success creates/updates a session and returns user info.
+  app.post("/api/auth/google", async (req, res) => {
+    const { credential } = req.body as { credential?: string };
+    if (!credential) {
+      return res.status(400).json({ message: "Missing credential" });
+    }
+    try {
+      const resp = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`
+      );
+      if (!resp.ok) {
+        return res.status(401).json({ message: "Invalid Google token" });
+      }
+      const payload = await resp.json() as {
+        sub: string; email: string; name: string; picture: string; aud: string;
+      };
+
+      // Basic audience check
+      const expectedAud = process.env.VITE_GOOGLE_CLIENT_ID ?? "";
+      if (expectedAud && payload.aud !== expectedAud) {
+        return res.status(401).json({ message: "Token audience mismatch" });
+      }
+
+      // Persist lead as submission
+      try {
+        await storage.createSubmission({
+          type: "google_signin",
+          firstName: (payload.name ?? "").split(" ")[0] || "",
+          lastName: (payload.name ?? "").split(" ").slice(1).join(" ") || "",
+          email: payload.email,
+          phone: "",
+          companyName: "",
+          technicians: "",
+        } as any);
+      } catch { /* non-fatal */ }
+
+      // Set simple session cookie
+      if (req.session) {
+        (req.session as any).user = {
+          id: payload.sub,
+          email: payload.email,
+          name: payload.name,
+          picture: payload.picture,
+          provider: "google",
+        };
+      }
+
+      return res.json({
+        ok: true,
+        user: { email: payload.email, name: payload.name, picture: payload.picture },
+      });
+    } catch (err) {
+      console.error("Google auth error", err);
+      return res.status(500).json({ message: "Authentication failed" });
+    }
+  });
+
+  // ── Email/password sign-in (stub — wire to your user store) ──────────────
+  app.post("/api/auth/login", async (req, res) => {
+    const { email, password } = req.body as { email?: string; password?: string };
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+    // TODO: replace with real user lookup & bcrypt compare
+    // For now redirect to onboarding flow
+    return res.status(401).json({ message: "Invalid email or password" });
+  });
+
   return httpServer;
 }
 
