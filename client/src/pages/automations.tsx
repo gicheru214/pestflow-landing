@@ -400,7 +400,7 @@ export default function Automations() {
           </nav>
         </div>
         <div className="mt-auto flex flex-col gap-4 mb-4">
-          <NavIcon icon={Settings} label="Settings" />
+          <Link href="/dashboard"><NavIcon icon={Settings} label="Settings" /></Link>
         </div>
       </aside>
 
