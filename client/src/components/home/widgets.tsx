@@ -12,6 +12,13 @@ const WORK_DAYS = 250;
 function RevenueCalculator() {
   const [stops, setStops] = useState(8);
   const [trucks, setTrucks] = useState(2);
+  const [, setLocation] = useLocation();
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleRedirect = useCallback(() => {
+    if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    redirectTimer.current = setTimeout(() => setLocation("/onboarding"), 3000);
+  }, [setLocation]);
 
   const gap = Math.max(0, INDUSTRY_BENCHMARK - stops);
   const annualLeak = gap * trucks * AVG_TICKET * WORK_DAYS;
