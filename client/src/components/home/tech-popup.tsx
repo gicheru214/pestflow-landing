@@ -172,6 +172,36 @@ export function TechPopup() {
                     <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-500 transition-colors flex-shrink-0" />
                   </button>
                 </div>
+
+                {/* ── Returning user sign-in ── */}
+                <div className="mt-5 pt-4 border-t border-slate-100">
+                  <p className="text-center text-[11px] text-slate-400 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
+                  <button
+                    onClick={() => {
+                      initGoogle((r) => {
+                        fetch("/api/auth/google", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ credential: r.credential }),
+                        }).then((res) => {
+                          if (res.ok) window.location.href = "/dashboard";
+                          else window.location.href = "/login";
+                        }).catch(() => { window.location.href = "/login"; });
+                      });
+                      setTimeout(() => (window as any).google?.accounts?.id?.prompt(), 200);
+                    }}
+                    className="w-full flex items-center justify-center gap-2.5 h-9 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-colors text-[13px] font-medium text-slate-700 mb-2"
+                  >
+                    <GoogleIcon />
+                    Sign in with Google
+                  </button>
+                  <a
+                    href="/login"
+                    className="block text-center text-[11px] text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    Or sign in with email →
+                  </a>
+                </div>
               </div>
             </motion.div>
           )}
