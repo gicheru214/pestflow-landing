@@ -115,6 +115,7 @@ export default function Dashboard() {
             <NavIcon icon={Users} label="Customers" />
             <NavIcon icon={MapIcon} label="Map" />
             <NavIcon icon={FileText} label="Reports" />
+            <NavIcon icon={Zap} label="Automations" />
             <NavIcon icon={MessageSquare} label="Messages" />
           </nav>
         </div>
