@@ -162,16 +162,16 @@ function ComparisonTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-100">
-              <th className="text-left text-xs font-semibold text-slate-400 pb-2 w-1/2">Feature</th>
-              <th className="text-center text-xs font-bold text-emerald-700 pb-2 px-2">PestFlow</th>
-              <th className="text-center text-xs font-semibold text-slate-400 pb-2 px-2">PestPac</th>
-              <th className="text-center text-xs font-semibold text-slate-400 pb-2 px-2">GorillaDesk</th>
+              <th className="text-left text-sm font-semibold text-slate-400 pb-3 w-1/2">Feature</th>
+              <th className="text-center text-sm font-bold text-emerald-700 pb-3 px-4">PestFlow</th>
+              <th className="text-center text-sm font-semibold text-slate-400 pb-3 px-4">PestPac</th>
+              <th className="text-center text-sm font-semibold text-slate-400 pb-3 px-4">GorillaDesk</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
             {COMPARISON_ROWS.map((row) => (
               <tr key={row.feature} className="hover:bg-emerald-50/40 transition-colors">
-                <td className="py-2 text-slate-700 text-xs font-medium pr-2">{row.feature}</td>
+                <td className="py-3 text-slate-700 text-sm font-medium pr-2">{row.feature}</td>
                 <td className="py-2 text-center">
                   <Cell val={row.pestflow} />
                 </td>
