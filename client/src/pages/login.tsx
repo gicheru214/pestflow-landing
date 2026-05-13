@@ -86,11 +86,42 @@ export default function Login() {
   }, [handleGoogleCredential]);
 
   const handleGoogleClick = () => {
-    if (window.google && GOOGLE_CLIENT_ID) {
-      window.google.accounts.id.prompt();
-    } else {
-      setError("Google sign-in is not configured yet. Please sign in with email below.");
+    const w = window as any;
+    if (!w.google?.accounts?.oauth2) {
+      setError("Google sign-in not available yet. Please refresh the page.");
+      return;
     }
+    setGoogleLoading(true);
+    setError("");
+    const tokenClient = w.google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: "openid email profile",
+      callback: async (tokenResponse: any) => {
+        if (tokenResponse.error) {
+          setGoogleLoading(false);
+          setError("Sign-in cancelled.");
+          return;
+        }
+        try {
+          const r = await fetch("/api/auth/google-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ access_token: tokenResponse.access_token }),
+          });
+          if (r.ok) {
+            window.location.href = "/dashboard";
+          } else {
+            const d = await r.json().catch(() => ({}));
+            setError(d.message ?? "Sign-in failed. Please try again.");
+            setGoogleLoading(false);
+          }
+        } catch {
+          setError("Network error. Please check your connection and try again.");
+          setGoogleLoading(false);
+        }
+      },
+    });
+    tokenClient.requestAccessToken({ prompt: "select_account" });
   };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
