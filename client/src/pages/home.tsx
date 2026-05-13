@@ -34,7 +34,6 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
       <AutoPopup />
-      <BarPopup variant="home" />
       <Navbar />
       <main className="flex-grow">
         <Hero />
