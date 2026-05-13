@@ -33,7 +33,6 @@ export default function TechLanding() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
       <TechPopup />
-      <BarPopup variant="tech" />
       <Navbar />
       <main className="flex-grow">
         <Hero variant="tech" />
