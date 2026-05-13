@@ -610,6 +610,57 @@ export async function registerRoutes(
     }
   });
 
+  // ── Google OAuth2 token sign-in (access-token flow, replaces One Tap) ──────
+  // Frontend sends an OAuth2 access_token; server verifies it with Google's
+  // userinfo endpoint and creates a session. No client_secret needed.
+  app.post("/api/auth/google-token", async (req, res) => {
+    const { access_token } = req.body as { access_token?: string };
+    if (!access_token) {
+      return res.status(400).json({ message: "Missing access_token" });
+    }
+    try {
+      const resp = await fetch(
+        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${encodeURIComponent(access_token)}`
+      );
+      if (!resp.ok) {
+        return res.status(401).json({ message: "Invalid Google token" });
+      }
+      const user = await resp.json() as {
+        id: string; email: string; name: string; picture: string; verified_email: boolean;
+      };
+
+      try {
+        await (storage as any).createSubmission({
+          type: "google_signin",
+          firstName: (user.name ?? "").split(" ")[0] || "",
+          lastName: (user.name ?? "").split(" ").slice(1).join(" ") || "",
+          email: user.email,
+          phone: "",
+          companyName: "",
+          technicians: "",
+        });
+      } catch { /* non-fatal */ }
+
+      if (req.session) {
+        (req.session as any).user = {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          picture: user.picture,
+          provider: "google",
+        };
+      }
+
+      return res.json({
+        ok: true,
+        user: { email: user.email, name: user.name, picture: user.picture },
+      });
+    } catch (err) {
+      console.error("Google token auth error", err);
+      return res.status(500).json({ message: "Authentication failed" });
+    }
+  });
+
   // ── Email/password sign-in (stub — wire to your user store) ──────────────
   app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body as { email?: string; password?: string };
