@@ -40,6 +40,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <Features />
+        <Widgets />
         <LeadGen />
         <Pricing />
         <CTA />
