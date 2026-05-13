@@ -335,7 +335,7 @@ export function Widgets() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="flex flex-col gap-8 max-w-4xl mx-auto">
           {[
             <RevenueCalculator key="calc" />,
             <ComparisonTable key="compare" />,
@@ -347,7 +347,7 @@ export function Widgets() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col"
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow p-8"
             >
               {widget}
             </motion.div>
