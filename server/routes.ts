@@ -5,6 +5,14 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
 import { z } from "zod";
+import {
+  sendReviewRequest,
+  sendWelcomeEmail,
+  sendInvoiceEmail,
+  sendQuoteFollowup,
+  sendOverdueReminder,
+  sendJobSummary,
+} from "./email";
 
 const optimizeRouteSchema = z.object({
   jobs: z.array(z.string()).min(1, "At least one job is required"),
