@@ -242,7 +242,7 @@ function RouteIQGrader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col gap-4 flex-grow"
+            className="flex flex-col gap-4"
           >
             {QUESTIONS.map((q) => (
               <div key={q.id} className="bg-slate-50 rounded-xl p-3 border border-slate-100">
