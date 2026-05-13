@@ -214,10 +214,10 @@ export default function Dashboard() {
             </nav>
           </div>
 
-          <div className="flex-1 max-w-xl mx-8 relative">
+          <div className="hidden md:block flex-1 max-w-xl mx-4 relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input 
-              placeholder="Search..." 
+            <Input
+              placeholder="Search..."
               className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
               onFocus={() => analytics.track(EVENTS.NAVIGATION.SEARCH_FOCUS)}
               onChange={(e) => {
@@ -231,7 +231,7 @@ export default function Dashboard() {
                 }
               }}
             />
-            <div className="absolute right-3 top-2.5 text-xs text-slate-400 font-medium">OPTION+S</div>
+            <div className="absolute right-3 top-2.5 text-xs text-slate-400 font-medium hidden lg:block">OPTION+S</div>
           </div>
 
           <div className="flex items-center gap-3">
