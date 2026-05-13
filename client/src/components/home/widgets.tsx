@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { ArrowRight, Check, X, TrendingUp, Zap, BarChart2 } from "lucide-react";
 
 // ─── 1. Revenue Leak Calculator ──────────────────────────────────────────────
