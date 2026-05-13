@@ -432,6 +432,89 @@ export async function registerRoutes(
     }
   });
 
+  // ── Automation / Email API ────────────────────────────────────────────────
+
+  // Send review request after job complete
+  app.post("/api/automations/review-request", async (req, res) => {
+    const { to, customerName, companyName } = req.body;
+    if (!to || !customerName) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendReviewRequest(to, customerName, companyName || "Your Pest Control Company");
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Send welcome email to new customer
+  app.post("/api/automations/welcome", async (req, res) => {
+    const { to, customerName, companyName } = req.body;
+    if (!to || !customerName) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendWelcomeEmail(to, customerName, companyName || "Your Pest Control Company");
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Send invoice email
+  app.post("/api/automations/send-invoice", async (req, res) => {
+    const { to, customerName, companyName, amount, paymentLink, invoiceId } = req.body;
+    if (!to || !customerName || !amount) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendInvoiceEmail(
+        to, customerName, companyName || "Your Pest Control Company",
+        amount, paymentLink || "#", invoiceId || "INV-001"
+      );
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Send quote follow-up (48hr no-response)
+  app.post("/api/automations/quote-followup", async (req, res) => {
+    const { to, customerName, companyName } = req.body;
+    if (!to || !customerName) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendQuoteFollowup(to, customerName, companyName || "Your Pest Control Company");
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Send overdue invoice reminder
+  app.post("/api/automations/overdue-reminder", async (req, res) => {
+    const { to, customerName, companyName, amount, paymentLink, daysOverdue } = req.body;
+    if (!to || !customerName || !amount) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendOverdueReminder(
+        to, customerName, companyName || "Your Pest Control Company",
+        amount, paymentLink || "#", daysOverdue || 14
+      );
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Send job completion summary
+  app.post("/api/automations/job-summary", async (req, res) => {
+    const { to, customerName, companyName, serviceType, notes } = req.body;
+    if (!to || !customerName) return res.status(400).json({ error: "Missing required fields" });
+    try {
+      const result = await sendJobSummary(
+        to, customerName, companyName || "Your Pest Control Company",
+        serviceType || "Pest Control Service", notes || ""
+      );
+      res.json({ success: true, id: result.data?.id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Seed demo data endpoint
   app.post("/api/seed-demo-jobs", async (req, res) => {
     try {
