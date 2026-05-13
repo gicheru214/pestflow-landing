@@ -53,6 +53,8 @@ export function TechPopup() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", employer: "", ownerName: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleErr, setGoogleErr] = useState("");
 
   // Auto-open after 2s (same pattern as AutoPopup)
   useEffect(() => {
