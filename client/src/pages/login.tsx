@@ -79,7 +79,7 @@ export default function Login() {
             body: JSON.stringify({ access_token: tokenResponse.access_token }),
           });
           if (r.ok) {
-            window.location.href = "/dashboard";
+            window.location.href = "/onboarding";
           } else {
             const d = await r.json().catch(() => ({}));
             setError(d.message ?? "Sign-in failed. Please try again.");
@@ -109,7 +109,7 @@ export default function Login() {
         body: JSON.stringify({ email: email.trim(), password }),
       });
       if (r.ok) {
-        window.location.href = "/dashboard";
+        window.location.href = "/onboarding";
       } else {
         const d = await r.json();
         setError(d.message ?? "Invalid email or password.");
