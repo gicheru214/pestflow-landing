@@ -571,7 +571,7 @@ export async function registerRoutes(
       };
 
       // Basic audience check
-      const expectedAud = process.env.VITE_GOOGLE_CLIENT_ID ?? "";
+      const expectedAud = process.env.GOOGLE_CLIENT_ID ?? process.env.VITE_GOOGLE_CLIENT_ID ?? "";
       if (expectedAud && payload.aud !== expectedAud) {
         return res.status(401).json({ message: "Token audience mismatch" });
       }
