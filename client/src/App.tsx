@@ -19,6 +19,7 @@ import Invoices from "@/pages/invoices";
 import Watch from "@/pages/watch";
 import TechLanding from "@/pages/tech";
 import Login from "@/pages/login";
+import Automations from "@/pages/automations";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 function AppRouter() {
