@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { ArrowRight, Check, X, TrendingUp, Zap, BarChart2 } from "lucide-react";
@@ -20,7 +19,6 @@ function RevenueCalculator() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div className="h-11 w-11 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
           <TrendingUp className="h-5 w-5 text-white" />
@@ -31,7 +29,6 @@ function RevenueCalculator() {
         </div>
       </div>
 
-      {/* Sliders */}
       <div className="space-y-7 mb-8">
         <div>
           <div className="flex justify-between items-baseline mb-3">
@@ -41,7 +38,7 @@ function RevenueCalculator() {
           <input
             type="range" min={4} max={18} value={stops}
             onChange={(e) => setStops(Number(e.target.value))}
-            className="w-full h-2.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
+            className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
             <span>4 stops</span>
@@ -58,7 +55,7 @@ function RevenueCalculator() {
           <input
             type="range" min={1} max={15} value={trucks}
             onChange={(e) => setTrucks(Number(e.target.value))}
-            className="w-full h-2.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
+            className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
             <span>1 truck</span>
@@ -67,39 +64,23 @@ function RevenueCalculator() {
         </div>
       </div>
 
-      {/* Result */}
-      <AnimatePresence mode="wait">
-        {gap > 0 ? (
-          <motion.div
-            key="leak"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            className="bg-red-50 border-2 border-red-100 rounded-2xl p-6 text-center mb-4"
-          >
-            <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-2">Estimated Annual Leak</p>
-            <p className="text-5xl sm:text-6xl font-extrabold text-red-600 tracking-tight">${annualLeak.toLocaleString()}</p>
-            <p className="text-sm text-slate-500 mt-3">
-              That's <span className="font-bold text-slate-700">${weeklyLeak.toLocaleString()}/week</span> left on the table
-            </p>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="maxed"
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            className="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 text-center mb-4"
-          >
-            <p className="text-lg font-bold text-emerald-700">You're at or above the benchmark.</p>
-            <p className="text-sm text-slate-500 mt-1">PestFlow keeps you there and pushes further.</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {gap > 0 ? (
+        <div className="bg-red-50 border-2 border-red-100 rounded-2xl p-6 text-center mb-4">
+          <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-2">Estimated Annual Leak</p>
+          <p className="text-5xl sm:text-6xl font-extrabold text-red-600 tracking-tight">${annualLeak.toLocaleString()}</p>
+          <p className="text-sm text-slate-500 mt-3">
+            That's <span className="font-bold text-slate-700">${weeklyLeak.toLocaleString()}/week</span> left on the table
+          </p>
+        </div>
+      ) : (
+        <div className="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 text-center mb-4">
+          <p className="text-lg font-bold text-emerald-700">You're at or above the benchmark.</p>
+          <p className="text-sm text-slate-500 mt-1">PestFlow keeps you there and pushes further.</p>
+        </div>
+      )}
 
-      {/* CTA */}
-      <Link href="/onboarding">
-        <Button className="w-full h-13 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
+      <Link href="/onboarding" className="block">
+        <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
           Fix this with PestFlow <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </Link>
@@ -137,7 +118,6 @@ function Cell({ val }: { val: boolean }) {
 function ComparisonTable() {
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div className="h-11 w-11 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
           <BarChart2 className="h-5 w-5 text-white" />
@@ -148,9 +128,8 @@ function ComparisonTable() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto -mx-2 px-2">
-        <table className="w-full min-w-[340px]">
+        <table className="w-full min-w-[320px]">
           <thead>
             <tr className="border-b-2 border-slate-100">
               <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider pb-3 w-1/2">Feature</th>
@@ -177,10 +156,9 @@ function ComparisonTable() {
         </table>
       </div>
 
-      {/* CTA */}
       <div className="mt-7">
-        <Link href="/onboarding">
-          <Button className="w-full h-13 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
+        <Link href="/onboarding" className="block">
+          <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
             Switch in under 24 hours <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </Link>
@@ -215,7 +193,6 @@ function RouteIQGrader() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <div className="h-11 w-11 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
           <Zap className="h-5 w-5 text-white" />
@@ -226,72 +203,65 @@ function RouteIQGrader() {
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {!submitted ? (
-          <motion.div key="questions" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-            {QUESTIONS.map((q) => (
-              <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-sm text-slate-800 font-medium mb-3 leading-snug">{q.text}</p>
-                <div className="flex gap-3">
-                  {[true, false].map((val) => (
-                    <button
-                      key={String(val)}
-                      onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: val }))}
-                      className={`flex-1 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${
-                        answers[q.id] === val
-                          ? val
-                            ? "bg-red-100 border-red-400 text-red-700"
-                            : "bg-emerald-100 border-emerald-400 text-emerald-700"
-                          : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
-                      }`}
-                    >
-                      {val ? "Yes" : "No"}
-                    </button>
-                  ))}
-                </div>
+      {!submitted ? (
+        <div className="space-y-3">
+          {QUESTIONS.map((q) => (
+            <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm text-slate-800 font-medium mb-3 leading-snug">{q.text}</p>
+              <div className="flex gap-3">
+                {[true, false].map((val) => (
+                  <button
+                    key={String(val)}
+                    onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: val }))}
+                    className={`flex-1 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${
+                      answers[q.id] === val
+                        ? val
+                          ? "bg-red-100 border-red-400 text-red-700"
+                          : "bg-emerald-100 border-emerald-400 text-emerald-700"
+                        : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    {val ? "Yes" : "No"}
+                  </button>
+                ))}
               </div>
-            ))}
-
-            <Button
-              disabled={!allAnswered}
-              onClick={() => setSubmitted(true)}
-              className="w-full h-13 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl disabled:opacity-40 mt-2"
-            >
-              Grade My Operation <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="result"
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center"
-          >
-            <div className={`rounded-2xl border-2 p-8 mb-5 ${scoreBg}`}>
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Your Route IQ Score</p>
-              <p className={`text-7xl font-extrabold tracking-tight ${scoreColor}`}>{score}</p>
-              <p className="text-slate-400 text-sm font-medium mb-1">out of 100</p>
-              <p className={`text-base font-bold mt-2 ${scoreColor}`}>{scoreLabel}</p>
-              {yesCount > 0 && (
-                <p className="text-xs text-slate-500 mt-3">
-                  {yesCount} of 3 inefficiencies identified — PestFlow automates all of them on day one.
-                </p>
-              )}
             </div>
-            <Link href="/onboarding" className="block">
-              <Button className="w-full h-13 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
-                See my full audit inside PestFlow <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <button
-              onClick={() => { setSubmitted(false); setAnswers({ manual_scheduling: null, manual_confirm: null, split_apps: null }); }}
-              className="text-xs text-slate-400 hover:text-slate-600 mt-3 underline block mx-auto"
-            >
-              Retake
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ))}
+
+          <Button
+            disabled={!allAnswered}
+            onClick={() => setSubmitted(true)}
+            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl disabled:opacity-40 mt-2"
+          >
+            Grade My Operation <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <div className="text-center">
+          <div className={`rounded-2xl border-2 p-8 mb-5 ${scoreBg}`}>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Your Route IQ Score</p>
+            <p className={`text-7xl font-extrabold tracking-tight ${scoreColor}`}>{score}</p>
+            <p className="text-slate-400 text-sm font-medium mb-1">out of 100</p>
+            <p className={`text-base font-bold mt-2 ${scoreColor}`}>{scoreLabel}</p>
+            {yesCount > 0 && (
+              <p className="text-xs text-slate-500 mt-3">
+                {yesCount} of 3 inefficiencies identified — PestFlow automates all of them on day one.
+              </p>
+            )}
+          </div>
+          <Link href="/onboarding" className="block">
+            <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
+              See my full audit inside PestFlow <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+          <button
+            onClick={() => { setSubmitted(false); setAnswers({ manual_scheduling: null, manual_confirm: null, split_apps: null }); }}
+            className="text-xs text-slate-400 hover:text-slate-600 mt-3 underline block mx-auto"
+          >
+            Retake
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -302,7 +272,6 @@ export function Widgets() {
   return (
     <section className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 md:px-6 max-w-2xl">
-        {/* Section heading */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-5">
             Try It Right Now
@@ -315,7 +284,6 @@ export function Widgets() {
           </p>
         </div>
 
-        {/* Stacked widgets */}
         <div className="flex flex-col gap-5">
           {[
             <RevenueCalculator />,
