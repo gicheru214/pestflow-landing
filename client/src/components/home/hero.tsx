@@ -97,11 +97,11 @@ export function Hero({ variant }: { variant?: "tech" } = {}) {
               <PlayCircle className="mr-2 h-5 w-5" /> Watch Demo
             </Button>
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="pt-8 pb-4 flex flex-col items-center gap-4 w-full"
+            className="pt-1 flex flex-col items-center gap-3 w-full"
           >
             <p className="text-sm font-medium text-slate-300 uppercase tracking-widest">Trusted by 500+ Pest Control Companies</p>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
