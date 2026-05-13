@@ -661,15 +661,43 @@ export async function registerRoutes(
     }
   });
 
-  // ── Email/password sign-in (stub — wire to your user store) ──────────────
+  // ── Email/password sign-in ───────────────────────────────────────────────
+  // Approved-user allowlist. Replace with real user store + bcrypt when ready.
+  const APPROVED_USERS: Record<string, { password: string; name: string }> = {
+    "danielstevens2014@gmail.com": { password: "Pestflow", name: "Daniel Stevens" },
+    "tgicheru21@gmail.com": { password: "Pestflow", name: "Trevor Gicheru" },
+  };
+
   app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body as { email?: string; password?: string };
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
-    // TODO: replace with real user lookup & bcrypt compare
-    // For now redirect to onboarding flow
-    return res.status(401).json({ message: "Invalid email or password" });
+    const normalized = email.trim().toLowerCase();
+    const user = APPROVED_USERS[normalized];
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    if (req.session) {
+      (req.session as any).user = {
+        id: normalized,
+        email: normalized,
+        name: user.name,
+        provider: "password",
+      };
+    }
+    try {
+      await (storage as any).createSubmission({
+        type: "password_signin",
+        firstName: user.name.split(" ")[0] || "",
+        lastName: user.name.split(" ").slice(1).join(" ") || "",
+        email: normalized,
+        phone: "",
+        companyName: "",
+        technicians: "",
+      });
+    } catch { /* non-fatal */ }
+    return res.json({ ok: true, user: { email: normalized, name: user.name } });
   });
 
   return httpServer;
