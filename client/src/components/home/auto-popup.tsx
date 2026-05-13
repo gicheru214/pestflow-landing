@@ -7,6 +7,27 @@ import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
+const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
+
+function initGoogle(callback: (r: { credential: string }) => void) {
+  const w = window as any;
+  if (w.google?.accounts?.id) {
+    w.google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback, context: "signin" });
+    return;
+  }
+  if (!document.getElementById("pf-gsi2")) {
+    const s = document.createElement("script");
+    s.id = "pf-gsi2";
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.defer = true;
+    s.onload = () => {
+      (window as any).google?.accounts?.id?.initialize({ client_id: GOOGLE_CLIENT_ID, callback, context: "signin" });
+    };
+    document.head.appendChild(s);
+  }
+}
+
 // Push whatever we've collected so far to the server, no-blocking.
 // Uses sendBeacon when available so it survives page unload.
 function pushPartial(payload: Record<string, unknown>) {
