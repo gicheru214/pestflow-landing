@@ -51,39 +51,9 @@ export default function Login() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleGoogleCredential = useCallback(async (response: { credential: string }) => {
-    setGoogleLoading(true);
-    setError("");
-    try {
-      const r = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credential: response.credential }),
-      });
-      if (r.ok) {
-        window.location.href = "/dashboard";
-      } else {
-        const d = await r.json();
-        setError(d.message ?? "Google sign-in failed. Please try again.");
-      }
-    } catch {
-      setError("Network error. Please try again.");
-    } finally {
-      setGoogleLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    loadGoogleScript().then(() => {
-      if (window.google && GOOGLE_CLIENT_ID) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredential,
-          context: "signin",
-        });
-      }
-    });
-  }, [handleGoogleCredential]);
+    loadGoogleScript();
+  }, []);
 
   const handleGoogleClick = () => {
     const w = window as any;
