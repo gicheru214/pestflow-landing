@@ -453,24 +453,51 @@ export function AutoPopup() {
                 <div className="w-full mt-4 pt-4 border-t border-white/8">
                   <p className="text-center text-[11px] text-slate-500 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
                   <button
+                    disabled={googleLoading}
                     onClick={() => {
-                      initGoogle((r) => {
-                        fetch("/api/auth/google", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({ credential: r.credential }),
-                        }).then((res) => {
-                          if (res.ok) window.location.href = "/dashboard";
-                          else window.location.href = "/login";
-                        }).catch(() => { window.location.href = "/login"; });
+                      const w = window as any;
+                      if (!w.google?.accounts?.oauth2) {
+                        window.location.href = "/login";
+                        return;
+                      }
+                      setGoogleLoading(true);
+                      setGoogleErr("");
+                      const tokenClient = w.google.accounts.oauth2.initTokenClient({
+                        client_id: GOOGLE_CLIENT_ID,
+                        scope: "openid email profile",
+                        callback: async (tokenResponse: any) => {
+                          if (tokenResponse.error) {
+                            setGoogleLoading(false);
+                            setGoogleErr("Sign-in cancelled.");
+                            return;
+                          }
+                          try {
+                            const res = await fetch("/api/auth/google-token", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ access_token: tokenResponse.access_token }),
+                            });
+                            if (res.ok) {
+                              window.location.href = "/dashboard";
+                            } else {
+                              const d = await res.json().catch(() => ({}));
+                              setGoogleErr(d.message ?? "Sign-in failed. Please try again.");
+                              setGoogleLoading(false);
+                            }
+                          } catch {
+                            setGoogleErr("Network error. Please try again.");
+                            setGoogleLoading(false);
+                          }
+                        },
                       });
-                      setTimeout(() => (window as any).google?.accounts?.id?.prompt(), 200);
+                      tokenClient.requestAccessToken({ prompt: "select_account" });
                     }}
-                    className="w-full flex items-center justify-center gap-2.5 h-9 rounded-lg bg-white hover:bg-gray-100 transition-colors text-[13px] font-medium text-gray-800 mb-2"
+                    className="w-full flex items-center justify-center gap-2.5 h-9 rounded-lg bg-white hover:bg-gray-100 transition-colors text-[13px] font-medium text-gray-800 mb-2 disabled:opacity-60"
                   >
-                    <GoogleIcon />
+                    {googleLoading ? <span className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
                     Sign in with Google
                   </button>
+                  {googleErr && <p className="text-[11px] text-red-400 text-center mb-1">{googleErr}</p>}
                   <a
                     href="/login"
                     className="block text-center text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
