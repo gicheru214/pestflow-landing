@@ -45,6 +45,8 @@ function RevenueCalculator() {
           <input
             type="range" min={4} max={18} value={stops}
             onChange={(e) => setStops(Number(e.target.value))}
+            onMouseUp={scheduleRedirect}
+            onTouchEnd={scheduleRedirect}
             className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
