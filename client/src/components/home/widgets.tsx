@@ -37,7 +37,7 @@ function RevenueCalculator() {
         </div>
       </div>
 
-      <div className="space-y-5 flex-grow">
+      <div className="space-y-5 md:max-w-xl">
         <div>
           <div className="flex justify-between text-sm font-medium text-slate-700 mb-2">
             <span>Stops per truck / day</span>
