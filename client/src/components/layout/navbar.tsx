@@ -39,14 +39,12 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <a
-            href="https://testflow.org/dashboard"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/login"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             Log in
-          </a>
+          </Link>
           <Link href="/onboarding">
             <Button size="lg" className="font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
               Start Trial
