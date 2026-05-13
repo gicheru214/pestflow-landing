@@ -110,12 +110,12 @@ export default function Dashboard() {
           </Button>
           
           <nav className="flex flex-col gap-4 w-full items-center">
-            <NavIcon icon={LayoutDashboard} label="Dashboard" />
-            <NavIcon icon={CalendarIcon} label="Calendar" active />
+            <Link href="/dashboard"><NavIcon icon={LayoutDashboard} label="Dashboard" /></Link>
+            <Link href="/dashboard"><NavIcon icon={CalendarIcon} label="Calendar" active /></Link>
             <NavIcon icon={Users} label="Customers" />
             <NavIcon icon={MapIcon} label="Map" />
             <NavIcon icon={FileText} label="Reports" />
-            <NavIcon icon={Zap} label="Automations" />
+            <Link href="/automations"><NavIcon icon={Zap} label="Automations" /></Link>
             <NavIcon icon={MessageSquare} label="Messages" />
           </nav>
         </div>
