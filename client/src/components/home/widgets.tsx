@@ -271,7 +271,7 @@ function RouteIQGrader() {
 export function Widgets() {
   return (
     <section className="py-20 bg-slate-50">
-      <div className="container mx-auto px-4 md:px-6 max-w-2xl">
+      <div className="container mx-auto px-4 md:px-6 max-w-5xl">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-5">
             Try It Right Now
