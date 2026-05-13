@@ -26,7 +26,7 @@ declare global {
   }
 }
 
-const GOOGLE_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID ?? "";
+const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
 function loadGoogleScript(): Promise<void> {
   return new Promise((resolve) => {
