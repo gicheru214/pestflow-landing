@@ -7,6 +7,7 @@ import { Pricing } from "@/components/home/pricing";
 import { CTA } from "@/components/home/cta";
 import { LeadGen } from "@/components/home/lead-gen";
 import { AutoPopup } from "@/components/home/auto-popup";
+import { BarPopup } from "@/components/home/bar-popup";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 export default function Home() {
