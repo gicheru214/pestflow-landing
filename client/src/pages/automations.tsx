@@ -504,7 +504,7 @@ export default function Automations() {
               </div>
             </div>
 
-            <Separator className="mb-10" />
+            <div className="border-t border-slate-200 mb-10" />
 
             {/* Zapier Section */}
             <div>
