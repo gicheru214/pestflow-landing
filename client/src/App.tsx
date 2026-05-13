@@ -37,6 +37,7 @@ function AppRouter() {
         <Route path="/invoices" component={Invoices} />
         <Route path="/watch" component={Watch} />
         <Route path="/tech" component={TechLanding} />
+        <Route path="/login" component={Login} />
         <Route component={NotFound} />
       </Switch>
     </Router>
