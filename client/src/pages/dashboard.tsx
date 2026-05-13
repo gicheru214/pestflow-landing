@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { Link, useLocation } from "wouter";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { 
-  LayoutDashboard, 
-  Calendar as CalendarIcon, 
-  Users, 
-  Map as MapIcon, 
-  FileText, 
-  Settings, 
-  Search, 
-  Plus, 
-  Bell, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  Calendar as CalendarIcon,
+  Users,
+  Map as MapIcon,
+  FileText,
+  Settings,
+  Search,
+  Plus,
+  Bell,
+  MessageSquare,
   HelpCircle,
   ChevronLeft,
   ChevronRight,
@@ -20,7 +20,8 @@ import {
   MoreVertical,
   Menu,
   CheckCircle2,
-  X
+  X,
+  Zap
 } from "lucide-react";
 import { OnboardingFlow, OnboardingBanner } from "@/components/onboarding/OnboardingFlow";
 import { Button } from "@/components/ui/button";
