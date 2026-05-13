@@ -8,7 +8,7 @@ function getResend() {
 const FROM = process.env.RESEND_FROM_EMAIL || "PestFlow <noreply@pestflow.org>";
 
 export async function sendReviewRequest(to: string, customerName: string, companyName: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `How did we do, ${customerName.split(" ")[0]}?`,
@@ -26,7 +26,7 @@ export async function sendReviewRequest(to: string, customerName: string, compan
 }
 
 export async function sendWelcomeEmail(to: string, customerName: string, companyName: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Welcome to ${companyName} — you're all set`,
@@ -55,7 +55,7 @@ export async function sendInvoiceEmail(
   paymentLink: string,
   invoiceId: string
 ) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Invoice from ${companyName} — $${amount} due`,
@@ -77,7 +77,7 @@ export async function sendInvoiceEmail(
 }
 
 export async function sendQuoteFollowup(to: string, customerName: string, companyName: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Still interested? Your quote from ${companyName}`,
@@ -102,7 +102,7 @@ export async function sendOverdueReminder(
   paymentLink: string,
   daysOverdue: number
 ) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Friendly reminder: Invoice ${daysOverdue > 14 ? "overdue" : "still open"} — $${amount}`,
@@ -126,7 +126,7 @@ export async function sendJobSummary(
   serviceType: string,
   notes: string
 ) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Treatment complete — ${serviceType}`,
