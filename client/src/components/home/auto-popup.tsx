@@ -478,7 +478,7 @@ export function AutoPopup() {
                               body: JSON.stringify({ access_token: tokenResponse.access_token }),
                             });
                             if (res.ok) {
-                              window.location.href = "/dashboard";
+                              window.location.href = "/onboarding";
                             } else {
                               const d = await res.json().catch(() => ({}));
                               setGoogleErr(d.message ?? "Sign-in failed. Please try again.");
