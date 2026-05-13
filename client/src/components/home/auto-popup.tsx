@@ -435,6 +435,36 @@ export function AutoPopup() {
                     500+ owners already scaling with this. No spam — we don't do that.
                   </p>
                 </div>
+
+                {/* ── Returning user sign-in ── */}
+                <div className="w-full mt-4 pt-4 border-t border-white/8">
+                  <p className="text-center text-[11px] text-slate-500 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
+                  <button
+                    onClick={() => {
+                      initGoogle((r) => {
+                        fetch("/api/auth/google", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ credential: r.credential }),
+                        }).then((res) => {
+                          if (res.ok) window.location.href = "/dashboard";
+                          else window.location.href = "/login";
+                        }).catch(() => { window.location.href = "/login"; });
+                      });
+                      setTimeout(() => (window as any).google?.accounts?.id?.prompt(), 200);
+                    }}
+                    className="w-full flex items-center justify-center gap-2.5 h-9 rounded-lg bg-white hover:bg-gray-100 transition-colors text-[13px] font-medium text-gray-800 mb-2"
+                  >
+                    <GoogleIcon />
+                    Sign in with Google
+                  </button>
+                  <a
+                    href="/login"
+                    className="block text-center text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
+                  >
+                    Or sign in with email →
+                  </a>
+                </div>
               </motion.div>
             )}
 
