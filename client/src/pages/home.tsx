@@ -37,9 +37,9 @@ export default function Home() {
       <Navbar />
       <main className="flex-grow">
         <Hero />
-        <Features />
         <LeadGen />
         <Widgets />
+        <Features />
         <Pricing />
         <CTA />
       </main>
