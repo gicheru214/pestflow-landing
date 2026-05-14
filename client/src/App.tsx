@@ -20,6 +20,13 @@ import Watch from "@/pages/watch";
 import TechLanding from "@/pages/tech";
 import Login from "@/pages/login";
 import Automations from "@/pages/automations";
+import BlogIndex from "@/pages/blog/index";
+import PestControlCostPost from "@/pages/blog/pest-control-cost";
+import PricingChartPost from "@/pages/blog/pricing-chart";
+import StartBusinessPost from "@/pages/blog/start-business";
+import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
+import EstimateTemplatePost from "@/pages/blog/estimate-template";
+import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 function AppRouter() {
@@ -40,6 +47,13 @@ function AppRouter() {
         <Route path="/tech" component={TechLanding} />
         <Route path="/login" component={Login} />
         <Route path="/automations" component={Automations} />
+        <Route path="/blog" component={BlogIndex} />
+        <Route path="/blog/how-much-does-pest-control-cost" component={PestControlCostPost} />
+        <Route path="/blog/pest-control-pricing-chart" component={PricingChartPost} />
+        <Route path="/blog/how-to-start-a-pest-control-business" component={StartBusinessPost} />
+        <Route path="/blog/pest-control-marketing-ideas" component={MarketingIdeasPost} />
+        <Route path="/blog/pest-control-estimate-template" component={EstimateTemplatePost} />
+        <Route path="/blog/pest-control-invoice-template" component={InvoiceTemplatePost} />
         <Route component={NotFound} />
       </Switch>
     </Router>

@@ -24,18 +24,24 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-8">
-          <button 
-            onClick={() => scrollToSection('features')} 
+          <button
+            onClick={() => scrollToSection('features')}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             Features
           </button>
-          <button 
-            onClick={() => scrollToSection('pricing')} 
+          <button
+            onClick={() => scrollToSection('pricing')}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
             Pricing
           </button>
+          <Link
+            href="/blog"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Blog
+          </Link>
         </div>
 
         <div className="flex items-center gap-4">
