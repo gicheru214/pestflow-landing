@@ -145,16 +145,16 @@ export function TechPopup() {
                 <div className="space-y-3">
                   <button
                     onClick={() => setStep("lead")}
-                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#1ECFC8] hover:bg-teal-50 transition-all text-left group"
+                    className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-[#16a34a] hover:bg-green-50 transition-all text-left group"
                   >
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors" style={{ background: "#e6fafa" }}>
-                      <Wrench className="w-5 h-5" style={{ color: "#1ECFC8" }} />
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors" style={{ background: "#dcfce7" }}>
+                      <Wrench className="w-5 h-5" style={{ color: "#16a34a" }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-slate-800 text-sm">I'm a Field Technician</div>
                       <div className="text-xs text-slate-500">Free account — stay organized on every job</div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#1ECFC8] transition-colors flex-shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#16a34a] transition-colors flex-shrink-0" />
                   </button>
 
                   <button
