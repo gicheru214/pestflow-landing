@@ -56,7 +56,25 @@ export default function Dashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSkipped, setOnboardingSkipped] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(() => localStorage.getItem("pestflow_banner_dismissed") === "true");
+  const [calendarView, setCalendarView] = useState<"map" | "list">("map");
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [zoom, setZoom] = useState(12);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const comingSoon = (feature: string) =>
+    toast({ title: `${feature} — coming soon`, description: "We're wiring this up next. Hang tight." });
+
+  // Compute the current week label based on weekOffset
+  const weekLabel = (() => {
+    const base = new Date(2026, 0, 11); // Sun Jan 11 2026 — matches mock data
+    const start = new Date(base);
+    start.setDate(base.getDate() + weekOffset * 7);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return `${fmt(start)} - ${fmt(end)}, ${end.getFullYear()}`;
+  })();
 
   // Check onboarding status
   const { data: onboardingProgress, refetch: refetchOnboarding } = useQuery({
