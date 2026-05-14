@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Wrench, Building2 } from "lucide-react";
+import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
