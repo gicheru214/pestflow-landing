@@ -1,3 +1,37 @@
+/* ============================================================================
+ * ⚠️  DEPRECATED / DO-NOT-EDIT  —  Marketing demo dashboard
+ * ============================================================================
+ *
+ *   This file renders the static "demo" dashboard served at:
+ *
+ *       https://pestflow.org/dashboard?dev=true
+ *
+ *   It is part of the MARKETING LANDING SITE (pestflow-landing repo).
+ *   It is NOT the real product. It is a screenshot-style mock with hard-coded
+ *   mock data, a fake calendar grid, a static map image, and (previously)
+ *   placeholder onClick handlers.
+ *
+ *   The REAL application dashboard lives in a different repo:
+ *
+ *       Repo:  /Users/trevorgicheru/pestflow-smart-pricing
+ *       File:  src/pages/Dashboard.tsx
+ *       URL:   https://app.pestflow.org/dashboard?dev=true
+ *
+ *   The real app uses react-router, Supabase, real Leaflet, real modals,
+ *   real auth — none of the buttons here exist on the real app.
+ *
+ *   FOR FUTURE CLAUDE CODE SESSIONS:
+ *     - If the user asks to "check the PestFlow dashboard" or "test the
+ *       buttons in PestFlow", DO NOT QA this file. Use the smart-pricing
+ *       repo at app.pestflow.org/dashboard?dev=true instead.
+ *     - This route is planned for deletion. Do not invest time wiring up
+ *       new features here.
+ *     - The dead-button "fixes" already applied (banner href, dropdowns,
+ *       calendar state, map zoom) were a misdirected QA pass and should
+ *       not be replicated elsewhere — the real app already handles them.
+ *
+ * ============================================================================ */
+
 import { useState, useEffect } from "react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { Link, useLocation } from "wouter";
