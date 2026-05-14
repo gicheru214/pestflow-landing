@@ -137,18 +137,18 @@ export default function Dashboard() {
           </Button>
           
           <nav className="flex flex-col gap-4 w-full items-center">
-            <Link href="/dashboard"><NavIcon icon={LayoutDashboard} label="Dashboard" /></Link>
-            <Link href="/dashboard"><NavIcon icon={CalendarIcon} label="Calendar" active /></Link>
-            <NavIcon icon={Users} label="Customers" />
-            <NavIcon icon={MapIcon} label="Map" />
-            <NavIcon icon={FileText} label="Reports" />
+            <Link href="/dashboard"><NavIcon icon={LayoutDashboard} label="Dashboard" active /></Link>
+            <Link href="/dashboard"><NavIcon icon={CalendarIcon} label="Calendar" /></Link>
+            <NavIcon icon={Users} label="Customers" onClick={() => comingSoon("Customers")} />
+            <Link href="/routes"><NavIcon icon={MapIcon} label="Routes" /></Link>
+            <NavIcon icon={FileText} label="Reports" onClick={() => comingSoon("Reports")} />
             <Link href="/automations"><NavIcon icon={Zap} label="Automations" /></Link>
-            <NavIcon icon={MessageSquare} label="Messages" />
+            <NavIcon icon={MessageSquare} label="Messages" onClick={() => comingSoon("Messages")} />
           </nav>
         </div>
-        
+
         <div className="mt-auto flex flex-col gap-4 mb-4">
-          <Link href="/dashboard"><NavIcon icon={Settings} label="Settings" /></Link>
+          <NavIcon icon={Settings} label="Settings" onClick={() => comingSoon("Settings")} />
         </div>
       </aside>
 
