@@ -435,12 +435,13 @@ export default function Dashboard() {
   );
 }
 
-function NavIcon({ icon: Icon, label, active }: { icon: any, label: string, active?: boolean }) {
+function NavIcon({ icon: Icon, label, active, onClick }: { icon: any, label: string, active?: boolean, onClick?: () => void }) {
   return (
     <div className="relative group flex items-center justify-center w-full">
-      <Button 
-        variant="ghost" 
-        size="icon" 
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClick}
         className={`h-10 w-10 rounded-xl transition-all duration-200 ${active ? 'bg-emerald-50 text-emerald-600 shadow-sm' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'}`}
       >
         <Icon className="h-5 w-5" />
