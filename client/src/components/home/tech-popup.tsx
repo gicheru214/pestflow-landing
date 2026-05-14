@@ -242,10 +242,8 @@ export function TechPopup() {
               transition={{ duration: 0.25 }}
             >
               {/* Brand header */}
-              <div className="px-7 py-5 flex items-center gap-3" style={{ background: "#1ECFC8" }}>
-                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                  <Wrench className="w-4 h-4 text-white" />
-                </div>
+              <div className="px-7 py-5 flex items-center gap-3" style={{ background: "#16a34a" }}>
+                <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
                 <div>
                   <div className="font-bold text-white text-sm leading-tight">PestFlow Tech — Free</div>
                   <div className="text-white/80 text-[11px]">Built for field technicians</div>
