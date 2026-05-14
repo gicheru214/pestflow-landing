@@ -159,12 +159,12 @@ export default function Dashboard() {
           <div className="flex items-center justify-between gap-3 px-4 py-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-800 text-sm shrink-0">
             <p className="font-medium">
               ⏳ Your trial data will be deleted in 48 hours —{" "}
-              <a
-                href="https://testflow.org"
+              <Link
+                href="/payment"
                 className="underline underline-offset-2 font-semibold hover:text-amber-900"
               >
                 confirm a plan to keep it
-              </a>
+              </Link>
             </p>
             <button
               onClick={() => { setBannerDismissed(true); localStorage.setItem("pestflow_banner_dismissed", "true"); }}
