@@ -129,12 +129,8 @@ export function TechPopup() {
               transition={{ duration: 0.25 }}
             >
               {/* Brand header */}
-              <div className="px-8 py-5 flex items-center gap-3" style={{ background: "#1ECFC8" }}>
-                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                  </svg>
-                </div>
+              <div className="px-8 py-5 flex items-center gap-3" style={{ background: "#16a34a" }}>
+                <img src={logoImage} alt="PestFlow" className="h-7 w-auto object-contain" />
                 <span className="font-bold text-white text-sm tracking-tight">PestFlow for Technicians</span>
               </div>
 
