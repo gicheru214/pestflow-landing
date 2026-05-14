@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  ChevronLeft, 
+  ChevronLeft,
   ChevronDown,
   MapPin,
   Search,
   Bell,
   MessageSquare,
   HelpCircle,
-  Plus
+  Plus,
+  TrendingDown,
+  Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +67,18 @@ export default function Routes() {
   
   // Selected jobs for optimization
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
+  const [hasAutoSelected, setHasAutoSelected] = useState(false);
+
+  // Last optimization result — drives the savings strip above the list
+  const [savings, setSavings] = useState<{
+    previousDistance: string;
+    estimatedDistance: string;
+    previousDuration: string;
+    estimatedDuration: string;
+    milesSaved: number;
+    minutesSaved: number;
+    percentSaved: number;
+  } | null>(null);
 
   // Fetch jobs
   const { data: jobs = [], isLoading } = useQuery<Job[]>({
@@ -109,15 +123,44 @@ export default function Routes() {
     onSuccess: (data) => {
       analytics.track(EVENTS.ROUTE.OPTIMIZE_COMPLETE, { jobCount: data.optimizedJobs.length });
       queryClient.invalidateQueries({ queryKey: ["/api/jobs"] });
-      toast({ 
-        title: "Route Optimized!", 
-        description: `${data.optimizedJobs.length} jobs scheduled. ${data.estimatedDuration}`
+      setSavings({
+        previousDistance: data.previousDistance,
+        estimatedDistance: data.estimatedDistance,
+        previousDuration: data.previousDuration,
+        estimatedDuration: data.estimatedDuration,
+        milesSaved: data.milesSaved,
+        minutesSaved: data.minutesSaved,
+        percentSaved: data.percentSaved,
+      });
+      toast({
+        title: `Route optimized — saved ${data.milesSaved} mi`,
+        description: `${data.optimizedJobs.length} stops sequenced. ${data.previousDuration} → ${data.estimatedDuration}.`
       });
     },
     onError: () => {
       analytics.track(EVENTS.ROUTE.OPTIMIZE_ERROR);
     }
   });
+
+  // Auto-select every job the first time they load so the Optimize button is
+  // active on arrival — empty selection was the silent-click footgun.
+  useEffect(() => {
+    if (!hasAutoSelected && jobs.length > 0) {
+      setSelectedJobs(jobs.map(j => j.id));
+      setHasAutoSelected(true);
+    }
+  }, [jobs, hasAutoSelected]);
+
+  // Once optimized, jobs carry scheduledTime — render them in route order.
+  const orderedJobs = [...jobs].sort((a, b) => {
+    if (a.scheduledTime && b.scheduledTime) return a.scheduledTime.localeCompare(b.scheduledTime);
+    if (a.scheduledTime) return -1;
+    if (b.scheduledTime) return 1;
+    return 0;
+  });
+  const isOptimized = orderedJobs.some(j => j.scheduledTime);
+  const allSelected = jobs.length > 0 && selectedJobs.length === jobs.length;
+  const someSelected = selectedJobs.length > 0 && !allSelected;
 
   const toggleJobSelection = (jobId: string) => {
     setSelectedJobs(prev => 
@@ -312,13 +355,17 @@ export default function Routes() {
 
         {/* Optimize Button */}
         <div className="p-4 border-t">
-          <Button 
+          <Button
             data-testid="button-optimize-route"
             className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold"
             onClick={() => optimizeMutation.mutate()}
             disabled={selectedJobs.length === 0 || optimizeMutation.isPending}
           >
-            {optimizeMutation.isPending ? "Optimizing..." : "Optimize Route"}
+            {optimizeMutation.isPending
+              ? "Optimizing..."
+              : selectedJobs.length === 0
+              ? "Select jobs to optimize"
+              : `Optimize Route (${selectedJobs.length})`}
           </Button>
         </div>
       </aside>
@@ -383,11 +430,43 @@ export default function Routes() {
         <div className="flex-1 overflow-auto p-6">
           <div className="bg-white rounded-lg border shadow-sm">
             {/* Date Header */}
-            <div className="px-6 py-4 border-b">
+            <div className="px-6 py-4 border-b flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-800">
                 {formatDate(optimizeToDate)}
               </h2>
+              {jobs.length > 0 && (
+                <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
+                  <Checkbox
+                    data-testid="checkbox-select-all-jobs"
+                    checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                    onCheckedChange={selectAllJobs}
+                  />
+                  <span>{allSelected ? "Deselect all" : `Select all (${jobs.length})`}</span>
+                </label>
+              )}
             </div>
+
+            {/* Savings strip — only shown after a successful optimize */}
+            {savings && (
+              <div className="px-6 py-3 border-b bg-emerald-50 flex items-center gap-6 text-sm">
+                <div className="flex items-center gap-2 text-emerald-700 font-semibold">
+                  <TrendingDown className="h-4 w-4" />
+                  Saved {savings.milesSaved} mi · {savings.percentSaved}% shorter
+                </div>
+                <div className="flex items-center gap-2 text-slate-600">
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span className="line-through text-slate-400">{savings.previousDistance}</span>
+                  <span>→</span>
+                  <span className="font-medium text-slate-800">{savings.estimatedDistance}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-600">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span className="line-through text-slate-400">{savings.previousDuration}</span>
+                  <span>→</span>
+                  <span className="font-medium text-slate-800">{savings.estimatedDuration}</span>
+                </div>
+              </div>
+            )}
 
             {/* Starting Address */}
             <div className="px-6 py-3 border-b bg-slate-50 flex items-center justify-between">
@@ -409,16 +488,22 @@ export default function Routes() {
                 <p>No jobs found. Click "Add Demo Jobs" to create sample data.</p>
               </div>
             ) : (
-              jobs.map((job, index) => (
-                <div 
-                  key={job.id} 
+              orderedJobs.map((job, index) => (
+                <div
+                  key={job.id}
                   className="px-6 py-4 border-b flex items-center gap-4 hover:bg-slate-50 transition-colors"
                 >
-                  <Checkbox 
-                    data-testid={`checkbox-job-${job.id}`}
-                    checked={selectedJobs.includes(job.id)}
-                    onCheckedChange={() => toggleJobSelection(job.id)}
-                  />
+                  {isOptimized && job.scheduledTime ? (
+                    <div className="h-5 w-5 rounded-full bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center shrink-0">
+                      {index + 1}
+                    </div>
+                  ) : (
+                    <Checkbox
+                      data-testid={`checkbox-job-${job.id}`}
+                      checked={selectedJobs.includes(job.id)}
+                      onCheckedChange={() => toggleJobSelection(job.id)}
+                    />
+                  )}
                   
                   <div className="flex-1 grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-2">
