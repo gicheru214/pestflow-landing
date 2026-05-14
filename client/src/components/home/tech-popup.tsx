@@ -316,7 +316,7 @@ export function TechPopup() {
                   onClick={handleSubmit}
                   disabled={submitting}
                   className="w-full mt-5 py-5 text-sm font-bold rounded-xl text-white flex items-center justify-center gap-2"
-                  style={{ background: submitting ? "#a3a3a3" : "#1ECFC8" }}
+                  style={{ background: submitting ? "#a3a3a3" : "#16a34a" }}
                 >
                   {submitting ? "Setting up your account…" : (
                     <>Claim My Free Account <ArrowRight className="w-4 h-4" /></>
