@@ -262,48 +262,99 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button 
-              className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-9 w-9 p-0 shadow-sm"
-              onClick={() => analytics.track(EVENTS.DASHBOARD.QUICK_ACTION_CLICK, { action: 'add_new' })}
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-9 w-9 p-0 shadow-sm"
+                  onClick={() => analytics.track(EVENTS.DASHBOARD.QUICK_ACTION_CLICK, { action: 'add_new' })}
+                >
+                  <Plus className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Quick add</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => comingSoon("New Job")}>New Job</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => comingSoon("New Customer")}>New Customer</DropdownMenuItem>
+                <Link href="/invoices"><DropdownMenuItem>New Invoice</DropdownMenuItem></Link>
+                <Link href="/routes"><DropdownMenuItem>New Route</DropdownMenuItem></Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-slate-500"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
+                >
+                  <Bell className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72">
+                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-sm text-slate-500" disabled>
+                  You're all caught up.
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              variant="ghost"
+              size="icon"
               className="text-slate-500"
-              onClick={() => analytics.track(EVENTS.NAVIGATION.NOTIFICATIONS_OPEN)}
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="text-slate-500"
-              onClick={() => analytics.track(EVENTS.NAVIGATION.MENU_OPEN, { menu: 'messages' })}
+              onClick={() => {
+                analytics.track(EVENTS.NAVIGATION.MENU_OPEN, { menu: 'messages' });
+                comingSoon("Messages");
+              }}
             >
               <MessageSquare className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="text-slate-500"
-              onClick={() => analytics.track(EVENTS.NAVIGATION.HELP_CLICK)}
+              onClick={() => {
+                analytics.track(EVENTS.NAVIGATION.HELP_CLICK);
+                window.open("mailto:support@pestflow.org?subject=PestFlow%20Help", "_blank");
+              }}
             >
               <HelpCircle className="h-5 w-5" />
             </Button>
             <div className="h-6 w-px bg-slate-200 mx-1" />
-            <Button 
-              variant="ghost" 
-              className="flex items-center gap-2 pl-1 pr-2"
-              onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
-            >
-              <Avatar className="h-8 w-8 border border-slate-200">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium text-slate-700">Trevor</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 pl-1 pr-2"
+                  onClick={() => analytics.track(EVENTS.NAVIGATION.PROFILE_CLICK)}
+                >
+                  <Avatar className="h-8 w-8 border border-slate-200">
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>JD</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-slate-700">Trevor</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => comingSoon("Profile")}>Profile</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => comingSoon("Settings")}>Settings</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => comingSoon("Billing")}>Billing</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    localStorage.removeItem("pestflow_banner_dismissed");
+                    window.location.href = "/login";
+                  }}
+                >
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
