@@ -362,28 +362,89 @@ export default function Dashboard() {
         <div className="h-14 bg-white border-b flex items-center justify-between px-4 shrink-0">
           <div className="flex items-center gap-4">
              <div className="flex items-center bg-slate-100 rounded-lg p-1">
-               <Button variant="ghost" size="sm" className="h-7 px-3 bg-white shadow-sm text-slate-900 text-xs font-medium rounded-md">Map</Button>
-               <Button variant="ghost" size="sm" className="h-7 px-3 text-slate-500 text-xs font-medium hover:text-slate-900">List</Button>
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={() => setCalendarView("map")}
+                 className={`h-7 px-3 text-xs font-medium rounded-md ${calendarView === "map" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-900"}`}
+               >
+                 Map
+               </Button>
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={() => setCalendarView("list")}
+                 className={`h-7 px-3 text-xs font-medium rounded-md ${calendarView === "list" ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-900"}`}
+               >
+                 List
+               </Button>
              </div>
              <div className="h-4 w-px bg-slate-200" />
-             <Button variant="outline" size="sm" className="text-slate-600 border-slate-200 h-8 gap-2">
-               Week <ChevronLeft className="h-3 w-3 rotate-90" />
-             </Button>
+             <DropdownMenu>
+               <DropdownMenuTrigger asChild>
+                 <Button variant="outline" size="sm" className="text-slate-600 border-slate-200 h-8 gap-2">
+                   Week <ChevronLeft className="h-3 w-3 rotate-[270deg]" />
+                 </Button>
+               </DropdownMenuTrigger>
+               <DropdownMenuContent align="start">
+                 <DropdownMenuItem onClick={() => comingSoon("Day view")}>Day</DropdownMenuItem>
+                 <DropdownMenuItem>Week</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => comingSoon("Month view")}>Month</DropdownMenuItem>
+               </DropdownMenuContent>
+             </DropdownMenu>
              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8"><Users className="h-4 w-4 text-slate-500" /></Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8"><Filter className="h-4 w-4 text-slate-500" /></Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => comingSoon("Technician filter")}>
+                  <Users className="h-4 w-4 text-slate-500" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => comingSoon("Filters")}>
+                  <Filter className="h-4 w-4 text-slate-500" />
+                </Button>
              </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="h-8 w-8 border-slate-200"><ChevronLeft className="h-4 w-4" /></Button>
-            <Button variant="outline" size="sm" className="h-8 px-4 font-medium text-slate-700 border-slate-200">Today</Button>
-            <span className="font-semibold text-slate-700 text-sm px-2">Jan 11 - 17, 2026</span>
-            <Button variant="outline" size="icon" className="h-8 w-8 border-slate-200"><ChevronRight className="h-4 w-4" /></Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 border-slate-200"
+              onClick={() => setWeekOffset((w) => w - 1)}
+              aria-label="Previous week"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-4 font-medium text-slate-700 border-slate-200"
+              onClick={() => setWeekOffset(0)}
+            >
+              Today
+            </Button>
+            <span className="font-semibold text-slate-700 text-sm px-2">{weekLabel}</span>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 border-slate-200"
+              onClick={() => setWeekOffset((w) => w + 1)}
+              aria-label="Next week"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
 
           <div className="flex items-center gap-2">
-             <Button variant="ghost" size="icon" className="h-8 w-8"><MoreVertical className="h-4 w-4 text-slate-500" /></Button>
+             <DropdownMenu>
+               <DropdownMenuTrigger asChild>
+                 <Button variant="ghost" size="icon" className="h-8 w-8">
+                   <MoreVertical className="h-4 w-4 text-slate-500" />
+                 </Button>
+               </DropdownMenuTrigger>
+               <DropdownMenuContent align="end">
+                 <DropdownMenuItem onClick={() => comingSoon("Print schedule")}>Print schedule</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => comingSoon("Export CSV")}>Export CSV</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => comingSoon("Calendar settings")}>Calendar settings</DropdownMenuItem>
+               </DropdownMenuContent>
+             </DropdownMenu>
           </div>
         </div>
 
