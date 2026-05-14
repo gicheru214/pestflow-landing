@@ -463,12 +463,29 @@ export default function Dashboard() {
                </div>
                
                {/* Map Image */}
-               <img src={mapImage} className="w-full h-full object-cover" alt="Map View" />
-               
+               <img
+                 src={mapImage}
+                 className="w-full h-full object-cover transition-transform duration-200"
+                 style={{ transform: `scale(${1 + (zoom - 12) * 0.1})` }}
+                 alt="Map View"
+               />
+
                {/* Map Controls */}
                <div className="absolute bottom-4 right-4 flex flex-col gap-2">
-                 <Button className="h-8 w-8 rounded bg-white shadow-md text-slate-700 p-0 hover:bg-slate-50">+</Button>
-                 <Button className="h-8 w-8 rounded bg-white shadow-md text-slate-700 p-0 hover:bg-slate-50">-</Button>
+                 <Button
+                   className="h-8 w-8 rounded bg-white shadow-md text-slate-700 p-0 hover:bg-slate-50"
+                   onClick={() => setZoom((z) => Math.min(z + 1, 18))}
+                   aria-label="Zoom in"
+                 >
+                   +
+                 </Button>
+                 <Button
+                   className="h-8 w-8 rounded bg-white shadow-md text-slate-700 p-0 hover:bg-slate-50"
+                   onClick={() => setZoom((z) => Math.max(z - 1, 8))}
+                   aria-label="Zoom out"
+                 >
+                   -
+                 </Button>
                </div>
             </div>
           </ResizablePanel>
