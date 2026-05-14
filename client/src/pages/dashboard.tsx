@@ -553,7 +553,15 @@ export default function Dashboard() {
       
       {/* Right Widget Sidebar (Collapsed) */}
       <div className="w-12 bg-white border-l flex flex-col items-center py-4 shrink-0">
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 mb-4"><ChevronLeft className="h-4 w-4" /></Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-slate-400 hover:text-slate-900 mb-4"
+          onClick={() => comingSoon("Side panel")}
+          aria-label="Open side panel"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Onboarding Banner if skipped */}
