@@ -22,16 +22,22 @@ const sanitizeProperties = (properties?: Record<string, any>): Record<string, an
 
 export const analytics = {
   track: (event: string, properties?: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
-      window.mixpanel.track(event, {
-        ...sanitizeProperties(properties),
-        timestamp: new Date().toISOString(),
-      });
+    if (typeof window === 'undefined') return;
+    const props = {
+      ...sanitizeProperties(properties),
+      timestamp: new Date().toISOString(),
+    };
+    if (window.mixpanel) {
+      window.mixpanel.track(event, props);
+    }
+    if (window.posthog?.capture) {
+      window.posthog.capture(event, props);
     }
   },
 
   identify: (userId: string, properties?: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
+    if (typeof window === 'undefined') return;
+    if (window.mixpanel) {
       window.mixpanel.identify(userId);
       if (properties) {
         window.mixpanel.people.set({
@@ -40,11 +46,18 @@ export const analytics = {
         });
       }
     }
+    if (window.posthog?.identify) {
+      window.posthog.identify(userId, sanitizeProperties(properties));
+    }
   },
 
   setUserProperties: (properties: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
+    if (typeof window === 'undefined') return;
+    if (window.mixpanel) {
       window.mixpanel.people.set(properties);
+    }
+    if (window.posthog?.setPersonProperties) {
+      window.posthog.setPersonProperties(sanitizeProperties(properties));
     }
   },
 
@@ -55,12 +68,17 @@ export const analytics = {
   },
 
   pageView: (pageName: string, properties?: Record<string, any>) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
-      window.mixpanel.track('Page View', { 
-        page: pageName,
-        url: window.location.href,
-        ...sanitizeProperties(properties) 
-      });
+    if (typeof window === 'undefined') return;
+    const props = {
+      page: pageName,
+      url: window.location.href,
+      ...sanitizeProperties(properties),
+    };
+    if (window.mixpanel) {
+      window.mixpanel.track('Page View', props);
+    }
+    if (window.posthog?.capture) {
+      window.posthog.capture('$pageview', props);
     }
   },
 
@@ -71,20 +89,29 @@ export const analytics = {
   },
 
   reset: () => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
+    if (typeof window === 'undefined') return;
+    if (window.mixpanel) {
       window.mixpanel.reset();
+    }
+    if (window.posthog?.reset) {
+      window.posthog.reset();
     }
   },
 
   trackSessionStart: () => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
-      window.mixpanel.track('Session Start', {
-        referrer: document.referrer,
-        userAgent: navigator.userAgent,
-        screenWidth: window.screen.width,
-        screenHeight: window.screen.height,
-        language: navigator.language,
-      });
+    if (typeof window === 'undefined') return;
+    const props = {
+      referrer: document.referrer,
+      userAgent: navigator.userAgent,
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+      language: navigator.language,
+    };
+    if (window.mixpanel) {
+      window.mixpanel.track('Session Start', props);
+    }
+    if (window.posthog?.capture) {
+      window.posthog.capture('Session Start', props);
     }
   },
 };
