@@ -436,6 +436,70 @@ export async function registerRoutes(
     }
   });
 
+  // ── Audit lookup by email ────────────────────────────────────────────────
+  // Lets the smart-pricing /tour page personalize the Revenue Leak Report
+  // for an authenticated user whose audit was filed under their email.
+  // Returns ONLY the latest type='audit' submission's quiz fields.
+  // CORS is locked to app.pestflow.org variants.
+  const AUDIT_BY_EMAIL_ALLOWED_ORIGINS = new Set([
+    "https://app.pestflow.org",
+    "https://pestflow-smart-pricing.lovable.app",
+    "http://localhost:5052",
+  ]);
+  app.options("/api/audit-by-email", (req, res) => {
+    const origin = req.headers.origin as string | undefined;
+    if (origin && AUDIT_BY_EMAIL_ALLOWED_ORIGINS.has(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "content-type");
+    res.sendStatus(204);
+  });
+  app.get("/api/audit-by-email", async (req, res) => {
+    const origin = req.headers.origin as string | undefined;
+    if (origin && AUDIT_BY_EMAIL_ALLOWED_ORIGINS.has(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+    }
+    const email = String(req.query.email || "").trim().toLowerCase();
+    if (!email || !email.includes("@")) {
+      return res.status(400).json({ found: false, error: "email required" });
+    }
+    try {
+      const allSubmissions = await storage.getSubmissions();
+      const matches = allSubmissions
+        .filter((s: any) =>
+          (s.type === "audit") &&
+          typeof s.email === "string" &&
+          s.email.trim().toLowerCase() === email
+        )
+        .sort((a: any, b: any) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime()
+        );
+      const latest: any = matches[0];
+      if (!latest) return res.json({ found: false });
+      const indexed: Record<string, number> = {};
+      const qa = latest.quizAnswers;
+      if (qa && typeof qa === "object") {
+        for (const [k, v] of Object.entries(qa)) {
+          if (v && typeof (v as any).val === "number") {
+            indexed[k] = (v as any).val;
+          }
+        }
+      }
+      return res.json({
+        found: true,
+        quizRevenue: latest.quizRevenue || null,
+        indexed,
+        routeDensity: latest.routeAnswers?.routeDensity || null,
+        routeCount: latest.routeAnswers?.routeCount || null,
+        firstName: latest.firstName || null,
+      });
+    } catch (error) {
+      return res.status(500).json({ found: false, error: "lookup failed" });
+    }
+  });
+
   app.post("/api/submissions", async (req, res) => {
     try {
       const validatedData = insertSubmissionSchema.parse(req.body);
