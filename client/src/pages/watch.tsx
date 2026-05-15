@@ -52,6 +52,27 @@ export default function Watch() {
     const routes = routeCountToNumber(incoming.get("routeCount") || cached.routeCount);
     if (routes != null) out.set("routes", String(routes));
 
+    // Forward the user's 15Q audit answers + their computed leak number so the
+    // smart-pricing /tour can render a personalized Revenue Leak Report
+    // instead of falling back to median-operator seed values.
+    const quizRev = incoming.get("quiz_revenue") || cached.quizRevenue;
+    if (quizRev) out.set("quiz_revenue", String(quizRev));
+    try {
+      if (cached.quizAnswers && typeof cached.quizAnswers === "object") {
+        // Compact: indexedAnswers[i] = optIdx for question i
+        const compact = Object.entries(cached.quizAnswers).reduce<Record<string, number>>(
+          (acc, [k, v]: [string, any]) => {
+            if (v && typeof v.val === "number") acc[k] = v.val;
+            return acc;
+          },
+          {}
+        );
+        if (Object.keys(compact).length > 0) {
+          out.set("qa", btoa(JSON.stringify(compact)));
+        }
+      }
+    } catch { /* non-blocking */ }
+
     const target = isMobileDevice() ? MOBILE_PRICING_URL : DESKTOP_PRICING_URL;
     window.location.href = `${target}?${out.toString()}`;
   };
