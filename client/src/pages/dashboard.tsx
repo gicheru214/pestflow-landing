@@ -88,7 +88,6 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingSkipped, setOnboardingSkipped] = useState(false);
-  const [bannerDismissed, setBannerDismissed] = useState(() => localStorage.getItem("pestflow_banner_dismissed") === "true");
   const [calendarView, setCalendarView] = useState<"map" | "list">("map");
   const [weekOffset, setWeekOffset] = useState(0);
   const [zoom, setZoom] = useState(12);
