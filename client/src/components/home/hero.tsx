@@ -15,7 +15,7 @@ export function Hero({ variant }: { variant?: "tech" } = {}) {
   const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
   return (
-    <section className="relative w-full h-screen min-h-[600px] overflow-hidden">
+    <section className="relative w-full min-h-screen overflow-hidden">
       <DemoVideoModal open={showDemo} onOpenChange={setShowDemo} />
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
