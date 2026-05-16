@@ -188,27 +188,9 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full overflow-hidden">
-        {/* Loss aversion banner */}
-        {!bannerDismissed && (
-          <div className="flex items-center justify-between gap-3 px-4 py-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-800 text-sm shrink-0">
-            <p className="font-medium">
-              ⏳ Your trial data will be deleted in 48 hours —{" "}
-              <Link
-                href="/payment"
-                className="underline underline-offset-2 font-semibold hover:text-amber-900"
-              >
-                confirm a plan to keep it
-              </Link>
-            </p>
-            <button
-              onClick={() => { setBannerDismissed(true); localStorage.setItem("pestflow_banner_dismissed", "true"); }}
-              className="flex-shrink-0 text-amber-500 hover:text-amber-800 transition-colors"
-              aria-label="Dismiss"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+        {/* Trial-pressure banner removed — paywall/loss-aversion belongs in
+            smart-pricing (app.pestflow.org), not on landing, and the day-5+
+            gating logic lives there too. */}
 
         {/* Top Header */}
         <header className="h-16 bg-white border-b flex items-center justify-between px-4 shrink-0 z-10">
