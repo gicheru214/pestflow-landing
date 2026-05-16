@@ -226,52 +226,6 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {/* Step 3: Loss aversion + CTA to pricing */}
-        {!isTech && uiStep === "loss-aversion" && (
-          <motion.div
-            key="loss-aversion"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.35 }}
-            className="relative z-10 w-full max-w-md"
-          >
-            <div className="bg-white rounded-2xl shadow-xl p-8 text-center space-y-5">
-              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-              </div>
-
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-1">
-                  Your {selectedFeatureLabel} setup is ready
-                </h1>
-                <p className="text-slate-500 text-sm">
-                  We've personalized your PestFlow account around {selectedFeatureLabel?.toLowerCase()}.
-                </p>
-              </div>
-
-              {/* Loss aversion */}
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left">
-                <p className="text-sm font-semibold text-amber-800">⚠️ Your account data expires in 48 hours</p>
-                <p className="text-xs text-amber-700 mt-1">
-                  Your profile, routes, and {selectedFeatureLabel?.toLowerCase()} settings will be permanently deleted unless you confirm a plan.
-                </p>
-              </div>
-
-              <button
-                onClick={() => goToPricing(selectedFeature ?? undefined)}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg shadow-emerald-500/25"
-              >
-                Lock in my {selectedFeatureLabel} plan
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <p className="text-xs text-slate-400">
-                Free 7-day trial · No credit card required to start
-              </p>
-            </div>
-          </motion.div>
-        )}
       </AnimatePresence>
     </div>
   );
