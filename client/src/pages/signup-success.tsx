@@ -50,7 +50,7 @@ function goToPricing(featureId?: string) {
 
 export default function SignupSuccess() {
   const [, setLocation] = useLocation();
-  const [uiStep, setUiStep] = useState<"confirmed" | "feature-pick" | "loss-aversion" | "tech-ready">("confirmed");
+  const [uiStep, setUiStep] = useState<"confirmed" | "feature-pick" | "tech-ready">("confirmed");
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [isTech, setIsTech] = useState(false);
   const [techEmail, setTechEmail] = useState("");
