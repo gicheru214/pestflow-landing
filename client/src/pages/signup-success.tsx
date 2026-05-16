@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
-import { CheckCircle2, Route, Calendar, Receipt, ArrowRight, Wrench } from "lucide-react";
+import { CheckCircle2, Wrench, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
-
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent) || window.innerWidth <= 767;
-}
 
 declare global {
   interface Window {
@@ -14,48 +9,28 @@ declare global {
   }
 }
 
-const FEATURES = [
-  {
-    id: "routes",
-    icon: Route,
-    label: "Route Optimization",
-    desc: "Cut driving time, hit more jobs per day",
-    color: "emerald",
-  },
-  {
-    id: "scheduling",
-    icon: Calendar,
-    label: "Scheduling",
-    desc: "Book jobs and manage technicians easily",
-    color: "blue",
-  },
-  {
-    id: "invoicing",
-    icon: Receipt,
-    label: "Invoicing & Billing",
-    desc: "Get paid faster with automated invoices",
-    color: "purple",
-  },
-];
-
-function goToPricing(featureId?: string) {
+function buildAppHandoffUrl(extras: Record<string, string>) {
   const popupData = (() => {
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); } catch { return {}; }
   })();
-  const routes = parseInt(popupData.routeSize || "1", 10);
-  const validRoutes = isNaN(routes) || routes < 1 ? 1 : Math.min(routes, 74);
-  const featureParam = featureId ? `&feature=${featureId}` : "";
-  window.location.href = `https://pestflow.org?routes=${validRoutes}${featureParam}`;
+  const params = new URLSearchParams();
+  const routesRaw = parseInt(popupData.routeSize || "1", 10);
+  const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
+  params.set("routes", String(routes));
+  ["email", "firstName", "lastName", "phone", "utm_source", "utm_campaign", "utm_content"].forEach((k) => {
+    const v = popupData[k] || extras[k];
+    if (v) params.set(k, v);
+  });
+  Object.entries(extras).forEach(([k, v]) => { if (v && !params.has(k)) params.set(k, v); });
+  return `https://app.pestflow.org/mobile/onboard/feature?${params.toString()}`;
 }
 
 export default function SignupSuccess() {
-  const [, setLocation] = useLocation();
-  const [uiStep, setUiStep] = useState<"confirmed" | "feature-pick" | "tech-ready">("confirmed");
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [isTech, setIsTech] = useState(false);
   const [techEmail, setTechEmail] = useState("");
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
+  const [showTechCta, setShowTechCta] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -65,6 +40,7 @@ export default function SignupSuccess() {
     const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign') || undefined;
     const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
     const type = urlParams.get('type') || hashParams.get('type');
+    const email = urlParams.get('email') || '';
 
     analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
     analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
@@ -80,17 +56,23 @@ export default function SignupSuccess() {
 
     if (type === 'tech') {
       setIsTech(true);
-      setTechEmail(urlParams.get('email') || '');
+      setTechEmail(email);
       setTechName(urlParams.get('name') || '');
       setTechEmployer(urlParams.get('employer') || '');
-      const timer = setTimeout(() => setUiStep("tech-ready"), 1500);
+      const timer = setTimeout(() => setShowTechCta(true), 1500);
       return () => clearTimeout(timer);
     }
 
-    // Auto-advance to feature picker after 1.5s
-    const timer = setTimeout(() => setUiStep("feature-pick"), 1500);
+    // Owner: brief confirmation flash, then hand off to the app.
+    const handoff = buildAppHandoffUrl({
+      email,
+      utm_source: utmSource || '',
+      utm_campaign: utmCampaign || '',
+      utm_content: utmContent || '',
+    });
+    const timer = setTimeout(() => { window.location.href = handoff; }, 1200);
     return () => clearTimeout(timer);
-  }, [setLocation]);
+  }, []);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
@@ -98,21 +80,8 @@ export default function SignupSuccess() {
     if (techName) params.set('name', techName);
     if (techEmployer) params.set('employer', techEmployer);
     const qs = params.toString() ? `?${params.toString()}` : '';
-    if (isMobileDevice()) {
-      window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
-    } else {
-      window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
-    }
+    window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
   };
-
-  const handleFeatureSelect = (featureId: string) => {
-    setSelectedFeature(featureId);
-    localStorage.setItem("pestflow_feature_choice", featureId);
-    analytics.track("feature_intent_selected", { feature: featureId });
-    goToPricing(featureId);
-  };
-
-  const selectedFeatureLabel = FEATURES.find(f => f.id === selectedFeature)?.label;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 relative overflow-hidden">
@@ -122,9 +91,7 @@ export default function SignupSuccess() {
       </div>
 
       <AnimatePresence mode="wait">
-
-        {/* Tech: Account ready */}
-        {uiStep === "tech-ready" && (
+        {isTech && showTechCta && (
           <motion.div
             key="tech-ready"
             initial={{ opacity: 0, y: 20 }}
@@ -164,13 +131,11 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {/* Step 1: Confirmation flash */}
-        {!isTech && uiStep === "confirmed" && (
+        {!isTech && (
           <motion.div
-            key="confirmed"
+            key="owner-handoff"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.05, opacity: 0 }}
             transition={{ duration: 0.4 }}
             className="relative z-10 flex flex-col items-center text-center space-y-6"
           >
@@ -179,53 +144,10 @@ export default function SignupSuccess() {
             </div>
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
-              <p className="text-lg text-slate-500 max-w-sm mx-auto">Setting up your personalized experience…</p>
+              <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
             </div>
           </motion.div>
         )}
-
-        {/* Step 2: Feature picker — "what do you want to try first?" */}
-        {!isTech && uiStep === "feature-pick" && (
-          <motion.div
-            key="feature-pick"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.35 }}
-            className="relative z-10 w-full max-w-lg"
-          >
-            <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-              <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600" />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-1">What do you want to try first?</h1>
-              <p className="text-slate-500 text-sm mb-6">We'll set up your plan around your top priority.</p>
-
-              <div className="space-y-3">
-                {FEATURES.map((f) => {
-                  const Icon = f.icon;
-                  return (
-                    <button
-                      key={f.id}
-                      onClick={() => handleFeatureSelect(f.id)}
-                      className="w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 hover:border-emerald-400 hover:bg-emerald-50 transition-all text-left group"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-200 transition-colors">
-                        <Icon className="w-5 h-5 text-emerald-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-800 text-sm">{f.label}</div>
-                        <div className="text-xs text-slate-500">{f.desc}</div>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0" />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
       </AnimatePresence>
     </div>
   );
