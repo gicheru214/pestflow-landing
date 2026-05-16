@@ -54,7 +54,6 @@ import {
   MoreVertical,
   Menu,
   CheckCircle2,
-  X,
   Zap
 } from "lucide-react";
 import { OnboardingFlow, OnboardingBanner } from "@/components/onboarding/OnboardingFlow";
