@@ -738,11 +738,6 @@ function SuccessScreen({ onClose }: { onClose: () => void }) {
         </p>
       </div>
 
-      {/* Loss aversion */}
-      <p className="text-sm font-medium text-amber-600 max-w-md mx-auto">
-        ⚠️ Your customer, job, and invoice data will be cleared in 48 hours — confirm a plan to keep everything you just built.
-      </p>
-
       <Button
         data-testid="button-go-to-dashboard"
         size="lg"
