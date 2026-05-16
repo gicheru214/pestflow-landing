@@ -109,7 +109,7 @@ export default function SignupSuccess() {
     setSelectedFeature(featureId);
     localStorage.setItem("pestflow_feature_choice", featureId);
     analytics.track("feature_intent_selected", { feature: featureId });
-    setUiStep("loss-aversion");
+    goToPricing(featureId);
   };
 
   const selectedFeatureLabel = FEATURES.find(f => f.id === selectedFeature)?.label;
