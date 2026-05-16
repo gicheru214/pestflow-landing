@@ -39,7 +39,7 @@ type Step2Values = z.infer<typeof step2Schema>;
 export default function Onboarding() {
   const [step, setStep] = useState(1);
   const [step1Data, setStep1Data] = useState<Step1Values | null>(null);
-  const pricingLink = "https://testflow.org";
+  const pricingLink = "https://pestflow.org";
 
   useEffect(() => {
     analytics.track(step === 1 ? EVENTS.ONBOARDING.STEP_1_VIEW : EVENTS.ONBOARDING.STEP_2_VIEW);
