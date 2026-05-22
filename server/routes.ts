@@ -502,7 +502,20 @@ export async function registerRoutes(
 
   app.post("/api/submissions", async (req, res) => {
     try {
-      const validatedData = insertSubmissionSchema.parse(req.body);
+      // Tech popup posts {name, email, phone, employer, ownerName} but the
+      // submissions schema requires firstName/lastName. Split the name here
+      // so the existing client code keeps working without a redeploy. We
+      // also stash employer/ownerName/role into the columns the schema does
+      // have so they survive into the DB row.
+      const body: any = { ...req.body };
+      if (body && body.type === "tech_lead" && body.name && !body.firstName) {
+        const parts = String(body.name).trim().split(/\s+/);
+        body.firstName = parts[0] ?? "";
+        body.lastName = parts.slice(1).join(" ") || parts[0] || "";
+        if (body.employer && !body.companyName) body.companyName = body.employer;
+        if (body.ownerName && !body.technicians) body.technicians = `Owner: ${body.ownerName}`;
+      }
+      const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
       res.status(201).json(submission);
     } catch (error) {
