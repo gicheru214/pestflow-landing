@@ -7,6 +7,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { GuidedTourProvider } from "@/components/onboarding/GuidedTooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Support from "@/pages/support";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
 import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
 import Dashboard from "@/pages/dashboard";
@@ -34,6 +37,9 @@ function AppRouter() {
     <Router>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/support" component={Support} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/terms" component={Terms} />
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/admin" component={Admin} />
         <Route path="/dashboard" component={Dashboard} />

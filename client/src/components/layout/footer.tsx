@@ -43,15 +43,43 @@ export function Footer() {
           <div>
             <h4 className="font-heading font-semibold mb-4">Legal</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><span className="text-muted-foreground/50">Privacy Policy</span></li>
-              <li><span className="text-muted-foreground/50">Terms of Service</span></li>
-              <li><span className="text-muted-foreground/50">Security</span></li>
+              <li>
+                <Link href="/support" className="hover:text-primary transition-colors">
+                  Support
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-primary transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-primary transition-colors">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
         
-        <div className="pt-8 border-t text-center md:text-left flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} PestFlow. All rights reserved.</p>
+        <div className="pt-8 border-t text-center md:text-left flex flex-col gap-4 md:flex-row md:justify-between md:items-center text-sm text-muted-foreground">
+          <div>
+            <p>&copy; {new Date().getFullYear()} Reflectly AI, Inc. All rights reserved.</p>
+            <p className="mt-1 text-xs text-muted-foreground/80">
+              PestFlow is a product operated by Reflectly AI, Inc., a Texas-based company.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs md:justify-end">
+            <Link href="/support" className="hover:text-primary transition-colors">
+              Support
+            </Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="hover:text-primary transition-colors">
+              Terms &amp; Conditions
+            </Link>
+          </div>
           <div className="flex gap-4 mt-4 md:mt-0">
             <a
               href="https://app.pestflow.org/admin"
