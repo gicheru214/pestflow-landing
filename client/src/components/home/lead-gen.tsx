@@ -100,11 +100,7 @@ export function LeadGen() {
             </div>
 
             {/* Proof row */}
-            <div className="grid grid-cols-3 gap-3 mb-6 max-w-lg">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                <div className="text-2xl font-extrabold text-emerald-400">500+</div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Owners scaling</div>
-              </div>
+            <div className="grid grid-cols-2 gap-3 mb-6 max-w-lg">
               <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
                 <div className="text-2xl font-extrabold text-emerald-400">$92K</div>
                 <div className="text-[11px] text-slate-400 uppercase tracking-wide">Avg. yr-1 lift</div>
@@ -166,9 +162,6 @@ export function LeadGen() {
                   </Button>
                 </div>
 
-                <p className="text-xs text-center text-slate-500 mt-5">
-                  500+ pest control owners already inside.
-                </p>
               </>
             )}
 

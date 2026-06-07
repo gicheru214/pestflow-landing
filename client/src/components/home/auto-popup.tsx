@@ -445,7 +445,7 @@ export function AutoPopup() {
                     Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-0.5">
-                    500+ owners already scaling with this. No spam — we don't do that.
+                    No spam — we don't do that.
                   </p>
                 </div>
 

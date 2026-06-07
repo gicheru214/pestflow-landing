@@ -25,6 +25,12 @@ export function Navbar() {
 
         <div className="hidden md:flex items-center gap-8">
           <button
+            onClick={() => scrollToSection('ai-tutor')}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            AI Tutor
+          </button>
+          <button
             onClick={() => scrollToSection('features')}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
