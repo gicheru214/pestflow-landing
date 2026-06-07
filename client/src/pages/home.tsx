@@ -7,6 +7,7 @@ import { Pricing } from "@/components/home/pricing";
 import { CTA } from "@/components/home/cta";
 import { LeadGen } from "@/components/home/lead-gen";
 import { Widgets } from "@/components/home/widgets";
+import { AiTutor } from "@/components/home/ai-tutor";
 import { AutoPopup } from "@/components/home/auto-popup";
 import { analytics, EVENTS } from "@/lib/analytics";
 
@@ -38,6 +39,7 @@ export default function Home() {
       <main className="flex-grow">
         <Hero />
         <LeadGen />
+        <AiTutor />
         <Widgets />
         <Features />
         <Pricing />
