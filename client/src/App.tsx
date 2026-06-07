@@ -23,6 +23,7 @@ import Watch from "@/pages/watch";
 import TechLanding from "@/pages/tech";
 import Login from "@/pages/login";
 import Automations from "@/pages/automations";
+import AiTutorPage from "@/pages/ai-tutor";
 import BlogIndex from "@/pages/blog/index";
 import PestControlCostPost from "@/pages/blog/pest-control-cost";
 import PricingChartPost from "@/pages/blog/pricing-chart";
@@ -53,6 +54,7 @@ function AppRouter() {
         <Route path="/tech" component={TechLanding} />
         <Route path="/login" component={Login} />
         <Route path="/automations" component={Automations} />
+        <Route path="/ai-tutor" component={AiTutorPage} />
         <Route path="/blog" component={BlogIndex} />
         <Route path="/blog/how-much-does-pest-control-cost" component={PestControlCostPost} />
         <Route path="/blog/pest-control-pricing-chart" component={PricingChartPost} />
