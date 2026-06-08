@@ -30,6 +30,12 @@ export function Navbar() {
           >
             AI Tutor
           </Link>
+          <Link
+            href="/competitors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Competitors
+          </Link>
           <button
             onClick={() => scrollToSection('features')}
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
