@@ -58,6 +58,9 @@ function AppRouter() {
         <Route path="/login" component={Login} />
         <Route path="/automations" component={Automations} />
         <Route path="/ai-tutor" component={AiTutorPage} />
+        <Route path="/competitors" component={CompetitorsPage} />
+        <Route path="/competitors/fieldroutes" component={CompetitorsFieldRoutes} />
+        <Route path="/competitors/gorilladesk" component={CompetitorsGorillaDesk} />
         <Route path="/blog" component={BlogIndex} />
         <Route path="/blog/how-much-does-pest-control-cost" component={PestControlCostPost} />
         <Route path="/blog/pest-control-pricing-chart" component={PricingChartPost} />
