@@ -7,7 +7,7 @@ import { Footer } from "@/components/layout/footer";
 type Cell = boolean | string;
 
 const rows: { label: string; pf: Cell; rival: Cell; winner: "pf" | "rival" | "tie" }[] = [
-  { label: "Starting price", pf: "$49 / route", rival: "$199–350 / mo", winner: "pf" },
+  { label: "Starting price", pf: "$40 / route", rival: "$199–350 / mo", winner: "pf" },
   { label: "Implementation fee", pf: "None", rival: "$1,500–$2,000", winner: "pf" },
   { label: "Free trial", pf: "7 days, no card", rival: "Demo only", winner: "pf" },
   { label: "Contract required", pf: "Month-to-month", rival: "Annual contract", winner: "pf" },
