@@ -49,7 +49,7 @@ const summary = [
     tag: "Built for growing crews",
     accent: true,
     pros: ["Mobile-first, free for techs", "Branded customer portal + reviews", "No setup fee, free migration"],
-    price: "$49",
+    price: "$40",
     priceNote: "per route · 7-day trial",
   },
   {
