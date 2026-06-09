@@ -32,18 +32,17 @@ export default function CompetitorsFieldRoutes() {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 px-4 py-16 md:py-20">
-        <div className="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#5ec23e_1px,transparent_0)] [background-size:38px_38px]" />
-        <div className="relative mx-auto max-w-4xl text-center">
+      <section className="border-b bg-secondary/30 px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-4xl text-center">
           <Link href="/competitors">
-            <span className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-white">
+            <span className="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" /> All comparisons
             </span>
           </Link>
-          <h1 className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl">
-            PestFlow <span className="text-slate-400">vs</span> <span className="text-emerald-400">FieldRoutes</span>
+          <h1 className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl">
+            PestFlow <span className="text-slate-400">vs</span> <span className="text-emerald-700">FieldRoutes</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-slate-300">
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             FieldRoutes is built for large enterprises — with enterprise pricing, setup fees, and contracts to match.
             Here's the honest head-to-head for a growing crew.
           </p>
