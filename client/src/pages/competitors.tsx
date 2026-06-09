@@ -85,18 +85,16 @@ export default function CompetitorsPage() {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950 px-4 py-20 md:py-28">
-        <div className="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(circle_at_1px_1px,#5ec23e_1px,transparent_0)] [background-size:38px_38px]" />
-        <div className="relative mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+      <section className="border-b bg-secondary/30 px-4 py-20 md:py-24">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
             PEST CONTROL SOFTWARE COMPARISON
           </div>
-          <h1 className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl">
+          <h1 className="font-heading text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
             How PestFlow stacks up <br className="hidden sm:block" />
-            against <span className="text-emerald-400">the field</span>
+            against <span className="text-emerald-700">the field</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             An honest, side-by-side look at PestFlow, FieldRoutes, and GorillaDesk — features, pricing, and the
             trade-offs nobody puts on their own site.
           </p>
@@ -107,11 +105,7 @@ export default function CompetitorsPage() {
               </Button>
             </Link>
             <a href="#matrix">
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 border-white/20 bg-white/10 px-8 text-base font-semibold text-white backdrop-blur-md hover:bg-white hover:text-slate-900"
-              >
+              <Button size="lg" variant="outline" className="h-12 px-8 text-base font-semibold">
                 See Full Comparison
               </Button>
             </a>
