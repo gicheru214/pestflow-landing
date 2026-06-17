@@ -3,11 +3,12 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, X } from "lucide-react";
+import { ArrowRight, CheckCircle2, Smartphone, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
+const MOBILE_APP_URL = "https://apps.apple.com/us/app/pestflow/id6773204838";
 
 function initGoogle(callback: (r: { credential: string }) => void) {
   const w = window as any;
@@ -92,30 +93,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "details" | "quiz" | "offer";
-
-const ROUTE_QUESTIONS = [
-  {
-    key: "routeCount",
-    label: "How many routes do you run each week?",
-    options: ["1–2", "3–5", "6–10", "11–20", "20+"],
-  },
-  {
-    key: "routeMix",
-    label: "What's the mix of work on those routes?",
-    options: ["Mostly residential", "Mostly commercial", "Even split", "One-off / on-demand"],
-  },
-  {
-    key: "routeDensity",
-    label: "How tight are your routes today?",
-    options: ["Dense — back-to-back stops", "Spread out — lots of windshield time", "All over the map"],
-  },
-  {
-    key: "routeBottleneck",
-    label: "What's hurting route revenue the most?",
-    options: ["Cancellations & no-shows", "Slow / missed payments", "Not enough new leads", "Techs running behind"],
-  },
-] as const;
+type Step = "guide" | "offer";
 
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
@@ -123,25 +101,15 @@ export function AutoPopup() {
   const [googleErr, setGoogleErr] = useState("");
   const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const initialStep = urlParams.get("popup_step") as Step | null;
-  const validInitial: Step[] = ["details", "offer"];
+  const validInitial: Step[] = ["offer"];
   const [step, setStep] = useState<Step>(validInitial.includes(initialStep as Step) ? (initialStep as Step) : "guide");
 
-  // When arriving at popup with ?popup_step=offer (return from /quiz.html),
-  // hydrate fields from URL params and the localStorage snapshot saved on guide submit.
+  // Hydrate fields from URL params and the localStorage snapshot saved on guide submit.
   const cachedPopup = (() => {
     if (typeof window === "undefined") return {} as any;
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); }
     catch { return {} as any; }
   })();
-
-  const seedRouteAnswers: Record<string, string> = {};
-  ["routeCount", "routeMix", "routeDensity", "routeBottleneck"].forEach((k) => {
-    const v = urlParams.get(k) || cachedPopup[k];
-    if (v) seedRouteAnswers[k] = v;
-  });
-
-  const [routeAnswers, setRouteAnswers] = useState<Record<string, string>>(seedRouteAnswers);
-  const [questionIdx, setQuestionIdx] = useState(0);
   const [showClose, setShowClose] = useState(false);
 
   const seedName = (() => {
@@ -167,10 +135,9 @@ export function AutoPopup() {
       lastName: parts.slice(1).join(" ") || "",
       phone,
       email,
-      ...routeAnswers,
       step,
     };
-  }, [name, phone, email, routeAnswers, step]);
+  }, [name, phone, email, step]);
 
   // Fire-and-forget partial send if user closes/refreshes mid-funnel
   useEffect(() => {
@@ -188,10 +155,10 @@ export function AutoPopup() {
   }, []);
 
   useEffect(() => {
-    // If returning from /quiz.html with ?popup_step=offer, open immediately at offer step
-    // even if popup_submitted flag is already set.
+    // Old quiz links may still return with ?popup_step=offer. Show the offer
+    // immediately so those links keep working without reviving the long quiz.
     const forcedStep = new URLSearchParams(window.location.search).get("popup_step");
-    if (forcedStep === "offer" || forcedStep === "details") {
+    if (forcedStep === "offer") {
       setShowClose(true);
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
@@ -290,45 +257,32 @@ export function AutoPopup() {
       console.error("Failed to save guide request", e);
     }
 
-    setStep("details");
+    setShowClose(true);
+    setStep("offer");
   };
 
-  // Build the params bundle (name/email/phone + route answers) we forward
-  // through quiz → offer → video → pricing.
+  // Build the params bundle (name/email/phone) we forward into the success
+  // page and then into the app onboarding handoff.
   const buildForwardParams = () => {
     const parts = name.trim().split(" ");
     const params = new URLSearchParams();
+    params.set("source", "popup_playbook");
     if (parts[0]) params.set("firstName", parts[0]);
     const lastName = parts.slice(1).join(" ");
     if (lastName) params.set("lastName", lastName);
     if (email) params.set("email", email);
     if (phone) params.set("phone", phone);
-    Object.entries(routeAnswers).forEach(([k, v]) => {
-      if (v) params.set(k, v);
-    });
     return params;
   };
 
-  // After 4-Q route quiz: navigate to /quiz.html full-page Revenue Audit.
-  // Quiz finishes by redirecting back to /?popup_step=offer with all params forwarded.
-  const handleRouteQuizComplete = () => {
-    pushPartial({ ...snapshotRef.current, reason: "route_quiz_complete" });
-    window.location.href = "/quiz.html?" + buildForwardParams().toString();
-  };
-
-  // No-op effect kept to avoid removing step type reference — quiz step
-  // is no longer rendered but "quiz" may appear in URL params from old links.
-  useEffect(() => {
-    if (step !== "quiz") return;
-  }, [step]);
-
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
-    pushPartial({ ...snapshotRef.current, reason: "accept_offer" });
+    pushPartial({ ...snapshotRef.current, reason: "accept_offer_signup_success" });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    // Forward to demo video page; "Start Trial" there → app.pestflow.org/pricing
-    window.location.href = `/watch?${buildForwardParams().toString()}`;
+    // Route through signup-success so Meta's Lead event and the handoff screen
+    // both happen before the visitor lands in PestFlow onboarding.
+    window.location.href = `/signup-success?${buildForwardParams().toString()}`;
   };
 
   const slideVariants = {
@@ -452,6 +406,23 @@ export function AutoPopup() {
                 {/* ── Returning user sign-in ── */}
                 <div className="w-full mt-4 pt-4 border-t border-white/8">
                   <p className="text-center text-[11px] text-slate-500 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
+                  <a
+                    href={MOBILE_APP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sm:hidden mb-2 flex items-center justify-between gap-3 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2.5 text-left text-white transition-colors hover:bg-emerald-500/15"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300">
+                        <Smartphone className="h-4 w-4" />
+                      </span>
+                      <span>
+                        <span className="block text-xs font-bold leading-tight">On your phone?</span>
+                        <span className="block text-[11px] text-emerald-100/75">Download PestFlow Mobile</span>
+                      </span>
+                    </span>
+                    <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200" />
+                  </a>
                   <button
                     disabled={googleLoading}
                     onClick={() => {
@@ -508,112 +479,7 @@ export function AutoPopup() {
               </motion.div>
             )}
 
-            {/* ── STEP 2: Route quiz to customize Growth Guide ── */}
-            {step === "details" && (() => {
-              const q = ROUTE_QUESTIONS[questionIdx];
-              const total = ROUTE_QUESTIONS.length;
-              const progressPct = ((questionIdx + (routeAnswers[q.key] ? 1 : 0)) / total) * 100;
-              const handleAnswer = (answer: string) => {
-                const next = { ...routeAnswers, [q.key]: answer };
-                setRouteAnswers(next);
-                const currentData = JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}");
-                localStorage.setItem(
-                  "pestflow_popup_data",
-                  JSON.stringify({ ...currentData, ...next })
-                );
-                pushPartial({ ...snapshotRef.current, ...next, reason: `q_${q.key}` });
-                if (questionIdx < total - 1) {
-                  setTimeout(() => setQuestionIdx(questionIdx + 1), 180);
-                } else {
-                  // Last route question answered → hand off to /quiz.html (15-Q Revenue Accelerator).
-                  // The quiz returns to /?popup_step=offer when done.
-                  setTimeout(() => handleRouteQuizComplete(), 220);
-                }
-              };
-              return (
-                <motion.div
-                  key="details"
-                  variants={slideVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="flex flex-col"
-                >
-                  {/* Sticky funnel header */}
-                  <div className="sticky top-0 z-10 bg-gradient-to-r from-emerald-600 to-emerald-500 px-4 py-3 border-b border-emerald-400/40">
-                    <p className="text-[11px] font-semibold tracking-wider uppercase text-emerald-100/90">
-                      Customize your Growth Guide
-                    </p>
-                    <p className="text-sm font-bold text-white leading-tight mt-0.5">
-                      Answer 4 quick questions for max-impact results
-                    </p>
-                    <div className="mt-2 h-1.5 w-full bg-emerald-900/40 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-white rounded-full"
-                        initial={false}
-                        animate={{ width: `${progressPct}%` }}
-                        transition={{ duration: 0.35 }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-[10px] text-emerald-100/80 mt-1 font-medium">
-                      <span>Step {questionIdx + 1} of {total}</span>
-                      <span>Next: your free trial</span>
-                    </div>
-                  </div>
-
-                  {/* Question body */}
-                  <div className="p-5 sm:p-6 flex flex-col">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={q.key}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <h3 className="text-base sm:text-lg font-bold text-white mb-1 leading-snug">
-                          {q.label}
-                        </h3>
-                        <p className="text-slate-400 text-xs mb-4">
-                          We use this to tune the Growth Guide to your routes.
-                        </p>
-                        <div className="space-y-2">
-                          {q.options.map((opt) => {
-                            const selected = routeAnswers[q.key] === opt;
-                            return (
-                              <button
-                                key={opt}
-                                onClick={() => handleAnswer(opt)}
-                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all text-sm font-medium ${
-                                  selected
-                                    ? "bg-emerald-600 border-emerald-400 text-white"
-                                    : "bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-emerald-500/50"
-                                }`}
-                              >
-                                {opt}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    </AnimatePresence>
-
-                    {questionIdx > 0 && (
-                      <button
-                        onClick={() => setQuestionIdx(questionIdx - 1)}
-                        className="mt-4 text-xs text-slate-500 hover:text-slate-300 self-start"
-                      >
-                        ← Back
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })()}
-
-            {/* STEP 3: quiz — handled by full-page redirect to /quiz.html, no inline render */}
-
-            {/* ── STEP 4: Offer / CTA ── */}
+            {/* ── STEP 2: Offer / CTA ── */}
             {step === "offer" && (
               <motion.div
                 key="offer"
