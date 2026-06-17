@@ -3,12 +3,11 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, Smartphone, X } from "lucide-react";
+import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
-const MOBILE_APP_URL = "https://apps.apple.com/us/app/pestflow/id6773204838";
 
 function initGoogle(callback: (r: { credential: string }) => void) {
   const w = window as any;
@@ -406,23 +405,6 @@ export function AutoPopup() {
                 {/* ── Returning user sign-in ── */}
                 <div className="w-full mt-4 pt-4 border-t border-white/8">
                   <p className="text-center text-[11px] text-slate-500 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
-                  <a
-                    href={MOBILE_APP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="sm:hidden mb-2 flex items-center justify-between gap-3 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2.5 text-left text-white transition-colors hover:bg-emerald-500/15"
-                  >
-                    <span className="flex items-center gap-2.5">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-300">
-                        <Smartphone className="h-4 w-4" />
-                      </span>
-                      <span>
-                        <span className="block text-xs font-bold leading-tight">On your phone?</span>
-                        <span className="block text-[11px] text-emerald-100/75">Download PestFlow Mobile</span>
-                      </span>
-                    </span>
-                    <ArrowRight className="h-4 w-4 shrink-0 text-emerald-200" />
-                  </a>
                   <button
                     disabled={googleLoading}
                     onClick={() => {
