@@ -8,6 +8,7 @@ import { CTA } from "@/components/home/cta";
 import { LeadGen } from "@/components/home/lead-gen";
 import { Widgets } from "@/components/home/widgets";
 import { AutoPopup } from "@/components/home/auto-popup";
+import { MobileDownloadBanner } from "@/components/home/mobile-download-banner";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 export default function Home() {
@@ -34,6 +35,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
       <AutoPopup />
+      <MobileDownloadBanner />
       <Navbar />
       <main className="flex-grow">
         <Hero />
