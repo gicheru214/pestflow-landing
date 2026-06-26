@@ -64,11 +64,11 @@ export default function AiTutorPage() {
             </div>
 
             {choice === "signin" && (
-              <Link href="/login" className="mt-4 block">
+              <a href="https://app.pestflow.org/login" className="mt-4 block">
                 <Button className="h-12 w-full bg-slate-900 text-base font-bold text-white hover:bg-slate-800">
                   Continue to sign in <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </a>
             )}
           </div>
         </div>
