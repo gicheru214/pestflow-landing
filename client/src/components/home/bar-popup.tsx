@@ -154,7 +154,7 @@ export function BarPopup({ variant = "home" }: BarPopupProps) {
     variant === "tech" ? "Create Free Account" : "Start Free Trial";
 
   const ctaPrimaryHref =
-    variant === "tech" ? "/create-account?type=tech" : "/onboarding";
+    variant === "tech" ? "https://app.pestflow.org/mobile/tech-signup" : "/onboarding";
 
   return (
     <AnimatePresence>
