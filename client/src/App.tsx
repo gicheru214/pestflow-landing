@@ -49,18 +49,14 @@ function AppRouter() {
         <Route path="/terms" component={Terms} />
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/admin" component={Admin} />
-        <Route path="/dashboard" component={Dashboard} />
         <Route path="/signup-success" component={SignupSuccess} />
-        <Route path="/create-account" component={CreateAccount} />
-        <Route path="/payment" component={Payment} />
-        <Route path="/materials" component={Materials} />
-        <Route path="/routes" component={Routes} />
-        <Route path="/invoices" component={Invoices} />
         <Route path="/watch" component={Watch} />
         <Route path="/tech" component={TechLanding} />
-        <Route path="/login" component={Login} />
-        <Route path="/automations" component={Automations} />
         <Route path="/ai-tutor" component={AiTutorPage} />
+        {/* Removed fake in-app clone — hand stale traffic to the real app. */}
+        <Route path="/login">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
+        <Route path="/create-account">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
+        <Route path="/dashboard">{() => <ExternalRedirect to="https://app.pestflow.org/dashboard" />}</Route>
         <Route path="/competitors" component={CompetitorsPage} />
         <Route path="/competitors/fieldroutes" component={CompetitorsFieldRoutes} />
         <Route path="/competitors/gorilladesk" component={CompetitorsGorillaDesk} />
