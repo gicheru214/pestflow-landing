@@ -109,11 +109,11 @@ export function BarPopup({ variant = "home" }: BarPopupProps) {
     })
       .then((r) => r.json())
       .then(() => {
-        window.location.href = "/dashboard";
+        // Hand off to the real app onboarding; carries popup data along.
+        window.location.href = "/onboarding";
       })
       .catch(() => {
-        // Fall back to create-account page with prefill
-        window.location.href = "/create-account";
+        window.location.href = "/onboarding";
       });
   }, [answers]);
 
@@ -121,8 +121,8 @@ export function BarPopup({ variant = "home" }: BarPopupProps) {
     if (googleReady && window.google) {
       window.google.accounts.id.prompt();
     } else {
-      // No client ID yet — fall through to login page
-      window.location.href = "/login";
+      // No client ID yet — fall through to the real app sign-in.
+      window.location.href = "https://app.pestflow.org/login";
     }
   };
 
