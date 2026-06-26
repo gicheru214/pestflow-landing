@@ -13,6 +13,7 @@ import {
   sendOverdueReminder,
   sendJobSummary,
 } from "./email";
+import { syncSubmissionToMtaInBackground } from "./mta";
 
 const optimizeRouteSchema = z.object({
   jobs: z.array(z.string()).min(1, "At least one job is required"),
@@ -517,6 +518,7 @@ export async function registerRoutes(
       }
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
+      syncSubmissionToMtaInBackground(submission);
       res.status(201).json(submission);
     } catch (error) {
       if (error instanceof z.ZodError) {

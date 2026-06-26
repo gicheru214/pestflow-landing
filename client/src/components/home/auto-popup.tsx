@@ -94,6 +94,10 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
 
 type Step = "guide" | "offer";
 
+const popupScrollStyle = {
+  maxHeight: "min(88vh, calc(100dvh - 5.5rem))",
+} satisfies React.CSSProperties;
+
 export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -154,6 +158,13 @@ export function AutoPopup() {
   }, []);
 
   useEffect(() => {
+    if (urlParams.has("popup-check")) {
+      setStep("guide");
+      setShowClose(true);
+      setOpen(true);
+      analytics.track(EVENTS.LANDING.POPUP_SHOWN);
+      return;
+    }
     // Old quiz links may still return with ?popup_step=offer. Show the offer
     // immediately so those links keep working without reviving the long quiz.
     const forcedStep = new URLSearchParams(window.location.search).get("popup_step");
@@ -295,7 +306,7 @@ export function AutoPopup() {
   return (
     <Dialog open={open} onOpenChange={showClose ? handleClose : () => {}}>
       <DialogContent
-        className="w-[calc(100vw-1.5rem)] sm:max-w-[400px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl"
+        className="w-[calc(100vw-1.5rem)] sm:max-w-[400px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl top-[calc(50%+2.25rem)] xl:top-[50%]"
         hideCloseButton
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={showClose ? handleClose : (e) => e.preventDefault()}
@@ -309,7 +320,7 @@ export function AutoPopup() {
             <X className="h-4 w-4" />
           </button>
         )}
-        <div className="max-h-[88vh] overflow-y-auto">
+        <div className="overflow-y-auto" style={popupScrollStyle}>
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Guide offer + contact info ── */}
             {step === "guide" && (
