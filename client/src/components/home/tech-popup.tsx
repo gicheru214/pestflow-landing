@@ -180,7 +180,7 @@ export function TechPopup() {
                     onClick={() => {
                       const w = window as any;
                       if (!w.google?.accounts?.oauth2) {
-                        window.location.href = "/login";
+                        window.location.href = "https://app.pestflow.org/login";
                         return;
                       }
                       setGoogleLoading(true);
@@ -222,7 +222,7 @@ export function TechPopup() {
                   </button>
                   {googleErr && <p className="text-[11px] text-red-500 text-center mb-1">{googleErr}</p>}
                   <a
-                    href="/login"
+                    href="https://app.pestflow.org/login"
                     className="block text-center text-[11px] text-slate-400 hover:text-slate-600 transition-colors"
                   >
                     Or sign in with email →
