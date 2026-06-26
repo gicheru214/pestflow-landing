@@ -207,7 +207,7 @@ export function BarPopup({ variant = "home" }: BarPopupProps) {
 
                 {/* Login link */}
                 <a
-                  href="/login"
+                  href="https://app.pestflow.org/login"
                   className="hidden md:block text-[13px] font-medium text-slate-400 hover:text-white transition-colors px-2"
                 >
                   Sign in
