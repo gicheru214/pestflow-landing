@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "wouter";
 import { ArrowRight, LogIn, MessageCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/navbar";
