@@ -28,6 +28,17 @@ import EstimateTemplatePost from "@/pages/blog/estimate-template";
 import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import { analytics, EVENTS } from "@/lib/analytics";
 
+// The landing site no longer hosts any in-app screens. Auth and the dashboard
+// live only in the real product on app.pestflow.org. These redirects catch
+// stale ad/bookmark traffic to the old fake-app URLs and hand it off to the
+// real app instead of rendering a mock or 404ing.
+function ExternalRedirect({ to }: { to: string }) {
+  useEffect(() => {
+    window.location.replace(to);
+  }, [to]);
+  return null;
+}
+
 function AppRouter() {
   return (
     <Router>
