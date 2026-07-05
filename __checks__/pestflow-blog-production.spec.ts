@@ -12,7 +12,7 @@ function absolutePath(path: string) {
 
 test("production blog index renders and generated posts open", async ({ page }) => {
   await page.goto(absolutePath("/blog"), { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: /pest control business/i })).toBeVisible();
+  await expect(page.locator("h1").filter({ hasText: "Pest control business" })).toBeVisible();
   await expect(page.getByText("PestFlow Learn")).toBeVisible();
 
   const slugsToCheck = expectedSlugs.length
