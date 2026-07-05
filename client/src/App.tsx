@@ -26,6 +26,7 @@ import StartBusinessPost from "@/pages/blog/start-business";
 import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
 import EstimateTemplatePost from "@/pages/blog/estimate-template";
 import InvoiceTemplatePost from "@/pages/blog/invoice-template";
+import GeneratedBlogPostPage from "@/pages/blog/generated-post";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 // The landing site no longer hosts any in-app screens. Auth and the dashboard
@@ -67,6 +68,7 @@ function AppRouter() {
         <Route path="/blog/pest-control-marketing-ideas" component={MarketingIdeasPost} />
         <Route path="/blog/pest-control-estimate-template" component={EstimateTemplatePost} />
         <Route path="/blog/pest-control-invoice-template" component={InvoiceTemplatePost} />
+        <Route path="/blog/:slug">{(params) => <GeneratedBlogPostPage slug={params.slug} />}</Route>
         <Route component={NotFound} />
       </Switch>
     </Router>

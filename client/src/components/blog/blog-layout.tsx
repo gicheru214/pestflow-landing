@@ -33,6 +33,7 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
   }, [post]);
 
   const related = getRelatedPosts(post.slug, 3);
+  const author = "author" in post && typeof post.author === "string" ? post.author : "the PestFlow team";
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
@@ -75,7 +76,7 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
                   <Clock className="w-4 h-4" />
                   {post.readTime}
                 </span>
-                <span>By the PestFlow team</span>
+                <span>By {author}</span>
               </div>
             </div>
           </header>

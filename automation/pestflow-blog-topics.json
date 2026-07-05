@@ -1,0 +1,911 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-05",
+  "notes": [
+    "The first 100 topics are long-tail phrases for pest control owners, not homeowner pest tips.",
+    "Research emphasis: local SEO, route density, recurring billing, field operations, templates, AI intake, and software comparisons.",
+    "Daily automation publishes the next three unpublished topics from this list."
+  ],
+  "topics": [
+    {
+      "keyword": "pest control route density calculator",
+      "slug": "pest-control-route-density-calculator",
+      "title": "Pest Control Route Density Calculator for Owner Operators",
+      "category": "Operations",
+      "angle": "Show owners how to measure revenue per mile and tighten routes before hiring another tech.",
+      "intent": "operations planning",
+      "researchQueries": ["pest control route density", "field service route optimization pest control", "pest control routing software"]
+    },
+    {
+      "keyword": "daily pest control route planning spreadsheet",
+      "slug": "daily-pest-control-route-planning-spreadsheet",
+      "title": "Daily Pest Control Route Planning Spreadsheet",
+      "category": "Templates",
+      "angle": "Turn a messy morning dispatch into a repeatable route board owners can outgrow into PestFlow.",
+      "intent": "template download",
+      "researchQueries": ["pest control route planning", "daily dispatch route planning field service", "pest control schedule template"]
+    },
+    {
+      "keyword": "how to reduce windshield time in pest control",
+      "slug": "how-to-reduce-windshield-time-in-pest-control",
+      "title": "How to Reduce Windshield Time in Pest Control",
+      "category": "Operations",
+      "angle": "Connect wasted drive time to route density, customer windows, and profit leakage.",
+      "intent": "efficiency",
+      "researchQueries": ["reduce windshield time field service", "pest control route optimization", "route density pest control business"]
+    },
+    {
+      "keyword": "pest control technician GPS tracking policy",
+      "slug": "pest-control-technician-gps-tracking-policy",
+      "title": "Pest Control Technician GPS Tracking Policy",
+      "category": "Operations",
+      "angle": "Help owners introduce GPS tracking without sounding like they distrust the crew.",
+      "intent": "team management",
+      "researchQueries": ["technician GPS tracking policy field service", "GPS tracking employees policy", "pest control technician management"]
+    },
+    {
+      "keyword": "dispatch board for pest control companies",
+      "slug": "dispatch-board-for-pest-control-companies",
+      "title": "Dispatch Board for Pest Control Companies",
+      "category": "Operations",
+      "angle": "Explain what a useful pest control dispatch board needs beyond a calendar.",
+      "intent": "software evaluation",
+      "researchQueries": ["pest control dispatch board", "field service dispatch board", "pest control scheduling software"]
+    },
+    {
+      "keyword": "pest control callback tracking system",
+      "slug": "pest-control-callback-tracking-system",
+      "title": "Pest Control Callback Tracking System",
+      "category": "Operations",
+      "angle": "Turn callbacks from vague complaints into measurable reservice cost and training signals.",
+      "intent": "quality control",
+      "researchQueries": ["pest control callback tracking", "field service callbacks tracking", "pest control reservice management"]
+    },
+    {
+      "keyword": "pest control service report workflow",
+      "slug": "pest-control-service-report-workflow",
+      "title": "Pest Control Service Report Workflow",
+      "category": "Operations",
+      "angle": "Make service reports useful for customers, compliance, payment, and future sales.",
+      "intent": "field workflow",
+      "researchQueries": ["pest control service report", "pesticide service report requirements", "field service report workflow"]
+    },
+    {
+      "keyword": "recurring service schedule software for pest control",
+      "slug": "recurring-service-schedule-software-for-pest-control",
+      "title": "Recurring Service Schedule Software for Pest Control",
+      "category": "Operations",
+      "angle": "Explain why quarterly, bimonthly, and monthly routes need more than calendar reminders.",
+      "intent": "software evaluation",
+      "researchQueries": ["recurring pest control scheduling software", "pest control recurring service routes", "field service recurring schedule"]
+    },
+    {
+      "keyword": "termite renewal tracking software",
+      "slug": "termite-renewal-tracking-software",
+      "title": "Termite Renewal Tracking Software",
+      "category": "Operations",
+      "angle": "Show how lost renewals leak margin and how owners should track warranty dates.",
+      "intent": "renewals",
+      "researchQueries": ["termite renewal tracking", "termite warranty renewal software", "pest control renewal tracking"]
+    },
+    {
+      "keyword": "mosquito route planning software",
+      "slug": "mosquito-route-planning-software",
+      "title": "Mosquito Route Planning Software",
+      "category": "Operations",
+      "angle": "Tie seasonal mosquito demand to dense routes, weather rules, and easy renewals.",
+      "intent": "seasonal operations",
+      "researchQueries": ["mosquito control route planning", "mosquito treatment scheduling software", "seasonal pest control routes"]
+    },
+    {
+      "keyword": "how to price quarterly pest control plans",
+      "slug": "how-to-price-quarterly-pest-control-plans",
+      "title": "How to Price Quarterly Pest Control Plans",
+      "category": "Pricing",
+      "angle": "Give owners a clear floor for initial, recurring, and annual plan math.",
+      "intent": "pricing",
+      "researchQueries": ["quarterly pest control pricing", "pest control plan pricing", "pest control recurring service price"]
+    },
+    {
+      "keyword": "pest control initial service fee",
+      "slug": "pest-control-initial-service-fee",
+      "title": "Pest Control Initial Service Fee",
+      "category": "Pricing",
+      "angle": "Explain why the first visit should pay for inspection, setup, and callback risk.",
+      "intent": "pricing",
+      "researchQueries": ["pest control initial service fee", "initial pest control treatment cost", "pest control startup service pricing"]
+    },
+    {
+      "keyword": "German roach cleanout price for pest control companies",
+      "slug": "german-roach-cleanout-price-for-pest-control-companies",
+      "title": "German Roach Cleanout Price for Pest Control Companies",
+      "category": "Pricing",
+      "angle": "Warn owners away from underbidding the most callback-heavy residential job.",
+      "intent": "pricing",
+      "researchQueries": ["German roach cleanout pricing", "German cockroach treatment price pest control", "pest control roach cleanout"]
+    },
+    {
+      "keyword": "bed bug treatment quote template",
+      "slug": "bed-bug-treatment-quote-template",
+      "title": "Bed Bug Treatment Quote Template",
+      "category": "Templates",
+      "angle": "Separate chemical, heat, prep, warranty, and follow-up terms so quotes do not become arguments.",
+      "intent": "template",
+      "researchQueries": ["bed bug treatment quote template", "bed bug heat treatment pricing", "bed bug service agreement"]
+    },
+    {
+      "keyword": "termite bait station pricing guide",
+      "slug": "termite-bait-station-pricing-guide",
+      "title": "Termite Bait Station Pricing Guide",
+      "category": "Pricing",
+      "angle": "Break down install, monitoring, renewal, and customer value in plain owner math.",
+      "intent": "pricing",
+      "researchQueries": ["termite bait station pricing", "Sentricon pricing pest control", "termite monitoring renewal price"]
+    },
+    {
+      "keyword": "rodent exclusion pricing for pest control",
+      "slug": "rodent-exclusion-pricing-for-pest-control",
+      "title": "Rodent Exclusion Pricing for Pest Control",
+      "category": "Pricing",
+      "angle": "Help owners price inspections, sealing, trapping, attic cleanup, and follow-ups without eating labor.",
+      "intent": "pricing",
+      "researchQueries": ["rodent exclusion pricing", "pest control rodent exclusion cost", "attic exclusion pest control pricing"]
+    },
+    {
+      "keyword": "mosquito control subscription pricing",
+      "slug": "mosquito-control-subscription-pricing",
+      "title": "Mosquito Control Subscription Pricing",
+      "category": "Pricing",
+      "angle": "Show seasonal mosquito subscription math, renewal timing, and add-on positioning.",
+      "intent": "pricing",
+      "researchQueries": ["mosquito control subscription pricing", "mosquito treatment monthly price", "pest control mosquito service pricing"]
+    },
+    {
+      "keyword": "commercial pest control bid template",
+      "slug": "commercial-pest-control-bid-template",
+      "title": "Commercial Pest Control Bid Template",
+      "category": "Templates",
+      "angle": "Cover scope, frequency, devices, reporting, and exclusions for commercial accounts.",
+      "intent": "template",
+      "researchQueries": ["commercial pest control bid template", "commercial pest control proposal", "pest control RFP bid"]
+    },
+    {
+      "keyword": "apartment pest control pricing guide",
+      "slug": "apartment-pest-control-pricing-guide",
+      "title": "Apartment Pest Control Pricing Guide",
+      "category": "Pricing",
+      "angle": "Explain per-door, per-visit, and infestation pricing for multifamily work.",
+      "intent": "pricing",
+      "researchQueries": ["apartment pest control pricing", "multifamily pest control pricing", "property management pest control bid"]
+    },
+    {
+      "keyword": "annual pest contract price increase letter",
+      "slug": "annual-pest-contract-price-increase-letter",
+      "title": "Annual Pest Contract Price Increase Letter",
+      "category": "Templates",
+      "angle": "Give owners a price increase script that keeps good accounts and stops margin rot.",
+      "intent": "template",
+      "researchQueries": ["pest control price increase letter", "service business price increase email", "pest control contract renewal letter"]
+    },
+    {
+      "keyword": "recurring billing setup for pest control",
+      "slug": "recurring-billing-setup-for-pest-control",
+      "title": "Recurring Billing Setup for Pest Control",
+      "category": "Operations",
+      "angle": "Show how card-on-file and automated billing protect cash flow without annoying customers.",
+      "intent": "billing",
+      "researchQueries": ["pest control recurring billing", "field service recurring billing", "card on file pest control"]
+    },
+    {
+      "keyword": "card on file policy for pest control companies",
+      "slug": "card-on-file-policy-for-pest-control-companies",
+      "title": "Card on File Policy for Pest Control Companies",
+      "category": "Templates",
+      "angle": "Write policy language that reduces accounts receivable and keeps the customer conversation calm.",
+      "intent": "billing template",
+      "researchQueries": ["card on file policy service business", "pest control payment policy", "recurring billing card on file"]
+    },
+    {
+      "keyword": "pest control invoice late fee wording",
+      "slug": "pest-control-invoice-late-fee-wording",
+      "title": "Pest Control Invoice Late Fee Wording",
+      "category": "Templates",
+      "angle": "Give late-fee language that is clear, professional, and easy to enforce.",
+      "intent": "invoice template",
+      "researchQueries": ["invoice late fee wording service business", "pest control invoice terms", "late payment wording invoice"]
+    },
+    {
+      "keyword": "ACH vs credit card payments for pest control",
+      "slug": "ach-vs-credit-card-payments-for-pest-control",
+      "title": "ACH vs Credit Card Payments for Pest Control",
+      "category": "Operations",
+      "angle": "Compare fees, failure rates, customer friction, and when to push each payment method.",
+      "intent": "billing operations",
+      "researchQueries": ["ACH vs credit card recurring billing", "field service payment processing", "pest control payments"]
+    },
+    {
+      "keyword": "payment link in pest control service report",
+      "slug": "payment-link-in-pest-control-service-report",
+      "title": "Payment Link in Pest Control Service Report",
+      "category": "Operations",
+      "angle": "Show owners how payment links inside service reports shorten collection time.",
+      "intent": "billing workflow",
+      "researchQueries": ["payment link invoice field service", "pest control service report payment", "online payment links service business"]
+    },
+    {
+      "keyword": "pest control estimate deposit terms",
+      "slug": "pest-control-estimate-deposit-terms",
+      "title": "Pest Control Estimate Deposit Terms",
+      "category": "Templates",
+      "angle": "Cover deposit rules for termite, bed bug, exclusion, and commercial work.",
+      "intent": "estimate template",
+      "researchQueries": ["service estimate deposit terms", "pest control estimate terms", "termite treatment deposit"]
+    },
+    {
+      "keyword": "pest control collections workflow",
+      "slug": "pest-control-collections-workflow",
+      "title": "Pest Control Collections Workflow",
+      "category": "Operations",
+      "angle": "Give a calm collection sequence from same-day reminder to account hold.",
+      "intent": "billing operations",
+      "researchQueries": ["field service collections workflow", "pest control accounts receivable", "service business collections email"]
+    },
+    {
+      "keyword": "prepaid annual pest control plan",
+      "slug": "prepaid-annual-pest-control-plan",
+      "title": "Prepaid Annual Pest Control Plan",
+      "category": "Pricing",
+      "angle": "Show how prepaid annual plans improve cash flow without discounting too much.",
+      "intent": "pricing",
+      "researchQueries": ["annual pest control plan pricing", "prepaid service plan pricing", "pest control recurring plan"]
+    },
+    {
+      "keyword": "failed payment text message for pest control",
+      "slug": "failed-payment-text-message-for-pest-control",
+      "title": "Failed Payment Text Message for Pest Control",
+      "category": "Templates",
+      "angle": "Provide payment-failure text and email copy that gets paid without burning trust.",
+      "intent": "billing template",
+      "researchQueries": ["failed payment text message", "payment failed SMS template", "service business failed payment email"]
+    },
+    {
+      "keyword": "batch invoicing for pest control companies",
+      "slug": "batch-invoicing-for-pest-control-companies",
+      "title": "Batch Invoicing for Pest Control Companies",
+      "category": "Operations",
+      "angle": "Explain when batch invoicing helps and when it hides service and cash-flow problems.",
+      "intent": "billing operations",
+      "researchQueries": ["batch invoicing field service", "pest control invoicing software", "recurring service batch billing"]
+    },
+    {
+      "keyword": "Google Local Services Ads budget for pest control",
+      "slug": "google-local-services-ads-budget-for-pest-control",
+      "title": "Google Local Services Ads Budget for Pest Control",
+      "category": "Marketing",
+      "angle": "Help owners budget LSAs by booked job value, lead quality, and route capacity.",
+      "intent": "marketing budget",
+      "researchQueries": ["Google Local Services Ads pest control budget", "pest control LSA cost", "Google Guaranteed pest control leads"]
+    },
+    {
+      "keyword": "Google Business Profile photo schedule for pest control",
+      "slug": "google-business-profile-photo-schedule-for-pest-control",
+      "title": "Google Business Profile Photo Schedule for Pest Control",
+      "category": "Marketing",
+      "angle": "Turn GBP photo posting into a weekly field habit that supports local trust.",
+      "intent": "local SEO",
+      "researchQueries": ["Google Business Profile photos pest control", "local SEO pest control photos", "GBP photo posting schedule"]
+    },
+    {
+      "keyword": "Nextdoor pest control marketing strategy",
+      "slug": "nextdoor-pest-control-marketing-strategy",
+      "title": "Nextdoor Pest Control Marketing Strategy",
+      "category": "Marketing",
+      "angle": "Show how to earn neighborhood recommendations without spammy posts.",
+      "intent": "local marketing",
+      "researchQueries": ["Nextdoor pest control marketing", "local pest control referrals Nextdoor", "neighborhood marketing pest control"]
+    },
+    {
+      "keyword": "door hanger after pest control service",
+      "slug": "door-hanger-after-pest-control-service",
+      "title": "Door Hanger After Pest Control Service",
+      "category": "Marketing",
+      "angle": "Teach the neighbor-door-hanger play for route density and referrals.",
+      "intent": "local marketing",
+      "researchQueries": ["pest control door hanger marketing", "door hanger route density pest control", "field service door hanger"]
+    },
+    {
+      "keyword": "neighborhood termite letter template",
+      "slug": "neighborhood-termite-letter-template",
+      "title": "Neighborhood Termite Letter Template",
+      "category": "Templates",
+      "angle": "Write an educational termite letter for the 50 homes around a high-ticket job.",
+      "intent": "marketing template",
+      "researchQueries": ["termite letter template neighbors", "termite marketing letter pest control", "pest control direct mail termite"]
+    },
+    {
+      "keyword": "pest control review request timing",
+      "slug": "pest-control-review-request-timing",
+      "title": "Pest Control Review Request Timing",
+      "category": "Marketing",
+      "angle": "Explain when to ask for reviews after initial service, follow-up, and save calls.",
+      "intent": "reviews",
+      "researchQueries": ["pest control review request timing", "Google review request service business", "field service review SMS"]
+    },
+    {
+      "keyword": "pest control city pages vs blog posts",
+      "slug": "pest-control-city-pages-vs-blog-posts",
+      "title": "Pest Control City Pages vs Blog Posts",
+      "category": "Marketing",
+      "angle": "Clarify local service pages, blog posts, and internal links for owner-led SEO.",
+      "intent": "SEO strategy",
+      "researchQueries": ["pest control city pages SEO", "pest control blog posts local SEO", "local service pages vs blog posts"]
+    },
+    {
+      "keyword": "pest control referral program template",
+      "slug": "pest-control-referral-program-template",
+      "title": "Pest Control Referral Program Template",
+      "category": "Templates",
+      "angle": "Give referral offer, timing, and tracking ideas that support recurring accounts.",
+      "intent": "marketing template",
+      "researchQueries": ["pest control referral program", "service business referral program template", "customer referral credit pest control"]
+    },
+    {
+      "keyword": "spring mosquito marketing campaign",
+      "slug": "spring-mosquito-marketing-campaign",
+      "title": "Spring Mosquito Marketing Campaign",
+      "category": "Marketing",
+      "angle": "Plan the pre-season mosquito push across text, email, GBP, and customer add-ons.",
+      "intent": "seasonal marketing",
+      "researchQueries": ["spring mosquito marketing pest control", "mosquito control advertising", "seasonal pest control campaign"]
+    },
+    {
+      "keyword": "AI receptionist script for pest control",
+      "slug": "ai-receptionist-script-for-pest-control",
+      "title": "AI Receptionist Script for Pest Control",
+      "category": "Marketing",
+      "angle": "Give owners an intake script that captures pest, urgency, address, source, and payment readiness.",
+      "intent": "lead intake",
+      "researchQueries": ["AI receptionist pest control", "pest control call answering script", "AI phone answering field service"]
+    },
+    {
+      "keyword": "PestPac alternative for small pest control companies",
+      "slug": "pestpac-alternative-for-small-pest-control-companies",
+      "title": "PestPac Alternative for Small Pest Control Companies",
+      "category": "Operations",
+      "angle": "Speak to owners who want core routing and billing without enterprise overhead.",
+      "intent": "software comparison",
+      "researchQueries": ["PestPac alternative small pest control", "pest control software for small business", "PestPac competitors"]
+    },
+    {
+      "keyword": "FieldRoutes alternative for owner operators",
+      "slug": "fieldroutes-alternative-for-owner-operators",
+      "title": "FieldRoutes Alternative for Owner Operators",
+      "category": "Operations",
+      "angle": "Compare owner-operator needs against heavier enterprise-style platforms.",
+      "intent": "software comparison",
+      "researchQueries": ["FieldRoutes alternative owner operator", "FieldRoutes competitors pest control", "pest control software owner operator"]
+    },
+    {
+      "keyword": "GorillaDesk vs PestFlow",
+      "slug": "gorilladesk-vs-pestflow",
+      "title": "GorillaDesk vs PestFlow",
+      "category": "Operations",
+      "angle": "Position PestFlow for owners who care about growth workflows, mobile field work, and billing.",
+      "intent": "software comparison",
+      "researchQueries": ["GorillaDesk vs pest control software", "GorillaDesk alternatives", "pest control CRM comparison"]
+    },
+    {
+      "keyword": "ServiceTitan pest control alternative",
+      "slug": "servicetitan-pest-control-alternative",
+      "title": "ServiceTitan Pest Control Alternative",
+      "category": "Operations",
+      "angle": "Show when ServiceTitan is too heavy and what a pest-specific owner needs instead.",
+      "intent": "software comparison",
+      "researchQueries": ["ServiceTitan pest control alternative", "ServiceTitan pest control software", "field service software pest control"]
+    },
+    {
+      "keyword": "Housecall Pro for pest control limits",
+      "slug": "housecall-pro-for-pest-control-limits",
+      "title": "Housecall Pro for Pest Control Limits",
+      "category": "Operations",
+      "angle": "Explain where generic home-service tools struggle with recurring pest routes and compliance.",
+      "intent": "software comparison",
+      "researchQueries": ["Housecall Pro pest control", "Housecall Pro pest control limitations", "pest control software recurring routes"]
+    },
+    {
+      "keyword": "QuickBooks plus pest control software",
+      "slug": "quickbooks-plus-pest-control-software",
+      "title": "QuickBooks Plus Pest Control Software",
+      "category": "Operations",
+      "angle": "Show why accounting software alone cannot run field work, renewals, and service history.",
+      "intent": "software evaluation",
+      "researchQueries": ["QuickBooks pest control software", "field service software QuickBooks pest control", "pest control invoicing QuickBooks"]
+    },
+    {
+      "keyword": "best mobile app for pest control technicians",
+      "slug": "best-mobile-app-for-pest-control-technicians",
+      "title": "Best Mobile App for Pest Control Technicians",
+      "category": "Operations",
+      "angle": "Focus on what techs need in the truck: today route, service notes, photos, invoices, and customer signatures.",
+      "intent": "software evaluation",
+      "researchQueries": ["best mobile app pest control technicians", "pest control technician app", "field service mobile app pest control"]
+    },
+    {
+      "keyword": "pest control CRM with customer portal",
+      "slug": "pest-control-crm-with-customer-portal",
+      "title": "Pest Control CRM with Customer Portal",
+      "category": "Operations",
+      "angle": "Connect service history, payment, documents, and customer self-service in one owner-friendly view.",
+      "intent": "software evaluation",
+      "researchQueries": ["pest control CRM customer portal", "pest control customer portal software", "CRM for pest control companies"]
+    },
+    {
+      "keyword": "chemical usage tracking software for pest control",
+      "slug": "chemical-usage-tracking-software-for-pest-control",
+      "title": "Chemical Usage Tracking Software for Pest Control",
+      "category": "Operations",
+      "angle": "Explain how usage logs protect compliance, inventory, and service reports.",
+      "intent": "compliance software",
+      "researchQueries": ["chemical usage tracking pest control", "pesticide application software", "pest control chemical tracking"]
+    },
+    {
+      "keyword": "pest control software migration checklist",
+      "slug": "pest-control-software-migration-checklist",
+      "title": "Pest Control Software Migration Checklist",
+      "category": "Templates",
+      "angle": "Help owners switch systems without losing customers, cards, routes, notes, or renewals.",
+      "intent": "migration template",
+      "researchQueries": ["pest control software migration", "field service software migration checklist", "CRM migration pest control"]
+    },
+    {
+      "keyword": "pesticide application record template",
+      "slug": "pesticide-application-record-template",
+      "title": "Pesticide Application Record Template",
+      "category": "Templates",
+      "angle": "List the record fields owners should capture after every treatment.",
+      "intent": "compliance template",
+      "researchQueries": ["pesticide application record template", "pest control application records", "EPA pesticide application record"]
+    },
+    {
+      "keyword": "EPA product usage log for pest control",
+      "slug": "epa-product-usage-log-for-pest-control",
+      "title": "EPA Product Usage Log for Pest Control",
+      "category": "Templates",
+      "angle": "Frame product usage logs as compliance, inventory, and margin control.",
+      "intent": "compliance template",
+      "researchQueries": ["EPA pesticide product usage log", "pest control chemical usage log", "pesticide recordkeeping requirements"]
+    },
+    {
+      "keyword": "state pest control license renewal tracking",
+      "slug": "state-pest-control-license-renewal-tracking",
+      "title": "State Pest Control License Renewal Tracking",
+      "category": "Operations",
+      "angle": "Help owners avoid license, CEU, and technician renewal surprises.",
+      "intent": "compliance operations",
+      "researchQueries": ["pest control license renewal tracking", "pest control continuing education tracking", "state pesticide license renewal"]
+    },
+    {
+      "keyword": "WDO inspection report workflow",
+      "slug": "wdo-inspection-report-workflow",
+      "title": "WDO Inspection Report Workflow",
+      "category": "Operations",
+      "angle": "Map the WDO inspection from scheduling to photos, report, invoice, and renewal opportunity.",
+      "intent": "termite operations",
+      "researchQueries": ["WDO inspection report workflow", "wood destroying organism inspection report", "NPMA 33 pest control workflow"]
+    },
+    {
+      "keyword": "termite warranty tracking spreadsheet",
+      "slug": "termite-warranty-tracking-spreadsheet",
+      "title": "Termite Warranty Tracking Spreadsheet",
+      "category": "Templates",
+      "angle": "Give owners a warranty tracker they can replace with automated renewal tasks.",
+      "intent": "template",
+      "researchQueries": ["termite warranty tracking", "termite renewal spreadsheet", "pest control warranty management"]
+    },
+    {
+      "keyword": "bed bug customer prep sheet",
+      "slug": "bed-bug-customer-prep-sheet",
+      "title": "Bed Bug Customer Prep Sheet",
+      "category": "Templates",
+      "angle": "Reduce failed treatments by setting customer prep expectations before the tech arrives.",
+      "intent": "customer template",
+      "researchQueries": ["bed bug customer prep sheet", "bed bug treatment preparation checklist", "pest control customer prep"]
+    },
+    {
+      "keyword": "German roach prep checklist for customers",
+      "slug": "german-roach-prep-checklist-for-customers",
+      "title": "German Roach Prep Checklist for Customers",
+      "category": "Templates",
+      "angle": "Make roach prep clear enough that follow-up visits are productive.",
+      "intent": "customer template",
+      "researchQueries": ["German roach prep checklist", "cockroach treatment preparation checklist", "pest control roach prep"]
+    },
+    {
+      "keyword": "rodent exclusion inspection checklist",
+      "slug": "rodent-exclusion-inspection-checklist",
+      "title": "Rodent Exclusion Inspection Checklist",
+      "category": "Templates",
+      "angle": "Help techs document entry points, sanitation, attic issues, and quote scope.",
+      "intent": "field checklist",
+      "researchQueries": ["rodent exclusion inspection checklist", "rodent entry point checklist", "pest control exclusion checklist"]
+    },
+    {
+      "keyword": "mosquito treatment weather policy",
+      "slug": "mosquito-treatment-weather-policy",
+      "title": "Mosquito Treatment Weather Policy",
+      "category": "Templates",
+      "angle": "Create a weather policy that protects quality, reschedules, and customer trust.",
+      "intent": "operations template",
+      "researchQueries": ["mosquito treatment weather policy", "mosquito control rain policy", "pest control weather reschedule policy"]
+    },
+    {
+      "keyword": "fumigation follow up schedule",
+      "slug": "fumigation-follow-up-schedule",
+      "title": "Fumigation Follow Up Schedule",
+      "category": "Operations",
+      "angle": "Outline the customer, compliance, and renewal follow-up after fumigation.",
+      "intent": "field workflow",
+      "researchQueries": ["fumigation follow up schedule", "fumigation customer follow up", "pest control fumigation workflow"]
+    },
+    {
+      "keyword": "how to get first 100 pest control customers",
+      "slug": "how-to-get-first-100-pest-control-customers",
+      "title": "How to Get Your First 100 Pest Control Customers",
+      "category": "Marketing",
+      "angle": "Give a realistic owner-operator path from zero to route density.",
+      "intent": "startup growth",
+      "researchQueries": ["first 100 pest control customers", "start pest control business customers", "pest control startup marketing"]
+    },
+    {
+      "keyword": "hiring first pest control technician",
+      "slug": "hiring-first-pest-control-technician",
+      "title": "Hiring Your First Pest Control Technician",
+      "category": "Operations",
+      "angle": "Help owners know when route capacity, callbacks, and sales justify the first hire.",
+      "intent": "hiring",
+      "researchQueries": ["hiring first pest control technician", "pest control technician hiring", "when to hire field service technician"]
+    },
+    {
+      "keyword": "pest control technician pay plan",
+      "slug": "pest-control-technician-pay-plan",
+      "title": "Pest Control Technician Pay Plan",
+      "category": "Operations",
+      "angle": "Compare hourly, commission, production bonus, and quality incentives.",
+      "intent": "team management",
+      "researchQueries": ["pest control technician pay plan", "pest control technician compensation", "field service technician bonus plan"]
+    },
+    {
+      "keyword": "pest control KPI dashboard",
+      "slug": "pest-control-kpi-dashboard",
+      "title": "Pest Control KPI Dashboard",
+      "category": "Operations",
+      "angle": "Define the owner dashboard that shows revenue, callbacks, collections, route density, and lead speed.",
+      "intent": "analytics",
+      "researchQueries": ["pest control KPI dashboard", "pest control business metrics", "field service KPI dashboard"]
+    },
+    {
+      "keyword": "how pest control owners can take a vacation",
+      "slug": "how-pest-control-owners-can-take-a-vacation",
+      "title": "How Pest Control Owners Can Take a Vacation",
+      "category": "Operations",
+      "angle": "Frame systems, delegation, route visibility, and payment automation as owner freedom.",
+      "intent": "owner operations",
+      "researchQueries": ["pest control owner vacation", "service business owner vacation systems", "field service delegation"]
+    },
+    {
+      "keyword": "how to sell a pest control route",
+      "slug": "how-to-sell-a-pest-control-route",
+      "title": "How to Sell a Pest Control Route",
+      "category": "Operations",
+      "angle": "Explain what buyers inspect: recurring revenue, route density, churn, AR, and service history.",
+      "intent": "business sale",
+      "researchQueries": ["sell pest control route", "pest control route valuation", "pest control business sale"]
+    },
+    {
+      "keyword": "pest control recurring revenue valuation",
+      "slug": "pest-control-recurring-revenue-valuation",
+      "title": "Pest Control Recurring Revenue Valuation",
+      "category": "Operations",
+      "angle": "Teach owners which recurring revenue is valuable and which revenue falls apart under diligence.",
+      "intent": "business valuation",
+      "researchQueries": ["pest control recurring revenue valuation", "pest control company valuation", "pest control M&A recurring revenue"]
+    },
+    {
+      "keyword": "pest control route acquisition due diligence",
+      "slug": "pest-control-route-acquisition-due-diligence",
+      "title": "Pest Control Route Acquisition Due Diligence",
+      "category": "Operations",
+      "angle": "Give buyers a checklist before acquiring another operator's route.",
+      "intent": "acquisition",
+      "researchQueries": ["pest control route acquisition due diligence", "buying pest control accounts", "pest control acquisition checklist"]
+    },
+    {
+      "keyword": "pest control customer churn tracking",
+      "slug": "pest-control-customer-churn-tracking",
+      "title": "Pest Control Customer Churn Tracking",
+      "category": "Operations",
+      "angle": "Show how to spot cancels, failed payments, callbacks, and low-value plan churn early.",
+      "intent": "retention",
+      "researchQueries": ["pest control customer churn", "recurring service churn tracking", "field service customer retention"]
+    },
+    {
+      "keyword": "how to automate pest control business",
+      "slug": "how-to-automate-pest-control-business",
+      "title": "How to Automate a Pest Control Business",
+      "category": "Operations",
+      "angle": "Map automation from lead capture to route board, invoices, reviews, and renewals.",
+      "intent": "automation",
+      "researchQueries": ["automate pest control business", "pest control automation software", "field service automation pest control"]
+    },
+    {
+      "keyword": "pest control service reminder text examples",
+      "slug": "pest-control-service-reminder-text-examples",
+      "title": "Pest Control Service Reminder Text Examples",
+      "category": "Templates",
+      "angle": "Give text examples for initial, recurring, rain delay, and same-day reminders.",
+      "intent": "SMS template",
+      "researchQueries": ["pest control service reminder text", "appointment reminder SMS pest control", "field service reminder text"]
+    },
+    {
+      "keyword": "pest control no show text message",
+      "slug": "pest-control-no-show-text-message",
+      "title": "Pest Control No Show Text Message",
+      "category": "Templates",
+      "angle": "Help owners recover a missed appointment without sounding irritated.",
+      "intent": "SMS template",
+      "researchQueries": ["no show text message template", "missed appointment SMS service business", "pest control appointment reminder"]
+    },
+    {
+      "keyword": "pest control reservice request workflow",
+      "slug": "pest-control-reservice-request-workflow",
+      "title": "Pest Control Reservice Request Workflow",
+      "category": "Operations",
+      "angle": "Separate legitimate callbacks from poor prep, weather, and customer expectation gaps.",
+      "intent": "quality workflow",
+      "researchQueries": ["pest control reservice request", "pest control callback workflow", "field service reservice process"]
+    },
+    {
+      "keyword": "post treatment follow up email pest control",
+      "slug": "post-treatment-follow-up-email-pest-control",
+      "title": "Post Treatment Follow Up Email for Pest Control",
+      "category": "Templates",
+      "angle": "Use follow-up emails to reduce callbacks, collect payment, and earn reviews.",
+      "intent": "email template",
+      "researchQueries": ["pest control follow up email", "post treatment pest control email", "service completion email template"]
+    },
+    {
+      "keyword": "termite warranty renewal email",
+      "slug": "termite-warranty-renewal-email",
+      "title": "Termite Warranty Renewal Email",
+      "category": "Templates",
+      "angle": "Write renewal email copy that explains risk and makes payment easy.",
+      "intent": "email template",
+      "researchQueries": ["termite warranty renewal email", "pest control renewal email", "termite renewal letter"]
+    },
+    {
+      "keyword": "seasonal mosquito text campaign",
+      "slug": "seasonal-mosquito-text-campaign",
+      "title": "Seasonal Mosquito Text Campaign",
+      "category": "Marketing",
+      "angle": "Build a text sequence that reactivates last year's mosquito customers before the rush.",
+      "intent": "SMS campaign",
+      "researchQueries": ["mosquito control text campaign", "seasonal pest control SMS", "mosquito service customer reactivation"]
+    },
+    {
+      "keyword": "pest control review request SMS",
+      "slug": "pest-control-review-request-sms",
+      "title": "Pest Control Review Request SMS",
+      "category": "Templates",
+      "angle": "Give review text copy that is short, personal, and tied to the tech visit.",
+      "intent": "SMS template",
+      "researchQueries": ["pest control review request SMS", "Google review SMS template", "field service review request"]
+    },
+    {
+      "keyword": "customer portal adoption for pest control",
+      "slug": "customer-portal-adoption-for-pest-control",
+      "title": "Customer Portal Adoption for Pest Control",
+      "category": "Operations",
+      "angle": "Show owners how portals reduce calls, payment friction, and document hunts.",
+      "intent": "customer operations",
+      "researchQueries": ["pest control customer portal", "customer portal adoption field service", "online portal pest control customers"]
+    },
+    {
+      "keyword": "pest control cancellation save script",
+      "slug": "pest-control-cancellation-save-script",
+      "title": "Pest Control Cancellation Save Script",
+      "category": "Templates",
+      "angle": "Give a retention script for price, moving, no activity, and callback frustration.",
+      "intent": "retention template",
+      "researchQueries": ["pest control cancellation script", "customer save script service business", "recurring service cancellation retention"]
+    },
+    {
+      "keyword": "pest control price increase email",
+      "slug": "pest-control-price-increase-email",
+      "title": "Pest Control Price Increase Email",
+      "category": "Templates",
+      "angle": "Write an increase email owners can send without sounding apologetic or greedy.",
+      "intent": "email template",
+      "researchQueries": ["pest control price increase email", "service business price increase email", "recurring service price increase"]
+    },
+    {
+      "keyword": "AI phone answering for pest control",
+      "slug": "ai-phone-answering-for-pest-control",
+      "title": "AI Phone Answering for Pest Control",
+      "category": "Marketing",
+      "angle": "Explain what AI intake should capture and when a human still needs to step in.",
+      "intent": "AI intake",
+      "researchQueries": ["AI phone answering pest control", "AI receptionist field service", "pest control missed calls"]
+    },
+    {
+      "keyword": "ChatGPT prompts for pest control marketing",
+      "slug": "chatgpt-prompts-for-pest-control-marketing",
+      "title": "ChatGPT Prompts for Pest Control Marketing",
+      "category": "Marketing",
+      "angle": "Give owners prompts that turn field work into useful local content without generic AI copy.",
+      "intent": "AI marketing",
+      "researchQueries": ["ChatGPT pest control marketing", "AI content pest control", "pest control marketing prompts"]
+    },
+    {
+      "keyword": "AI estimate assistant for pest control",
+      "slug": "ai-estimate-assistant-for-pest-control",
+      "title": "AI Estimate Assistant for Pest Control",
+      "category": "Operations",
+      "angle": "Frame AI estimates as scope capture, not blind pricing.",
+      "intent": "AI operations",
+      "researchQueries": ["AI estimate assistant pest control", "AI estimator field service", "pest control estimate automation"]
+    },
+    {
+      "keyword": "AI route optimization for pest control",
+      "slug": "ai-route-optimization-for-pest-control",
+      "title": "AI Route Optimization for Pest Control",
+      "category": "Operations",
+      "angle": "Separate useful routing automation from hype and show the owner checks that still matter.",
+      "intent": "AI operations",
+      "researchQueries": ["AI route optimization pest control", "field service AI routing", "pest control route optimization software"]
+    },
+    {
+      "keyword": "automate missed calls for pest control",
+      "slug": "automate-missed-calls-for-pest-control",
+      "title": "Automate Missed Calls for Pest Control",
+      "category": "Marketing",
+      "angle": "Show owners how missed-call texts, AI intake, and follow-up tasks protect leads.",
+      "intent": "lead intake",
+      "researchQueries": ["automate missed calls pest control", "missed call text back service business", "AI receptionist missed calls"]
+    },
+    {
+      "keyword": "after hours pest control leads",
+      "slug": "after-hours-pest-control-leads",
+      "title": "After Hours Pest Control Leads",
+      "category": "Marketing",
+      "angle": "Turn urgent evening calls into booked inspections without keeping the owner on the phone all night.",
+      "intent": "lead intake",
+      "researchQueries": ["after hours pest control leads", "pest control answering service", "field service after hours calls"]
+    },
+    {
+      "keyword": "pest control lead response speed",
+      "slug": "pest-control-lead-response-speed",
+      "title": "Pest Control Lead Response Speed",
+      "category": "Marketing",
+      "angle": "Explain why the first five minutes matter and how to operationalize it.",
+      "intent": "sales operations",
+      "researchQueries": ["lead response speed pest control", "speed to lead home services", "field service lead response time"]
+    },
+    {
+      "keyword": "pest control website conversion checklist",
+      "slug": "pest-control-website-conversion-checklist",
+      "title": "Pest Control Website Conversion Checklist",
+      "category": "Marketing",
+      "angle": "Give a checklist for owner websites: offer, proof, booking, phone, service areas, and reviews.",
+      "intent": "website conversion",
+      "researchQueries": ["pest control website conversion", "home service website conversion checklist", "pest control landing page"]
+    },
+    {
+      "keyword": "pest control landing page examples",
+      "slug": "pest-control-landing-page-examples",
+      "title": "Pest Control Landing Page Examples",
+      "category": "Marketing",
+      "angle": "Break down what owners should copy from high-converting local landing pages.",
+      "intent": "website conversion",
+      "researchQueries": ["pest control landing page examples", "pest control website examples", "local service landing page examples"]
+    },
+    {
+      "keyword": "online booking for pest control companies",
+      "slug": "online-booking-for-pest-control-companies",
+      "title": "Online Booking for Pest Control Companies",
+      "category": "Operations",
+      "angle": "Show when online booking helps, when it creates bad jobs, and what guardrails to use.",
+      "intent": "booking operations",
+      "researchQueries": ["online booking pest control", "pest control scheduling online", "field service online booking"]
+    },
+    {
+      "keyword": "commercial pest control proposal template",
+      "slug": "commercial-pest-control-proposal-template",
+      "title": "Commercial Pest Control Proposal Template",
+      "category": "Templates",
+      "angle": "Give owners a commercial proposal structure that shows professionalism and scope control.",
+      "intent": "proposal template",
+      "researchQueries": ["commercial pest control proposal template", "pest control proposal commercial", "facility pest management proposal"]
+    },
+    {
+      "keyword": "quarterly pest control service agreement template",
+      "slug": "quarterly-pest-control-service-agreement-template",
+      "title": "Quarterly Pest Control Service Agreement Template",
+      "category": "Templates",
+      "angle": "Cover recurring visits, billing, callbacks, cancellation, and exclusions.",
+      "intent": "agreement template",
+      "researchQueries": ["quarterly pest control agreement template", "pest control service agreement", "recurring pest control contract"]
+    },
+    {
+      "keyword": "pest control inspection form template",
+      "slug": "pest-control-inspection-form-template",
+      "title": "Pest Control Inspection Form Template",
+      "category": "Templates",
+      "angle": "Build an inspection form that supports quoting, compliance, photos, and follow-up.",
+      "intent": "field template",
+      "researchQueries": ["pest control inspection form template", "pest inspection checklist", "field service inspection form"]
+    },
+    {
+      "keyword": "pest control service checklist template",
+      "slug": "pest-control-service-checklist-template",
+      "title": "Pest Control Service Checklist Template",
+      "category": "Templates",
+      "angle": "Give techs a standard service checklist without slowing down the route.",
+      "intent": "field checklist",
+      "researchQueries": ["pest control service checklist", "pest control technician checklist", "field service checklist template"]
+    },
+    {
+      "keyword": "pest control technician daily checklist",
+      "slug": "pest-control-technician-daily-checklist",
+      "title": "Pest Control Technician Daily Checklist",
+      "category": "Templates",
+      "angle": "Cover truck stock, route review, chemicals, PPE, payments, photos, and end-of-day closeout.",
+      "intent": "field checklist",
+      "researchQueries": ["pest control technician daily checklist", "field technician daily checklist", "pest control truck checklist"]
+    },
+    {
+      "keyword": "termite inspection invoice template",
+      "slug": "termite-inspection-invoice-template",
+      "title": "Termite Inspection Invoice Template",
+      "category": "Templates",
+      "angle": "Give invoice language for WDO inspections, termite treatment, renewal, and payment links.",
+      "intent": "invoice template",
+      "researchQueries": ["termite inspection invoice template", "WDO inspection invoice", "termite invoice pest control"]
+    },
+    {
+      "keyword": "pest control work order template",
+      "slug": "pest-control-work-order-template",
+      "title": "Pest Control Work Order Template",
+      "category": "Templates",
+      "angle": "Show the job details techs need before arrival and owners need afterward.",
+      "intent": "field template",
+      "researchQueries": ["pest control work order template", "field service work order pest control", "service work order template"]
+    },
+    {
+      "keyword": "pest control customer onboarding form",
+      "slug": "pest-control-customer-onboarding-form",
+      "title": "Pest Control Customer Onboarding Form",
+      "category": "Templates",
+      "angle": "Capture billing, property, pest, access, pets, gate codes, and communication preferences once.",
+      "intent": "customer template",
+      "researchQueries": ["pest control customer onboarding form", "new customer intake form pest control", "field service customer intake form"]
+    },
+    {
+      "keyword": "pest control cancellation policy template",
+      "slug": "pest-control-cancellation-policy-template",
+      "title": "Pest Control Cancellation Policy Template",
+      "category": "Templates",
+      "angle": "Set cancellation, reschedule, no-show, contract, and seasonal plan rules clearly.",
+      "intent": "policy template",
+      "researchQueries": ["pest control cancellation policy", "service appointment cancellation policy", "recurring service cancellation terms"]
+    },
+    {
+      "keyword": "pest control equipment inventory spreadsheet",
+      "slug": "pest-control-equipment-inventory-spreadsheet",
+      "title": "Pest Control Equipment Inventory Spreadsheet",
+      "category": "Templates",
+      "angle": "Track sprayers, traps, bait stations, PPE, chemicals, and truck stock before it becomes chaos.",
+      "intent": "inventory template",
+      "researchQueries": ["pest control equipment inventory", "pest control inventory spreadsheet", "field service equipment inventory"]
+    }
+  ]
+}

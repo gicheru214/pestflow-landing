@@ -1,15 +1,7 @@
-export type BlogPost = {
-  slug: string;
-  title: string;
-  description: string;
-  keyword: string;
-  readTime: string;
-  category: "Pricing" | "Operations" | "Marketing" | "Templates";
-  updated: string;
-  excerpt: string;
-};
+import type { BlogPost } from "@/lib/blog-types";
+import { GENERATED_BLOG_POSTS } from "@/lib/generated-blog-posts";
 
-export const BLOG_POSTS: BlogPost[] = [
+const STATIC_BLOG_POSTS: BlogPost[] = [
   {
     slug: "how-much-does-pest-control-cost",
     title: "How Much Does Pest Control Cost? (2026 Pricing Guide)",
@@ -84,6 +76,8 @@ export const BLOG_POSTS: BlogPost[] = [
   },
 ];
 
+export const BLOG_POSTS: BlogPost[] = [...GENERATED_BLOG_POSTS, ...STATIC_BLOG_POSTS];
+
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((post) => post.slug === slug);
 }
@@ -91,3 +85,5 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
 export function getRelatedPosts(slug: string, count = 3): BlogPost[] {
   return BLOG_POSTS.filter((post) => post.slug !== slug).slice(0, count);
 }
+
+export type { BlogPost };
