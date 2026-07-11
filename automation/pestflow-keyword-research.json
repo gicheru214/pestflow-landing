@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "researchedAt": "2026-07-11",
+  "market": "United States focus with global demand used as a directional cross-check",
+  "sources": [
+    {
+      "name": "The SEO Labs Pest Control Keywords List",
+      "url": "https://www.theseolabs.com/keywords-lists/pest-control/",
+      "data": "Published global monthly search volume and CPC estimates"
+    },
+    {
+      "name": "Google Autocomplete",
+      "url": "https://suggestqueries.google.com/complete/search",
+      "data": "Live query suggestions collected from ten pest-control business seeds"
+    },
+    {
+      "name": "Google Search Console",
+      "url": "https://search.google.com/search-console",
+      "data": "Verified URL-prefix property; query data will become the primary source after impressions accrue"
+    }
+  ],
+  "measuredSeeds": [
+    { "keyword": "pest control", "globalMonthlyVolume": 201000, "cpcUsd": 36.0 },
+    { "keyword": "pest control companies", "globalMonthlyVolume": 12100, "cpcUsd": 36.0 },
+    { "keyword": "commercial pest control", "globalMonthlyVolume": 3600, "cpcUsd": 48.67 },
+    { "keyword": "pest control cost", "globalMonthlyVolume": 2900, "cpcUsd": 16.06 },
+    { "keyword": "pest control prices", "globalMonthlyVolume": 2400, "cpcUsd": 18.83 },
+    { "keyword": "pest control licenses", "globalMonthlyVolume": 720, "cpcUsd": 9.6 },
+    { "keyword": "pest control for apartments", "globalMonthlyVolume": 720, "cpcUsd": 27.17 },
+    { "keyword": "pest control software", "globalMonthlyVolume": 590, "cpcUsd": 66.74 },
+    { "keyword": "pest control for restaurants", "globalMonthlyVolume": 480, "cpcUsd": 33.72 },
+    { "keyword": "pest control branding", "globalMonthlyVolume": 480, "cpcUsd": 21.57 },
+    { "keyword": "pest control inspection", "globalMonthlyVolume": 390, "cpcUsd": 27.66 },
+    { "keyword": "pest control certification", "globalMonthlyVolume": 390, "cpcUsd": 9.33 },
+    { "keyword": "pest control insurance", "globalMonthlyVolume": 320, "cpcUsd": 17.41 },
+    { "keyword": "pest control training", "globalMonthlyVolume": 260, "cpcUsd": 8.37 },
+    { "keyword": "pest control contracts", "globalMonthlyVolume": 260, "cpcUsd": 13.36 },
+    { "keyword": "pest control technology", "globalMonthlyVolume": 210, "cpcUsd": 2.48 },
+    { "keyword": "pest control advertising", "globalMonthlyVolume": 170, "cpcUsd": 26.24 },
+    { "keyword": "pest control for hotels", "globalMonthlyVolume": 140, "cpcUsd": 0.0 },
+    { "keyword": "pest control license requirements", "globalMonthlyVolume": 30, "cpcUsd": 9.09 },
+    { "keyword": "pest control regulations", "globalMonthlyVolume": 20, "cpcUsd": 0.0 }
+  ],
+  "liveAutocompleteLongTails": [
+    "pest control software free",
+    "pest control software programs",
+    "pest control software for small business",
+    "pest control software for small business free",
+    "pest control CRM software",
+    "best pest control CRM",
+    "pest control business CRM",
+    "pest control pricing sheet",
+    "pest control pricing guide",
+    "pest control prices list",
+    "pest control business insurance",
+    "pest control business license",
+    "pest control business owner salary",
+    "pest control technician license",
+    "pest control technician certification",
+    "pest control technician training",
+    "pest control technician hiring",
+    "pest control marketing ideas",
+    "pest control marketing strategies",
+    "pest control marketing materials",
+    "pest control route manager",
+    "pest control route technician",
+    "pest control route app",
+    "pest control invoice template",
+    "pest control invoice template free",
+    "pest control invoice sample",
+    "pest control invoice template word",
+    "pest control license cost",
+    "pest control license requirements",
+    "pest control license practice test"
+  ],
+  "priorityClusters": [
+    {
+      "cluster": "software and CRM",
+      "priority": 1,
+      "reason": "The measured software seed has the highest CPC in the dataset and directly matches PestFlow purchase intent.",
+      "formats": ["best-of guide", "alternative page", "feature guide", "small-business guide"]
+    },
+    {
+      "cluster": "pricing, contracts, and templates",
+      "priority": 2,
+      "reason": "Pricing seeds have meaningful demand and templates attract working pest-control owners rather than homeowners.",
+      "formats": ["calculator", "pricing sheet", "proposal template", "contract template", "invoice template"]
+    },
+    {
+      "cluster": "commercial verticals",
+      "priority": 3,
+      "reason": "Commercial, apartment, restaurant, hotel, and inspection queries have strong CPC and clear business intent.",
+      "formats": ["vertical guide", "bid template", "inspection checklist", "service agreement"]
+    },
+    {
+      "cluster": "technician and operations",
+      "priority": 4,
+      "reason": "Training, certification, hiring, route, and technician queries create topical authority around PestFlow's operating workflows.",
+      "formats": ["training plan", "hiring scorecard", "route guide", "mobile workflow"]
+    },
+    {
+      "cluster": "licensing and compliance",
+      "priority": 5,
+      "reason": "Autocomplete confirms state and practice-test demand, but every page requires current primary-source research before publication.",
+      "formats": ["state guide", "renewal checklist", "recordkeeping guide"]
+    }
+  ],
+  "publishingDecision": {
+    "editorialArticlesPerDay": 3,
+    "tenPerDayStatus": "not approved for generic editorial posts",
+    "reason": "Ten daily pages are appropriate only after a data-backed programmatic template has distinct facts, intent, and review for every URL.",
+    "scaleTrigger": "Increase only after Search Console shows at least 70 percent indexing and the published cohort earns qualified impressions without duplicate-query cannibalization."
+  }
+}

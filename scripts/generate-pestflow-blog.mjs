@@ -7,7 +7,7 @@ const SCHEDULED_POSTS_PATHS = [
   "client/src/content/scheduled-blog-posts.json",
   "client/src/content/scheduled-blog-posts-phase-two.json",
 ];
-const DEFAULT_COUNT = 1;
+const DEFAULT_COUNT = 3;
 const DEFAULT_MODEL = "gpt-4.1-mini";
 const DEFAULT_AUTHOR = "PestFlow Field Notes";
 const BLOG_BASE_URL = process.env.BLOG_BASE_URL || "https://pestflow.org";
