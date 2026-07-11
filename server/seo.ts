@@ -21,8 +21,8 @@ const STATIC_PAGES: SeoPage[] = [
   },
   {
     path: "/blog",
-    title: "Pest Control Business Guides and Templates | PestFlow",
-    description: "Practical pest control business guides covering software, routing, scheduling, billing, pricing, marketing, and field operations.",
+    title: "Pest Control Software Guides for Owners | PestFlow",
+    description: "Owner-focused pest control software guides covering scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.",
   },
   {
     path: "/competitors",
@@ -38,13 +38,6 @@ const STATIC_PAGES: SeoPage[] = [
     path: "/competitors/gorilladesk",
     title: "PestFlow vs GorillaDesk | Pest Control Software Comparison",
     description: "Compare PestFlow and GorillaDesk across scheduling, technician workflows, invoicing, routing, customer portals, and growth needs.",
-  },
-  {
-    path: "/blog/how-much-does-pest-control-cost",
-    title: "How Much Does Pest Control Cost? 2026 Pricing Guide",
-    description: "See typical 2026 pest control prices for general pest, termites, bed bugs, rodents, and mosquito service.",
-    type: "article",
-    publishedAt: "2026-05-01T12:00:00.000Z",
   },
   {
     path: "/blog/pest-control-pricing-chart",

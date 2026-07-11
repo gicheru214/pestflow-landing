@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "researchedAt": "2026-07-11",
+  "audience": "Owners and operators evaluating software for a pest control company",
+  "exclusions": [
+    "homeowner pest treatment searches",
+    "exterminator near me searches",
+    "consumer treatment prices",
+    "DIY pest control",
+    "generic hotel, restaurant, or apartment pest service searches"
+  ],
+  "evidence": [
+    "Live Google Autocomplete suggestions from 25 pest-control software and competitor seeds",
+    "GorillaDesk sitemap inventory with dedicated software, routing, scheduling, app, and portal coverage",
+    "PestPac sitemap inventory with 30 software and operations articles",
+    "QuoteIQ sitemap inventory with 43 pest-control software feature and comparison pages",
+    "Current owner discussions comparing GorillaDesk, FieldRoutes, PestPac, Jobber, and Housecall Pro"
+  ],
+  "clusters": [
+    {
+      "name": "Core software buyers",
+      "category": "Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "best pest control software",
+        "best pest control software for small business",
+        "pest control software for owner operators",
+        "pest control management software",
+        "pest control service management software",
+        "pest control business software",
+        "pest control field service software",
+        "all in one pest control software",
+        "affordable pest control software",
+        "pest control software pricing",
+        "pest control software free trial",
+        "pest control software for startups",
+        "pest control software for growing companies",
+        "pest control software for 1 to 5 technicians",
+        "pest control software for multi branch companies"
+      ]
+    },
+    {
+      "name": "Scheduling and field operations",
+      "category": "Operations Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "pest control scheduling software",
+        "pest control recurring service scheduling software",
+        "pest control dispatch software",
+        "pest control route optimization software",
+        "pest control route planning software",
+        "pest control route density software",
+        "pest control GPS tracking software",
+        "pest control technician tracking software",
+        "pest control work order software",
+        "pest control mobile workforce management software",
+        "offline pest control technician app",
+        "pest control field service mobile app",
+        "pest control inspection software",
+        "pest control service report software",
+        "pest control photo documentation software"
+      ]
+    },
+    {
+      "name": "Compliance and inventory",
+      "category": "Compliance Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "pest control chemical tracking software",
+        "pesticide usage tracking software",
+        "pest control inventory management software",
+        "pest control truck inventory software",
+        "pest control barcode inventory software",
+        "pest control product usage software",
+        "pest control SDS document software",
+        "pest control device mapping software",
+        "commercial pest control reporting software",
+        "pest control compliance record software"
+      ]
+    },
+    {
+      "name": "CRM and customer experience",
+      "category": "CRM Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "best pest control CRM",
+        "pest control CRM software",
+        "pest control CRM for small companies",
+        "pest control customer management software",
+        "pest control CRM with customer portal",
+        "commercial pest control customer portal software",
+        "pest control online booking software",
+        "pest control self scheduling software",
+        "pest control appointment reminder software",
+        "pest control two way texting software",
+        "pest control mass texting software",
+        "pest control review automation software",
+        "pest control reputation management software",
+        "pest control customer history software",
+        "pest control lead management software"
+      ]
+    },
+    {
+      "name": "Billing and financial workflows",
+      "category": "Billing Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "pest control billing software",
+        "pest control invoicing software",
+        "pest control recurring billing software",
+        "pest control autopay software",
+        "pest control payment processing software",
+        "pest control ACH payment software",
+        "pest control failed payment automation",
+        "pest control estimating software",
+        "pest control quoting software",
+        "pest control e signature software",
+        "pest control service agreement software",
+        "pest control software with QuickBooks integration",
+        "pest control expense tracking software",
+        "pest control technician commission software",
+        "pest control revenue reporting software"
+      ]
+    },
+    {
+      "name": "Analytics and owner visibility",
+      "category": "Analytics Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "pest control KPI dashboard software",
+        "pest control route profitability software",
+        "pest control technician performance reporting software",
+        "pest control churn reporting software",
+        "pest control business intelligence software",
+        "pest control owner dashboard software",
+        "multi location pest control reporting software",
+        "pest control customer lifetime value software",
+        "pest control data export software",
+        "pest control software API integrations"
+      ]
+    },
+    {
+      "name": "AI and communication automation",
+      "category": "AI Software",
+      "intent": "commercial investigation",
+      "keywords": [
+        "AI receptionist for pest control companies",
+        "pest control answering service software",
+        "pest control intelligent call routing software",
+        "pest control call tracking software",
+        "pest control after hours booking software",
+        "pest control automated follow up software",
+        "pest control email automation software",
+        "pest control marketing automation software",
+        "pest control sales pipeline software",
+        "pest control automated review request software"
+      ]
+    },
+    {
+      "name": "Migration and implementation",
+      "category": "Software Migration",
+      "intent": "solution seeking",
+      "keywords": [
+        "switch from spreadsheets to pest control software",
+        "migrate from GorillaDesk to another pest control CRM",
+        "migrate from FieldRoutes to another pest control CRM",
+        "migrate from PestPac to another pest control CRM",
+        "migrate from Jobber to pest control software",
+        "pest control CRM implementation checklist",
+        "pest control software data migration checklist",
+        "pest control software onboarding checklist",
+        "questions to ask during a pest control software demo",
+        "pest control software ROI calculator"
+      ]
+    },
+    {
+      "name": "Competitor alternatives",
+      "category": "Software Comparison",
+      "intent": "software comparison",
+      "keywords": [
+        "GorillaDesk alternatives",
+        "FieldRoutes alternative for pest control",
+        "PestPac alternatives",
+        "Briostack alternatives",
+        "Jobber alternative for pest control",
+        "Housecall Pro alternative for pest control",
+        "QuoteIQ alternative for pest control",
+        "ServiceTitan alternative for pest control",
+        "Pocomos alternative for pest control",
+        "Fieldwork alternative for pest control"
+      ]
+    },
+    {
+      "name": "Head to head comparisons",
+      "category": "Software Comparison",
+      "intent": "software comparison",
+      "keywords": [
+        "GorillaDesk vs FieldRoutes",
+        "GorillaDesk vs PestPac",
+        "FieldRoutes vs PestPac",
+        "Jobber vs GorillaDesk for pest control",
+        "Housecall Pro vs GorillaDesk for pest control",
+        "Jobber vs FieldRoutes for pest control",
+        "PestPac vs Briostack",
+        "QuoteIQ vs GorillaDesk",
+        "PestFlow vs GorillaDesk",
+        "PestFlow vs FieldRoutes"
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@ on:
       count:
         description: "How many posts to publish"
         required: false
-        default: "3"
+        default: "10"
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ concurrency:
 env:
   BLOG_BASE_URL: https://pestflow.org
   BLOG_TIMEZONE: America/Chicago
-  BLOG_POST_COUNT: ${{ github.event.inputs.count || '3' }}
+  BLOG_POST_COUNT: ${{ github.event.inputs.count || '10' }}
 
 jobs:
   publish:

@@ -3,18 +3,6 @@ import { GENERATED_BLOG_POSTS } from "@/lib/generated-blog-posts";
 
 const STATIC_BLOG_POSTS: BlogPost[] = [
   {
-    slug: "how-much-does-pest-control-cost",
-    title: "How Much Does Pest Control Cost? (2026 Pricing Guide)",
-    description:
-      "Real pest control prices in 2026: general pest, termites, bed bugs, rodents, and mosquitos — broken down by region, contract type, and one-time vs recurring.",
-    keyword: "how much does pest control cost",
-    readTime: "9 min read",
-    category: "Pricing",
-    updated: "May 2026",
-    excerpt:
-      "Average general pest service runs $125–$300 for the initial and $100–$180 per quarterly visit. Here is what every pest costs to treat in 2026 — and where the contracts get expensive.",
-  },
-  {
     slug: "pest-control-pricing-chart",
     title: "Pest Control Pricing Chart by Service Type (Owner Edition)",
     description:

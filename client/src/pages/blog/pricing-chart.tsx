@@ -339,7 +339,7 @@ export default function PricingChartPost() {
 
       <p>
         Want the customer-side perspective on pricing? Our{" "}
-        <Link href="/blog/how-much-does-pest-control-cost">guide to how much pest control costs</Link>{" "}
+        <Link href="/blog/best-pest-control-software-for-small-business">small-business pest control software guide</Link>{" "}
         walks through what homeowners actually pay — useful for owners who want to benchmark against
         their own market. And when you're ready to build the actual paperwork, see our{" "}
         <Link href="/blog/pest-control-estimate-template">estimate template</Link> and{" "}

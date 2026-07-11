@@ -1,13 +1,13 @@
 import { appendFile, readFile, writeFile } from "node:fs/promises";
 import Parser from "rss-parser";
 
-const TOPICS_PATH = "automation/pestflow-blog-topics.json";
+const TOPICS_PATH = "automation/pestflow-software-keywords.json";
 const POSTS_PATH = "client/src/content/generated-blog-posts.json";
 const SCHEDULED_POSTS_PATHS = [
   "client/src/content/scheduled-blog-posts.json",
   "client/src/content/scheduled-blog-posts-phase-two.json",
 ];
-const DEFAULT_COUNT = 3;
+const DEFAULT_COUNT = 10;
 const DEFAULT_MODEL = "gpt-4.1-mini";
 const DEFAULT_AUTHOR = "PestFlow Field Notes";
 const BLOG_BASE_URL = process.env.BLOG_BASE_URL || "https://pestflow.org";
@@ -186,7 +186,7 @@ async function researchTopic(topic) {
 function buildInternalLinks(topic) {
   const links = [
     { label: "Start a PestFlow trial", href: "/onboarding" },
-    { label: "Read the pest control pricing chart", href: "/blog/pest-control-pricing-chart" },
+    { label: "Compare pest control software", href: "/blog/best-pest-control-software-for-small-business" },
   ];
 
   if (topic.category === "Marketing") {
@@ -218,6 +218,20 @@ function validatePostDraft(draft) {
     if (!["paragraph", "heading", "list", "callout", "quote", "table"].includes(section.type)) {
       throw new Error(`Unknown section type: ${section.type}`);
     }
+  }
+
+  const articleText = draft.sections
+    .flatMap((section) => {
+      if (section.type === "table") return [...(section.headers || []), ...(section.rows || []).flat()];
+      if (section.type === "list" || section.type === "callout") {
+        return [section.title || "", ...(section.items || [])];
+      }
+      return [section.text || ""];
+    })
+    .join(" ");
+  const wordCount = articleText.split(/\s+/).filter(Boolean).length;
+  if (wordCount < 600) {
+    throw new Error(`OpenAI response is too thin: ${wordCount} words (minimum 600)`);
   }
 }
 
@@ -267,6 +281,7 @@ async function askOpenAI(topic, sources) {
       "Include 10 to 14 sections.",
       "Include one callout near the top.",
       "Include one practical table.",
+      "Write 700 to 1,100 useful words. Do not pad the article or repeat points to reach the range.",
       "Mention PestFlow naturally in 2 or 3 places, mostly as the system of record or follow-through tool.",
       "No em dashes, no en dashes, no AI phrasing such as 'in today's fast-paced world'.",
       "Do not include markdown fences.",
@@ -366,6 +381,15 @@ async function writeGithubOutput(values) {
 async function main() {
   const args = parseArgs();
   const topicsFile = JSON.parse(await readFile(TOPICS_PATH, "utf8"));
+  const researchedTopics = topicsFile.topics || topicsFile.clusters.flatMap((cluster) =>
+    cluster.keywords.map((keyword) => ({
+      keyword,
+      category: cluster.category,
+      intent: cluster.intent,
+      angle: `Help a pest control owner evaluate ${keyword} using real operating requirements and a clear software buying framework.`,
+      researchQueries: [keyword, `${keyword} features`, `${keyword} comparison`],
+    })),
+  );
   const existingPosts = JSON.parse(await readFile(POSTS_PATH, "utf8"));
   const scheduledPosts = (await Promise.all(
     SCHEDULED_POSTS_PATHS.map(async (path) => JSON.parse(await readFile(path, "utf8"))),
@@ -384,7 +408,7 @@ async function main() {
   }
 
   const existingSlugs = new Set([...existingPosts, ...scheduledPosts].map((post) => post.slug));
-  const nextTopics = topicsFile.topics
+  const nextTopics = researchedTopics
     .map((topic) => ({ ...topic, slug: topic.slug || slugify(topic.keyword) }))
     .filter((topic) => !existingSlugs.has(topic.slug))
     .slice(0, args.count);

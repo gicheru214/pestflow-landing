@@ -20,7 +20,6 @@ import CompetitorsPage from "@/pages/competitors";
 import CompetitorsFieldRoutes from "@/pages/competitors-fieldroutes";
 import CompetitorsGorillaDesk from "@/pages/competitors-gorilladesk";
 import BlogIndex from "@/pages/blog/index";
-import PestControlCostPost from "@/pages/blog/pest-control-cost";
 import PricingChartPost from "@/pages/blog/pricing-chart";
 import StartBusinessPost from "@/pages/blog/start-business";
 import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
@@ -62,7 +61,6 @@ function AppRouter() {
         <Route path="/competitors/fieldroutes" component={CompetitorsFieldRoutes} />
         <Route path="/competitors/gorilladesk" component={CompetitorsGorillaDesk} />
         <Route path="/blog" component={BlogIndex} />
-        <Route path="/blog/how-much-does-pest-control-cost" component={PestControlCostPost} />
         <Route path="/blog/pest-control-pricing-chart" component={PricingChartPost} />
         <Route path="/blog/how-to-start-a-pest-control-business" component={StartBusinessPost} />
         <Route path="/blog/pest-control-marketing-ideas" component={MarketingIdeasPost} />

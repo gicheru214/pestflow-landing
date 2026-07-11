@@ -21,7 +21,7 @@ export default function BlogIndex() {
     };
     setMeta(
       "description",
-      "Real pricing, marketing, and templates for pest control owners. Practical guides on how much pest control costs, how to start a PC business, and the templates you actually need.",
+      "Pest control software guides for owners comparing scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.",
     );
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
@@ -47,13 +47,12 @@ export default function BlogIndex() {
               PestFlow Learn
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold font-heading tracking-tight leading-[1.05] mb-6">
-              Pest control business{" "}
-              <span className="text-emerald-700">guides, pricing, and templates.</span>
+              Pest control software{" "}
+              <span className="text-emerald-700">guides built for owners.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-              No fluff. Real pricing benchmarks pulled from active PCOs, the licensing path for new
-              owners, marketing that actually works in 2026, and the estimate and invoice templates
-              every shop needs.
+              Compare scheduling, routing, CRM, billing, technician workflows, reporting, inventory,
+              automation, and the operational details that matter before you choose a system.
             </p>
           </div>
         </section>
