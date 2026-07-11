@@ -28,6 +28,15 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
     setMeta("og:title", post.title, "property");
     setMeta("og:description", post.description, "property");
     setMeta("og:type", "article", "property");
+    setMeta("og:url", window.location.href, "property");
+
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `https://pestflow.org/blog/${post.slug}`;
 
     analytics.track(EVENTS.LANDING.PAGE_VIEW, { page: "blog", slug: post.slug });
   }, [post]);

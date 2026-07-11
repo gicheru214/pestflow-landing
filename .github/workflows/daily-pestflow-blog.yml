@@ -2,8 +2,9 @@ name: Daily PestFlow blog
 
 on:
   schedule:
-    # GitHub cron is UTC. Running twice and gating in Node keeps this at 2:00 AM America/Chicago through DST changes.
-    - cron: "0 7,8 * * *"
+    # GitHub cron is UTC. Separate triggers let the gate identify which scheduled hour fired even if the runner starts late.
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
   workflow_dispatch:
     inputs:
       count:

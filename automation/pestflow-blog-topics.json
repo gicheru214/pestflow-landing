@@ -1,101 +1,102 @@
 {
   "version": 1,
-  "generatedAt": "2026-07-05",
+  "generatedAt": "2026-07-10",
   "notes": [
     "The first 100 topics are long-tail phrases for pest control owners, not homeowner pest tips.",
-    "Research emphasis: local SEO, route density, recurring billing, field operations, templates, AI intake, and software comparisons.",
-    "Daily automation publishes the next three unpublished topics from this list."
+    "Research refreshed from live 2026 SERPs, Google autocomplete, competitor coverage, and current owner discussions.",
+    "The first ten topics prioritize commercial-intent software searches; later topics build authority through operations, pricing, compliance, and templates.",
+    "Daily automation publishes the next unpublished topics from this ordered list."
   ],
   "topics": [
     {
-      "keyword": "pest control route density calculator",
-      "slug": "pest-control-route-density-calculator",
-      "title": "Pest Control Route Density Calculator for Owner Operators",
+      "keyword": "best pest control software for small business",
+      "slug": "best-pest-control-software-for-small-business",
+      "title": "Best Pest Control Software for Small Businesses",
       "category": "Operations",
-      "angle": "Show owners how to measure revenue per mile and tighten routes before hiring another tech.",
-      "intent": "operations planning",
-      "researchQueries": ["pest control route density", "field service route optimization pest control", "pest control routing software"]
+      "angle": "Give owner-operators a practical buying framework based on route count, recurring service, billing, compliance, and ease of setup.",
+      "intent": "commercial investigation",
+      "researchQueries": ["best pest control software for small business", "pest control software owner operator", "pest control management software small company"]
     },
     {
-      "keyword": "daily pest control route planning spreadsheet",
-      "slug": "daily-pest-control-route-planning-spreadsheet",
-      "title": "Daily Pest Control Route Planning Spreadsheet",
-      "category": "Templates",
-      "angle": "Turn a messy morning dispatch into a repeatable route board owners can outgrow into PestFlow.",
-      "intent": "template download",
-      "researchQueries": ["pest control route planning", "daily dispatch route planning field service", "pest control schedule template"]
+      "keyword": "best pest control CRM",
+      "slug": "best-pest-control-crm",
+      "title": "Best Pest Control CRM: What Owners Should Compare",
+      "category": "Operations",
+      "angle": "Separate a real pest control operating CRM from a basic contact database.",
+      "intent": "commercial investigation",
+      "researchQueries": ["best pest control CRM", "pest control CRM software", "CRM for pest control companies"]
     },
     {
-      "keyword": "how to reduce windshield time in pest control",
-      "slug": "how-to-reduce-windshield-time-in-pest-control",
-      "title": "How to Reduce Windshield Time in Pest Control",
+      "keyword": "pest control scheduling software",
+      "slug": "pest-control-scheduling-software",
+      "title": "Pest Control Scheduling Software: Owner's Buying Guide",
       "category": "Operations",
-      "angle": "Connect wasted drive time to route density, customer windows, and profit leakage.",
-      "intent": "efficiency",
-      "researchQueries": ["reduce windshield time field service", "pest control route optimization", "route density pest control business"]
+      "angle": "Explain recurring cycles, route capacity, customer windows, dispatch changes, and technician visibility.",
+      "intent": "commercial investigation",
+      "researchQueries": ["pest control scheduling software", "pest control scheduling app", "recurring pest control service scheduling"]
     },
     {
-      "keyword": "pest control technician GPS tracking policy",
-      "slug": "pest-control-technician-gps-tracking-policy",
-      "title": "Pest Control Technician GPS Tracking Policy",
+      "keyword": "pest control routing software",
+      "slug": "pest-control-routing-software",
+      "title": "Pest Control Routing Software: How to Compare Tools",
       "category": "Operations",
-      "angle": "Help owners introduce GPS tracking without sounding like they distrust the crew.",
-      "intent": "team management",
-      "researchQueries": ["technician GPS tracking policy field service", "GPS tracking employees policy", "pest control technician management"]
+      "angle": "Compare map views, route density, recurring work, time windows, technician skills, and same-day changes.",
+      "intent": "commercial investigation",
+      "researchQueries": ["pest control routing software", "pest control route optimization software", "pest control route planning app"]
     },
     {
-      "keyword": "dispatch board for pest control companies",
-      "slug": "dispatch-board-for-pest-control-companies",
-      "title": "Dispatch Board for Pest Control Companies",
+      "keyword": "pest control invoicing software",
+      "slug": "pest-control-invoicing-software",
+      "title": "Pest Control Invoicing Software: Features That Matter",
       "category": "Operations",
-      "angle": "Explain what a useful pest control dispatch board needs beyond a calendar.",
-      "intent": "software evaluation",
-      "researchQueries": ["pest control dispatch board", "field service dispatch board", "pest control scheduling software"]
+      "angle": "Connect service completion to invoices, recurring billing, cards on file, payment reminders, and clean reporting.",
+      "intent": "commercial investigation",
+      "researchQueries": ["pest control invoicing software", "pest control billing software", "pest control recurring billing software"]
     },
     {
-      "keyword": "pest control callback tracking system",
-      "slug": "pest-control-callback-tracking-system",
-      "title": "Pest Control Callback Tracking System",
+      "keyword": "FieldRoutes alternative for owner operators",
+      "slug": "fieldroutes-alternative-for-owner-operators",
+      "title": "FieldRoutes Alternative for Owner Operators",
       "category": "Operations",
-      "angle": "Turn callbacks from vague complaints into measurable reservice cost and training signals.",
-      "intent": "quality control",
-      "researchQueries": ["pest control callback tracking", "field service callbacks tracking", "pest control reservice management"]
+      "angle": "Compare owner-operator needs against heavier enterprise-style platforms without making unsupported feature or pricing claims.",
+      "intent": "software comparison",
+      "researchQueries": ["FieldRoutes alternative owner operator", "FieldRoutes competitors pest control", "pest control software owner operator"]
     },
     {
-      "keyword": "pest control service report workflow",
-      "slug": "pest-control-service-report-workflow",
-      "title": "Pest Control Service Report Workflow",
+      "keyword": "PestPac alternative for small pest control companies",
+      "slug": "pestpac-alternative-for-small-pest-control-companies",
+      "title": "PestPac Alternative for Small Pest Control Companies",
       "category": "Operations",
-      "angle": "Make service reports useful for customers, compliance, payment, and future sales.",
-      "intent": "field workflow",
-      "researchQueries": ["pest control service report", "pesticide service report requirements", "field service report workflow"]
+      "angle": "Help small teams compare workflow depth, implementation effort, routing, billing, portals, and compliance.",
+      "intent": "software comparison",
+      "researchQueries": ["PestPac alternative small pest control", "pest control software for small business", "PestPac competitors"]
     },
     {
-      "keyword": "recurring service schedule software for pest control",
-      "slug": "recurring-service-schedule-software-for-pest-control",
-      "title": "Recurring Service Schedule Software for Pest Control",
+      "keyword": "GorillaDesk alternatives",
+      "slug": "gorilladesk-alternatives",
+      "title": "GorillaDesk Alternatives for Pest Control Companies",
       "category": "Operations",
-      "angle": "Explain why quarterly, bimonthly, and monthly routes need more than calendar reminders.",
-      "intent": "software evaluation",
-      "researchQueries": ["recurring pest control scheduling software", "pest control recurring service routes", "field service recurring schedule"]
+      "angle": "Give owners a fair shortlist framework based on company size, routing, field execution, billing, and customer experience.",
+      "intent": "software comparison",
+      "researchQueries": ["GorillaDesk alternatives", "GorillaDesk competitors pest control", "best pest control software small business"]
     },
     {
-      "keyword": "termite renewal tracking software",
-      "slug": "termite-renewal-tracking-software",
-      "title": "Termite Renewal Tracking Software",
+      "keyword": "pest control CRM with customer portal",
+      "slug": "pest-control-crm-with-customer-portal",
+      "title": "Pest Control CRM with Customer Portal",
       "category": "Operations",
-      "angle": "Show how lost renewals leak margin and how owners should track warranty dates.",
-      "intent": "renewals",
-      "researchQueries": ["termite renewal tracking", "termite warranty renewal software", "pest control renewal tracking"]
+      "angle": "Connect service history, payment, documents, and customer self-service in one owner-friendly view.",
+      "intent": "commercial investigation",
+      "researchQueries": ["pest control CRM customer portal", "pest control customer portal software", "CRM for pest control companies"]
     },
     {
-      "keyword": "mosquito route planning software",
-      "slug": "mosquito-route-planning-software",
-      "title": "Mosquito Route Planning Software",
+      "keyword": "best mobile app for pest control technicians",
+      "slug": "best-mobile-app-for-pest-control-technicians",
+      "title": "Best Mobile App for Pest Control Technicians",
       "category": "Operations",
-      "angle": "Tie seasonal mosquito demand to dense routes, weather rules, and easy renewals.",
-      "intent": "seasonal operations",
-      "researchQueries": ["mosquito control route planning", "mosquito treatment scheduling software", "seasonal pest control routes"]
+      "angle": "Focus on what techs need in the truck: routes, service notes, products, photos, signatures, invoices, and offline resilience.",
+      "intent": "commercial investigation",
+      "researchQueries": ["best mobile app pest control technicians", "pest control technician app", "field service mobile app pest control"]
     },
     {
       "keyword": "how to price quarterly pest control plans",
@@ -368,31 +369,31 @@
       "researchQueries": ["AI receptionist pest control", "pest control call answering script", "AI phone answering field service"]
     },
     {
-      "keyword": "PestPac alternative for small pest control companies",
-      "slug": "pestpac-alternative-for-small-pest-control-companies",
-      "title": "PestPac Alternative for Small Pest Control Companies",
+      "keyword": "pest control route density calculator",
+      "slug": "pest-control-route-density-calculator",
+      "title": "Pest Control Route Density Calculator for Owner Operators",
       "category": "Operations",
-      "angle": "Speak to owners who want core routing and billing without enterprise overhead.",
-      "intent": "software comparison",
-      "researchQueries": ["PestPac alternative small pest control", "pest control software for small business", "PestPac competitors"]
+      "angle": "Show owners how to measure revenue per mile and tighten routes before hiring another tech.",
+      "intent": "operations planning",
+      "researchQueries": ["pest control route density", "field service route optimization pest control", "pest control routing software"]
     },
     {
-      "keyword": "FieldRoutes alternative for owner operators",
-      "slug": "fieldroutes-alternative-for-owner-operators",
-      "title": "FieldRoutes Alternative for Owner Operators",
-      "category": "Operations",
-      "angle": "Compare owner-operator needs against heavier enterprise-style platforms.",
-      "intent": "software comparison",
-      "researchQueries": ["FieldRoutes alternative owner operator", "FieldRoutes competitors pest control", "pest control software owner operator"]
+      "keyword": "daily pest control route planning spreadsheet",
+      "slug": "daily-pest-control-route-planning-spreadsheet",
+      "title": "Daily Pest Control Route Planning Spreadsheet",
+      "category": "Templates",
+      "angle": "Turn a messy morning dispatch into a repeatable route board owners can outgrow into PestFlow.",
+      "intent": "template download",
+      "researchQueries": ["pest control route planning", "daily dispatch route planning field service", "pest control schedule template"]
     },
     {
-      "keyword": "GorillaDesk vs PestFlow",
-      "slug": "gorilladesk-vs-pestflow",
-      "title": "GorillaDesk vs PestFlow",
+      "keyword": "how to reduce windshield time in pest control",
+      "slug": "how-to-reduce-windshield-time-in-pest-control",
+      "title": "How to Reduce Windshield Time in Pest Control",
       "category": "Operations",
-      "angle": "Position PestFlow for owners who care about growth workflows, mobile field work, and billing.",
-      "intent": "software comparison",
-      "researchQueries": ["GorillaDesk vs pest control software", "GorillaDesk alternatives", "pest control CRM comparison"]
+      "angle": "Connect wasted drive time to route density, customer windows, and profit leakage.",
+      "intent": "efficiency",
+      "researchQueries": ["reduce windshield time field service", "pest control route optimization", "route density pest control business"]
     },
     {
       "keyword": "ServiceTitan pest control alternative",
@@ -422,22 +423,22 @@
       "researchQueries": ["QuickBooks pest control software", "field service software QuickBooks pest control", "pest control invoicing QuickBooks"]
     },
     {
-      "keyword": "best mobile app for pest control technicians",
-      "slug": "best-mobile-app-for-pest-control-technicians",
-      "title": "Best Mobile App for Pest Control Technicians",
+      "keyword": "pest control technician GPS tracking policy",
+      "slug": "pest-control-technician-gps-tracking-policy",
+      "title": "Pest Control Technician GPS Tracking Policy",
       "category": "Operations",
-      "angle": "Focus on what techs need in the truck: today route, service notes, photos, invoices, and customer signatures.",
-      "intent": "software evaluation",
-      "researchQueries": ["best mobile app pest control technicians", "pest control technician app", "field service mobile app pest control"]
+      "angle": "Help owners introduce GPS tracking without sounding like they distrust the crew.",
+      "intent": "team management",
+      "researchQueries": ["technician GPS tracking policy field service", "GPS tracking employees policy", "pest control technician management"]
     },
     {
-      "keyword": "pest control CRM with customer portal",
-      "slug": "pest-control-crm-with-customer-portal",
-      "title": "Pest Control CRM with Customer Portal",
+      "keyword": "dispatch board for pest control companies",
+      "slug": "dispatch-board-for-pest-control-companies",
+      "title": "Dispatch Board for Pest Control Companies",
       "category": "Operations",
-      "angle": "Connect service history, payment, documents, and customer self-service in one owner-friendly view.",
+      "angle": "Explain what a useful pest control dispatch board needs beyond a calendar.",
       "intent": "software evaluation",
-      "researchQueries": ["pest control CRM customer portal", "pest control customer portal software", "CRM for pest control companies"]
+      "researchQueries": ["pest control dispatch board", "field service dispatch board", "pest control scheduling software"]
     },
     {
       "keyword": "chemical usage tracking software for pest control",

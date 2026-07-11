@@ -23,6 +23,13 @@ export default function BlogIndex() {
       "description",
       "Real pricing, marketing, and templates for pest control owners. Practical guides on how much pest control costs, how to start a PC business, and the templates you actually need.",
     );
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = "https://pestflow.org/blog";
     analytics.track(EVENTS.LANDING.PAGE_VIEW, { page: "blog_index" });
   }, []);
 
