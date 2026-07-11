@@ -1,4 +1,6 @@
 import generatedPosts from "../client/src/content/generated-blog-posts.json";
+import scheduledPosts from "../client/src/content/scheduled-blog-posts.json";
+import scheduledPhaseTwoPosts from "../client/src/content/scheduled-blog-posts-phase-two.json";
 
 const SITE_URL = "https://pestflow.org";
 
@@ -81,7 +83,11 @@ const STATIC_PAGES: SeoPage[] = [
   },
 ];
 
-const GENERATED_PAGES: SeoPage[] = generatedPosts.map((post) => ({
+const GENERATED_PAGES: SeoPage[] = [
+  ...generatedPosts,
+  ...scheduledPosts,
+  ...scheduledPhaseTwoPosts,
+].map((post) => ({
   path: `/blog/${post.slug}`,
   title: `${post.title} | PestFlow`,
   description: post.description,
@@ -90,8 +96,16 @@ const GENERATED_PAGES: SeoPage[] = generatedPosts.map((post) => ({
   updatedAt: post.publishedAt,
 }));
 
-const ALL_PAGES = [...STATIC_PAGES, ...GENERATED_PAGES];
-const PAGE_BY_PATH = new Map(ALL_PAGES.map((page) => [page.path, page]));
+function publishedPages(now = Date.now()) {
+  return [
+    ...STATIC_PAGES,
+    ...GENERATED_PAGES.filter((page) => {
+      if (!page.publishedAt) return true;
+      const publishTime = Date.parse(page.publishedAt);
+      return Number.isFinite(publishTime) && publishTime <= now;
+    }),
+  ];
+}
 
 function escapeHtml(value: string) {
   return value
@@ -106,14 +120,14 @@ function safeJson(value: unknown) {
 }
 
 export function getSeoPage(pathname: string) {
-  return PAGE_BY_PATH.get(pathname) || {
+  return publishedPages().find((page) => page.path === pathname) || {
     ...STATIC_PAGES[0],
     path: pathname,
   };
 }
 
 export function isKnownBlogPath(pathname: string) {
-  return !pathname.startsWith("/blog/") || PAGE_BY_PATH.has(pathname);
+  return !pathname.startsWith("/blog/") || publishedPages().some((page) => page.path === pathname);
 }
 
 export function injectSeoHtml(template: string, pathname: string) {
@@ -162,7 +176,7 @@ export function injectSeoHtml(template: string, pathname: string) {
 }
 
 export function buildSitemapXml() {
-  const urls = ALL_PAGES.map((page) => {
+  const urls = publishedPages().map((page) => {
     const lastmod = page.updatedAt || page.publishedAt;
     return [
       "  <url>",

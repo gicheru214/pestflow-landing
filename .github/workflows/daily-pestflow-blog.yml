@@ -10,7 +10,7 @@ on:
       count:
         description: "How many posts to publish"
         required: false
-        default: "3"
+        default: "1"
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ concurrency:
 env:
   BLOG_BASE_URL: https://pestflow.org
   BLOG_TIMEZONE: America/Chicago
-  BLOG_POST_COUNT: ${{ github.event.inputs.count || '3' }}
+  BLOG_POST_COUNT: ${{ github.event.inputs.count || '1' }}
 
 jobs:
   publish:
@@ -47,22 +47,6 @@ jobs:
       - name: Gate to 2 AM Central
         id: gate
         run: npm run blog:should-run
-
-      - name: Check required automation credentials
-        if: steps.gate.outputs.run == 'true'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          CHECKLY_API_KEY: ${{ secrets.CHECKLY_API_KEY }}
-          CHECKLY_ACCOUNT_ID: ${{ vars.CHECKLY_ACCOUNT_ID || secrets.CHECKLY_ACCOUNT_ID }}
-        run: |
-          node -e "
-            const required = ['OPENAI_API_KEY', 'CHECKLY_API_KEY', 'CHECKLY_ACCOUNT_ID'];
-            const missing = required.filter((key) => !process.env[key]);
-            if (missing.length) {
-              console.error('Missing required GitHub secret/variable: ' + missing.join(', '));
-              process.exit(1);
-            }
-          "
 
       - name: Generate next PestFlow posts
         if: steps.gate.outputs.run == 'true'

@@ -3,7 +3,11 @@ import Parser from "rss-parser";
 
 const TOPICS_PATH = "automation/pestflow-blog-topics.json";
 const POSTS_PATH = "client/src/content/generated-blog-posts.json";
-const DEFAULT_COUNT = 3;
+const SCHEDULED_POSTS_PATHS = [
+  "client/src/content/scheduled-blog-posts.json",
+  "client/src/content/scheduled-blog-posts-phase-two.json",
+];
+const DEFAULT_COUNT = 1;
 const DEFAULT_MODEL = "gpt-4.1-mini";
 const DEFAULT_AUTHOR = "PestFlow Field Notes";
 const BLOG_BASE_URL = process.env.BLOG_BASE_URL || "https://pestflow.org";
@@ -12,12 +16,14 @@ const parser = new Parser();
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const parsed = { count: DEFAULT_COUNT, dryRun: false };
+  const parsed = { count: DEFAULT_COUNT, dryRun: false, ignoreSchedule: false };
 
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--dry-run") {
       parsed.dryRun = true;
+    } else if (arg === "--ignore-schedule") {
+      parsed.ignoreSchedule = true;
     } else if (arg.startsWith("--count=")) {
       parsed.count = Number(arg.split("=")[1]);
     } else if (arg === "--count") {
@@ -361,7 +367,23 @@ async function main() {
   const args = parseArgs();
   const topicsFile = JSON.parse(await readFile(TOPICS_PATH, "utf8"));
   const existingPosts = JSON.parse(await readFile(POSTS_PATH, "utf8"));
-  const existingSlugs = new Set(existingPosts.map((post) => post.slug));
+  const scheduledPosts = (await Promise.all(
+    SCHEDULED_POSTS_PATHS.map(async (path) => JSON.parse(await readFile(path, "utf8"))),
+  )).flat();
+  const futureScheduledPosts = scheduledPosts
+    .filter((post) => Date.parse(post.publishedAt) > Date.now())
+    .sort((left, right) => Date.parse(left.publishedAt) - Date.parse(right.publishedAt));
+
+  if (futureScheduledPosts.length > 0 && !args.ignoreSchedule) {
+    const lastScheduled = futureScheduledPosts.at(-1);
+    console.log(
+      `[blog] Scheduled backlog has ${futureScheduledPosts.length} post(s) through ${lastScheduled.publishedAt}; skipping new generation.`,
+    );
+    await writeGithubOutput({ published_count: 0, published_slugs: "" });
+    return;
+  }
+
+  const existingSlugs = new Set([...existingPosts, ...scheduledPosts].map((post) => post.slug));
   const nextTopics = topicsFile.topics
     .map((topic) => ({ ...topic, slug: topic.slug || slugify(topic.keyword) }))
     .filter((topic) => !existingSlugs.has(topic.slug))
