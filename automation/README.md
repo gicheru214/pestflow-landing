@@ -1,22 +1,15 @@
-# PestFlow Daily Blog Automation
+# PestFlow Prewritten Blog Schedule
 
-This repo publishes original PestFlow articles from the owner-only software universe in `automation/pestflow-software-keywords.json`. The list excludes homeowner, exterminator, consumer treatment price, and DIY traffic. Prewritten articles can also carry a future `publishedAt` timestamp; the blog, direct route, metadata, and sitemap expose them automatically when that timestamp arrives.
+PestFlow does not need an OpenAI API key or a daily content-generation job. The owner-only software keyword universe lives in `automation/pestflow-software-keywords.json`, and the complete scheduled backlog is committed to the repository before publication.
 
-Required GitHub configuration:
+Current publishing plan:
 
-- Secret: `OPENAI_API_KEY`
-- Secret: `CHECKLY_API_KEY`
-- Variable or secret: `CHECKLY_ACCOUNT_ID`
-- Optional variable: `OPENAI_MODEL`, defaults to `gpt-4.1-mini`
+- The existing July 11 backlog publishes ten owner-software guides during the Central business day.
+- `scripts/build-prewritten-pestflow-backlog.mjs` builds forty additional canonical guides into `client/src/content/scheduled-blog-posts-phase-two.json`.
+- Those forty guides publish at ten per Central day from July 12 through July 15.
+- The forty canonical pages cover all 120 researched keywords through primary and secondary keyword mapping. Closely related query variants share one page to prevent keyword cannibalization.
+- Each prewritten article must contain at least 600 words, include a live-workflow test, implementation guidance, risk checks, complete-cost questions, internal links, and a clear owner decision rule.
+- Future-dated pages return `404` and remain absent from the blog and sitemap until their `publishedAt` time.
+- `https://pestflow.org/sitemap.xml` updates automatically as each page becomes eligible for publication. Search Console only needs the root sitemap submitted once.
 
-Runtime flow:
-
-1. `.github/workflows/daily-pestflow-blog.yml` wakes at 7 and 8 UTC, then only continues when the local hour in `America/Chicago` is 2 AM.
-2. The current prewritten backlog publishes ten software-feature articles during the July 11 Central business day. Future-dated articles remain absent from the blog, direct routes, metadata, and sitemap until their `publishedAt` time.
-3. While that backlog exists, `scripts/generate-pestflow-blog.mjs` skips new generation so the site does not publish duplicate topics. After the backlog ends, it picks the next ten unpublished owner-only software topics, pulls recent Google News RSS context, asks OpenAI for JSON article content, strips em and en dashes, and writes to `client/src/content/generated-blog-posts.json`.
-4. The workflow runs `npm run check` and `npm run build`.
-5. It commits and pushes the generated JSON to `main`, which lets Railway deploy the PestFlow landing site.
-6. `scripts/wait-for-blog-deploy.mjs` waits until the production bundle at `https://pestflow.org` contains the new slugs.
-7. Checkly runs `__checks__/pestflow-blog-production.spec.ts` against production and deploys the BrowserCheck monitor.
-
-The generated posts render through `client/src/pages/blog/generated-post.tsx`, so new posts do not need new React route files.
+Run `npm run blog:build-backlog` after changing the canonical article plan. The GitHub workflow rebuilds the backlog, confirms the generated JSON is committed, typechecks the site, and runs the production build. It does not generate, commit, or publish content through an external AI API.

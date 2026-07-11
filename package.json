@@ -9,8 +9,7 @@
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
-    "blog:generate": "node scripts/generate-pestflow-blog.mjs",
-    "blog:should-run": "node scripts/should-run-blog-cron.mjs",
+    "blog:build-backlog": "node scripts/build-prewritten-pestflow-backlog.mjs",
     "blog:wait": "node scripts/wait-for-blog-deploy.mjs",
     "db:push": "drizzle-kit push",
     "mta:backfill-submissions": "tsx script/backfill-mta-submissions.ts"
@@ -105,7 +104,6 @@
     "drizzle-kit": "^0.31.4",
     "esbuild": "^0.25.0",
     "postcss": "^8.5.6",
-    "rss-parser": "^3.13.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.20.5",
     "typescript": "5.6.3",

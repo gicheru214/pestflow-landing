@@ -1,39 +1,28 @@
-name: Daily PestFlow blog
+name: PestFlow prewritten blog audit
 
 on:
-  schedule:
-    # GitHub cron is UTC. Separate triggers let the gate identify which scheduled hour fired even if the runner starts late.
-    - cron: "0 7 * * *"
-    - cron: "0 8 * * *"
   workflow_dispatch:
-    inputs:
-      count:
-        description: "How many posts to publish"
-        required: false
-        default: "10"
+  push:
+    branches: [main]
+    paths:
+      - "automation/pestflow-software-keywords.json"
+      - "scripts/build-prewritten-pestflow-backlog.mjs"
+      - "client/src/content/generated-blog-posts.json"
+      - "client/src/content/scheduled-blog-posts.json"
+      - "client/src/content/scheduled-blog-posts-phase-two.json"
+      - ".github/workflows/daily-pestflow-blog.yml"
 
 permissions:
-  contents: write
-
-concurrency:
-  group: daily-pestflow-blog
-  cancel-in-progress: false
-
-env:
-  BLOG_BASE_URL: https://pestflow.org
-  BLOG_TIMEZONE: America/Chicago
-  BLOG_POST_COUNT: ${{ github.event.inputs.count || '10' }}
+  contents: read
 
 jobs:
-  publish:
-    name: Generate and verify PestFlow blog posts
+  verify:
+    name: Verify prewritten owner-software backlog
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Use Node
         uses: actions/setup-node@v4
@@ -44,60 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Gate to 2 AM Central
-        id: gate
-        run: npm run blog:should-run
+      - name: Rebuild committed backlog
+        run: npm run blog:build-backlog
 
-      - name: Generate next PestFlow posts
-        if: steps.gate.outputs.run == 'true'
-        id: generate
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
-        run: npm run blog:generate -- --count "$BLOG_POST_COUNT"
+      - name: Confirm backlog is committed
+        run: git diff --exit-code -- client/src/content/scheduled-blog-posts-phase-two.json
 
       - name: Type check
-        if: steps.gate.outputs.run == 'true' && steps.generate.outputs.published_count != '0'
         run: npm run check
 
       - name: Build
-        if: steps.gate.outputs.run == 'true' && steps.generate.outputs.published_count != '0'
         run: npm run build
-
-      - name: Commit generated posts
-        if: steps.gate.outputs.run == 'true' && steps.generate.outputs.published_count != '0'
-        id: commit
-        run: |
-          git config user.name "pestflow-blog-bot"
-          git config user.email "actions@github.com"
-          git add client/src/content/generated-blog-posts.json
-          if git diff --cached --quiet; then
-            echo "pushed=false" >> "$GITHUB_OUTPUT"
-            echo "No generated blog changes to commit."
-          else
-            git commit -m "chore(blog): publish daily PestFlow guides"
-            git push
-            echo "pushed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Wait for Railway production bundle
-        if: steps.commit.outputs.pushed == 'true'
-        env:
-          EXPECTED_BLOG_SLUGS: ${{ steps.generate.outputs.published_slugs }}
-        run: npm run blog:wait -- --slugs "$EXPECTED_BLOG_SLUGS"
-
-      - name: Run Checkly production blog check
-        if: steps.commit.outputs.pushed == 'true'
-        env:
-          CHECKLY_API_KEY: ${{ secrets.CHECKLY_API_KEY }}
-          CHECKLY_ACCOUNT_ID: ${{ vars.CHECKLY_ACCOUNT_ID || secrets.CHECKLY_ACCOUNT_ID }}
-          ENVIRONMENT_URL: ${{ env.BLOG_BASE_URL }}
-          EXPECTED_BLOG_SLUGS: ${{ steps.generate.outputs.published_slugs }}
-        run: npx checkly test -e ENVIRONMENT_URL="$ENVIRONMENT_URL" -e EXPECTED_BLOG_SLUGS="$EXPECTED_BLOG_SLUGS" --reporter=github --record
-
-      - name: Deploy Checkly monitor
-        if: steps.commit.outputs.pushed == 'true'
-        env:
-          CHECKLY_API_KEY: ${{ secrets.CHECKLY_API_KEY }}
-          CHECKLY_ACCOUNT_ID: ${{ vars.CHECKLY_ACCOUNT_ID || secrets.CHECKLY_ACCOUNT_ID }}
-        run: npx checkly deploy --force
