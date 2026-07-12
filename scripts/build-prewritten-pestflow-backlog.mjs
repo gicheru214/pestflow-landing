@@ -7,8 +7,10 @@ const EXISTING_PATHS = [
   "client/src/content/scheduled-blog-posts.json",
 ];
 const AUTHOR = "PestFlow Field Notes";
-const START_DAY_UTC = Date.parse("2026-07-12T07:00:00.000Z");
-const POSTS_PER_DAY = 10;
+// Four posts per Central day at 8 AM, noon, 4 PM, and 8 PM during daylight time.
+const START_DAY_UTC = Date.parse("2026-07-12T13:00:00.000Z");
+const POSTS_PER_DAY = 4;
+const HOURS_BETWEEN_POSTS = 4;
 
 const specs = [
   {
@@ -541,7 +543,7 @@ const allSpecs = [...specs, ...comparisonHubs];
 function publishAt(index) {
   const day = Math.floor(index / POSTS_PER_DAY);
   const slot = index % POSTS_PER_DAY;
-  return new Date(START_DAY_UTC + day * 24 * 60 * 60 * 1000 + slot * 2 * 60 * 60 * 1000).toISOString();
+  return new Date(START_DAY_UTC + day * 24 * 60 * 60 * 1000 + slot * HOURS_BETWEEN_POSTS * 60 * 60 * 1000).toISOString();
 }
 
 function sourceLinks(spec) {
