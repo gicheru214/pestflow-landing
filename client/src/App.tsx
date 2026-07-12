@@ -26,7 +26,9 @@ import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
 import EstimateTemplatePost from "@/pages/blog/estimate-template";
 import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import GeneratedBlogPostPage from "@/pages/blog/generated-post";
-import { analytics, EVENTS } from "@/lib/analytics";
+import ConversionLab from "@/pages/conversion-lab";
+import ConversionPreview from "@/pages/conversion-preview";
+import { analytics } from "@/lib/analytics";
 
 // The landing site no longer hosts any in-app screens. Auth and the dashboard
 // live only in the real product on app.pestflow.org. These redirects catch
@@ -67,6 +69,8 @@ function AppRouter() {
         <Route path="/blog/pest-control-estimate-template" component={EstimateTemplatePost} />
         <Route path="/blog/pest-control-invoice-template" component={InvoiceTemplatePost} />
         <Route path="/blog/:slug">{(params) => <GeneratedBlogPostPage slug={params.slug} />}</Route>
+        <Route path="/conversion-lab" component={ConversionLab} />
+        <Route path="/conversion-preview" component={ConversionPreview} />
         <Route component={NotFound} />
       </Switch>
     </Router>
@@ -75,22 +79,9 @@ function AppRouter() {
 
 function App() {
   useEffect(() => {
-    // Track session start / login when app loads
+    // This repository serves the public marketing site, not the authenticated
+    // app. Do not label landing visitors as logins or app opens.
     analytics.trackSessionStart();
-    analytics.track(EVENTS.SESSION.LOGIN);
-    analytics.track(EVENTS.SESSION.APP_OPENED);
-    
-    // Track when user leaves/backgrounds app
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        analytics.track(EVENTS.SESSION.APP_BACKGROUNDED);
-      } else {
-        analytics.track(EVENTS.SESSION.APP_OPENED);
-      }
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
   
   return (

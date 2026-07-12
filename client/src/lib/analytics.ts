@@ -2,8 +2,14 @@ declare global {
   interface Window {
     mixpanel: any;
     posthog: any;
+    __PESTFLOW_INTERNAL_TRAFFIC__?: boolean;
   }
 }
+
+const shouldSkipAnalytics = () =>
+  typeof window === 'undefined' ||
+  window.__PESTFLOW_INTERNAL_TRAFFIC__ === true ||
+  document.documentElement.dataset.pestflowInternalTraffic === 'true';
 
 // List of PII fields to automatically strip from analytics
 const PII_FIELDS = ['email', 'phone', 'firstName', 'lastName', 'name', 'companyName', 'address', 'city', 'zipCode', 'state'];
@@ -22,7 +28,7 @@ const sanitizeProperties = (properties?: Record<string, any>): Record<string, an
 
 export const analytics = {
   track: (event: string, properties?: Record<string, any>) => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     const props = {
       ...sanitizeProperties(properties),
       timestamp: new Date().toISOString(),
@@ -36,7 +42,7 @@ export const analytics = {
   },
 
   identify: (userId: string, properties?: Record<string, any>) => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     if (window.mixpanel) {
       window.mixpanel.identify(userId);
       if (properties) {
@@ -52,7 +58,7 @@ export const analytics = {
   },
 
   setUserProperties: (properties: Record<string, any>) => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     if (window.mixpanel) {
       window.mixpanel.people.set(properties);
     }
@@ -62,13 +68,13 @@ export const analytics = {
   },
 
   incrementProperty: (property: string, value: number = 1) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
+    if (!shouldSkipAnalytics() && window.mixpanel) {
       window.mixpanel.people.increment(property, value);
     }
   },
 
   pageView: (pageName: string, properties?: Record<string, any>) => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     const props = {
       page: pageName,
       url: window.location.href,
@@ -83,13 +89,13 @@ export const analytics = {
   },
 
   timeEvent: (eventName: string) => {
-    if (typeof window !== 'undefined' && window.mixpanel) {
+    if (!shouldSkipAnalytics() && window.mixpanel) {
       window.mixpanel.time_event(eventName);
     }
   },
 
   reset: () => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     if (window.mixpanel) {
       window.mixpanel.reset();
     }
@@ -99,7 +105,7 @@ export const analytics = {
   },
 
   trackSessionStart: () => {
-    if (typeof window === 'undefined') return;
+    if (shouldSkipAnalytics()) return;
     const props = {
       referrer: document.referrer,
       userAgent: navigator.userAgent,
