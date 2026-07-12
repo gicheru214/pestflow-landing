@@ -28,9 +28,10 @@ export default function LeadMagnetAssignment() {
     params.delete("reset");
     params.set("experiment", experiment);
     params.set("lm_assignment", selected);
+    params.set("popup", selected);
     analytics.track("Lead Magnet Variant Assigned", { variant: selected, experiment, pool_size: pool.length });
-    window.location.replace(`/experiments/lead-magnets/${selected}?${params.toString()}`);
+    window.location.replace(`/?${params.toString()}`);
   }, []);
 
-  return <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white"><div><span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-emerald-400" /><p className="mt-5 text-sm font-black">Assigning a PestFlow experiment…</p></div></main>;
+  return <main className="grid min-h-screen place-items-center bg-slate-950 px-6 text-center text-white"><div><span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-emerald-400" /><p className="mt-5 text-sm font-black">Opening the PestFlow landing page…</p></div></main>;
 }

@@ -27,7 +27,10 @@
     <script>
       const pestflowParams = new URLSearchParams(window.location.search);
       const pestflowProductionHost = ['pestflow.org', 'www.pestflow.org'].includes(window.location.hostname);
-      const pestflowExperimentRoute = window.location.pathname.startsWith('/experiments/lead-magnets');
+      const pestflowExperimentRoute =
+        window.location.pathname.startsWith('/experiments/lead-magnets') ||
+        pestflowParams.has('popup') ||
+        pestflowParams.has('lm_assignment');
       window.__PESTFLOW_INTERNAL_TRAFFIC__ =
         pestflowParams.get('internal') === '1' ||
         (!pestflowProductionHost && !pestflowExperimentRoute);

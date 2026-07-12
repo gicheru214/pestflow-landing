@@ -22,15 +22,15 @@ export default function LeadMagnetLab() {
       <header className="border-b border-white/10 bg-[#0d1510] text-white">
         <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
           <div className="flex items-center justify-between gap-5"><div className="flex items-center gap-3"><img src={logoImage} alt="PestFlow" className="h-12 w-auto" /><div><p className="text-sm font-black">PestFlow Lead-Magnet Lab</p><p className="text-[10px] uppercase tracking-[.17em] text-white/35">Conversion-v2 staging environment</p></div></div><span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-300">5 variants</span></div>
-          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.8fr] lg:items-end"><div><div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-black uppercase tracking-[.16em] text-white/60"><FlaskConical className="h-3.5 w-3.5" />Experiment control center</div><h1 className="mt-5 max-w-4xl text-5xl font-black leading-[.95] tracking-[-.05em] sm:text-7xl">Five independent pages. One clean comparison.</h1><p className="mt-6 max-w-2xl text-sm leading-7 text-white/50">Open each variant with internal analytics disabled, copy a traffic-ready URL, or use the persistent equal-split router to assign visitors automatically.</p></div><div className="rounded-2xl border border-white/10 bg-white/5 p-5"><div className="flex items-center gap-2 text-emerald-300"><Shuffle className="h-4 w-4" /><p className="text-[10px] font-black uppercase tracking-[.16em]">Equal-split traffic router</p></div><p className="mt-3 break-all text-xs leading-5 text-white/55">{routerUrl}</p><div className="mt-4 grid grid-cols-2 gap-2"><CopyButton value={routerUrl} /><a href={`${routerUrl}&internal=1&reset=1`} className="flex h-9 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-3 text-[10px] font-black text-white">Test assignment<ArrowRight className="h-3.5 w-3.5" /></a></div></div></div>
+          <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_.8fr] lg:items-end"><div><div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-[10px] font-black uppercase tracking-[.16em] text-white/60"><FlaskConical className="h-3.5 w-3.5" />Popup experiment control center</div><h1 className="mt-5 max-w-4xl text-5xl font-black leading-[.95] tracking-[-.05em] sm:text-7xl">One landing page. Five popup offers.</h1><p className="mt-6 max-w-2xl text-sm leading-7 text-white/50">Every variant opens over the existing PestFlow homepage. Only the popup offer, qualifier, and result change.</p></div><div className="rounded-2xl border border-white/10 bg-white/5 p-5"><div className="flex items-center gap-2 text-emerald-300"><Shuffle className="h-4 w-4" /><p className="text-[10px] font-black uppercase tracking-[.16em]">Equal-split popup router</p></div><p className="mt-3 break-all text-xs leading-5 text-white/55">{routerUrl}</p><div className="mt-4 grid grid-cols-2 gap-2"><CopyButton value={routerUrl} /><a href={`${routerUrl}&internal=1&reset=1&popup-check=1`} className="flex h-9 items-center justify-center gap-2 rounded-lg bg-emerald-500 px-3 text-[10px] font-black text-white">Test assignment<ArrowRight className="h-3.5 w-3.5" /></a></div></div></div>
         </div>
       </header>
 
       <main className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
         <div className="grid gap-5 lg:grid-cols-2">
           {LEAD_MAGNETS.map((magnet) => {
-            const internalUrl = `${origin}/experiments/lead-magnets/${magnet.id}?internal=1`;
-            const trafficUrl = `${origin}/experiments/lead-magnets/${magnet.id}`;
+            const internalUrl = `${origin}/?popup=${magnet.id}&popup-check=1&internal=1`;
+            const trafficUrl = `${origin}/?popup=${magnet.id}`;
             const Icon = magnet.icon;
             return (
               <article key={magnet.id} className="overflow-hidden rounded-[26px] border border-slate-200 bg-white shadow-sm">
@@ -40,7 +40,7 @@ export default function LeadMagnetLab() {
                   <p className="mt-3 text-sm leading-6 text-slate-500">{magnet.body}</p>
                   <div className="mt-5 grid grid-cols-3 gap-2">{magnet.proof.map((item) => <div key={item.label} className="rounded-xl border border-slate-100 bg-slate-50 p-3"><p className="text-sm font-black">{item.value}</p><p className="mt-1 text-[9px] leading-3 text-slate-400">{item.label}</p></div>)}</div>
                 </div>
-                <div className="border-t border-slate-100 bg-slate-50/70 p-4 sm:px-7"><div className="grid grid-cols-[1fr_auto] gap-2"><a href={internalUrl} className="flex h-10 items-center justify-center gap-2 rounded-xl text-xs font-black text-white" style={{ background: magnet.accent }}>Open staging page<ExternalLink className="h-3.5 w-3.5" /></a><CopyButton value={trafficUrl} /></div><p className="mt-3 truncate text-[9px] text-slate-400">{trafficUrl}</p></div>
+                <div className="border-t border-slate-100 bg-slate-50/70 p-4 sm:px-7"><div className="grid grid-cols-[1fr_auto] gap-2"><a href={internalUrl} className="flex h-10 items-center justify-center gap-2 rounded-xl text-xs font-black text-white" style={{ background: magnet.accent }}>Open popup on homepage<ExternalLink className="h-3.5 w-3.5" /></a><CopyButton value={trafficUrl} /></div><p className="mt-3 truncate text-[9px] text-slate-400">{trafficUrl}</p></div>
               </article>
             );
           })}
@@ -51,7 +51,7 @@ export default function LeadMagnetLab() {
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{[
             ["Lead capture", "Live", "Submissions save to the conversion-v2 Postgres database."],
             ["Attribution", "Live", "Variant, UTMs, assignment, route count, and team size are saved."],
-            ["Analytics", "Traffic URLs", "Experiment URLs track unless ?internal=1 is present."],
+            ["Analytics", "Traffic URLs", "Popup traffic URLs track unless ?internal=1 is present."],
             ["External providers", "Staged", "Calls, maps, official compliance, and bid feeds are previews only."],
           ].map(([title, status, copy]) => <div key={title} className="rounded-2xl border border-slate-200 p-4"><div className="flex items-center justify-between"><p className="text-xs font-black">{title}</p><span className={`rounded-full px-2 py-1 text-[8px] font-black uppercase tracking-wider ${status === "Live" ? "bg-emerald-50 text-emerald-700" : status === "Traffic URLs" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>{status}</span></div><p className="mt-3 text-[11px] leading-5 text-slate-500">{copy}</p></div>)}
           </div>

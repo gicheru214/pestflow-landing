@@ -28,7 +28,7 @@ import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import GeneratedBlogPostPage from "@/pages/blog/generated-post";
 import LeadMagnetLab from "@/pages/lead-magnet-lab";
 import LeadMagnetAssignment from "@/pages/lead-magnet-assignment";
-import LeadMagnetExperiment from "@/pages/lead-magnet-experiment";
+import { isLeadMagnetId } from "@/lead-magnets/config";
 import { analytics } from "@/lib/analytics";
 
 // The landing site no longer hosts any in-app screens. Auth and the dashboard
@@ -39,6 +39,16 @@ function ExternalRedirect({ to }: { to: string }) {
   useEffect(() => {
     window.location.replace(to);
   }, [to]);
+  return null;
+}
+
+function LeadMagnetPopupRedirect({ variant }: { variant: string }) {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (isLeadMagnetId(variant)) params.set("popup", variant);
+    if (params.get("internal") === "1") params.set("popup-check", "1");
+    window.location.replace(`/?${params.toString()}`);
+  }, [variant]);
   return null;
 }
 
@@ -59,7 +69,7 @@ function AppRouter() {
         <Route path="/experiments/lead-magnets" component={LeadMagnetLab} />
         <Route path="/experiments/lead-magnets/assign" component={LeadMagnetAssignment} />
         <Route path="/experiments/lead-magnets/:variant">
-          {(params) => <LeadMagnetExperiment variant={params.variant} />}
+          {(params) => <LeadMagnetPopupRedirect variant={params.variant} />}
         </Route>
         {/* Removed fake in-app clone — hand stale traffic to the real app. */}
         <Route path="/login">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
