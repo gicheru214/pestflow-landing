@@ -23,11 +23,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300..900&family=Inter:wght@300..900&display=swap" rel="stylesheet">
 
-    <!-- Keep local and Railway staging review traffic out of production analytics. -->
+    <!-- Track experiment traffic on staging; QA links opt out with ?internal=1. -->
     <script>
+      const pestflowParams = new URLSearchParams(window.location.search);
+      const pestflowProductionHost = ['pestflow.org', 'www.pestflow.org'].includes(window.location.hostname);
+      const pestflowExperimentRoute = window.location.pathname.startsWith('/experiments/lead-magnets');
       window.__PESTFLOW_INTERNAL_TRAFFIC__ =
-        !['pestflow.org', 'www.pestflow.org'].includes(window.location.hostname) ||
-        new URLSearchParams(window.location.search).get('internal') === '1';
+        pestflowParams.get('internal') === '1' ||
+        (!pestflowProductionHost && !pestflowExperimentRoute);
       document.documentElement.dataset.pestflowInternalTraffic =
         String(window.__PESTFLOW_INTERNAL_TRAFFIC__);
     </script>

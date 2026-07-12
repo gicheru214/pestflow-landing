@@ -158,6 +158,10 @@ export const EVENTS = {
     FEATURES_VIEW: 'Features Section View',
     TESTIMONIALS_VIEW: 'Testimonials Section View',
     SCROLL_DEPTH: 'Scroll Depth',
+    LEAD_MAGNET_VIEWED: 'Lead Magnet Viewed',
+    LEAD_MAGNET_QUALIFIED: 'Lead Magnet Qualified',
+    LEAD_MAGNET_SUBMITTED: 'Lead Magnet Submitted',
+    LEAD_MAGNET_ASSIGNED: 'Lead Magnet Variant Assigned',
   },
 
   // Onboarding Events

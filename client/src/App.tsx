@@ -26,6 +26,9 @@ import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
 import EstimateTemplatePost from "@/pages/blog/estimate-template";
 import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import GeneratedBlogPostPage from "@/pages/blog/generated-post";
+import LeadMagnetLab from "@/pages/lead-magnet-lab";
+import LeadMagnetAssignment from "@/pages/lead-magnet-assignment";
+import LeadMagnetExperiment from "@/pages/lead-magnet-experiment";
 import { analytics } from "@/lib/analytics";
 
 // The landing site no longer hosts any in-app screens. Auth and the dashboard
@@ -53,6 +56,11 @@ function AppRouter() {
         <Route path="/watch" component={Watch} />
         <Route path="/tech" component={TechLanding} />
         <Route path="/ai-tutor" component={AiTutorPage} />
+        <Route path="/experiments/lead-magnets" component={LeadMagnetLab} />
+        <Route path="/experiments/lead-magnets/assign" component={LeadMagnetAssignment} />
+        <Route path="/experiments/lead-magnets/:variant">
+          {(params) => <LeadMagnetExperiment variant={params.variant} />}
+        </Route>
         {/* Removed fake in-app clone — hand stale traffic to the real app. */}
         <Route path="/login">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
         <Route path="/create-account">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>

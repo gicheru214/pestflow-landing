@@ -516,6 +516,22 @@ export async function registerRoutes(
         if (body.employer && !body.companyName) body.companyName = body.employer;
         if (body.ownerName && !body.technicians) body.technicians = `Owner: ${body.ownerName}`;
       }
+      if (body?.type === "lead_magnet") {
+        const firstName = String(body.firstName || "").trim();
+        const lastName = String(body.lastName || "").trim();
+        const email = String(body.email || "").trim().toLowerCase();
+        const phoneDigits = String(body.phone || "").replace(/\D/g, "");
+        const companyName = String(body.companyName || "").trim();
+        if (firstName.length < 2) return res.status(400).json({ error: "A valid first name is required", field: "firstName" });
+        if (lastName.length < 2) return res.status(400).json({ error: "A valid last name is required", field: "lastName" });
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: "A valid email is required", field: "email" });
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) return res.status(400).json({ error: "A valid phone number is required", field: "phone" });
+        if (companyName.length < 2) return res.status(400).json({ error: "A company name is required", field: "companyName" });
+        body.firstName = firstName;
+        body.lastName = lastName;
+        body.email = email;
+        body.companyName = companyName;
+      }
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
       syncSubmissionToMtaInBackground(submission);
