@@ -90,7 +90,7 @@ export function Navbar() {
           </a>
           <Link href="/onboarding">
             <Button size="lg" className="font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-              Start Trial
+              Start for $1
             </Button>
           </Link>
         </div>

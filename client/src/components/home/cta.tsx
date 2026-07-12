@@ -14,19 +14,19 @@ export function CTA() {
           Ready to grow your pest control business?
         </h2>
         <p className="text-xl md:text-2xl opacity-90 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
-          Join thousands of pest control professionals who trust PestFlow to manage their operations.
+          Start with the workflow slowing you down most. Use the full product for seven days before deciding if it belongs in your operation.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link href="/onboarding">
             <Button size="xl" variant="secondary" className="h-16 px-12 text-lg font-bold shadow-2xl hover:scale-105 transition-all duration-300 bg-white text-primary hover:bg-slate-50 border-0">
-              Start Your Trial <ArrowRight className="ml-2 h-6 w-6" />
+              Start for $1 <ArrowRight className="ml-2 h-6 w-6" />
             </Button>
           </Link>
         </div>
         
         <p className="mt-8 text-sm opacity-80 font-medium tracking-wide">
-          7-day trial • Cancel anytime • Full access
+          $1 today • 7-day full-product trial • Cancel anytime
         </p>
       </div>
     </section>

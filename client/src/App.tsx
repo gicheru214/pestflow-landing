@@ -26,7 +26,7 @@ import MarketingIdeasPost from "@/pages/blog/marketing-ideas";
 import EstimateTemplatePost from "@/pages/blog/estimate-template";
 import InvoiceTemplatePost from "@/pages/blog/invoice-template";
 import GeneratedBlogPostPage from "@/pages/blog/generated-post";
-import { analytics, EVENTS } from "@/lib/analytics";
+import { analytics } from "@/lib/analytics";
 
 // The landing site no longer hosts any in-app screens. Auth and the dashboard
 // live only in the real product on app.pestflow.org. These redirects catch
@@ -75,22 +75,8 @@ function AppRouter() {
 
 function App() {
   useEffect(() => {
-    // Track session start / login when app loads
+    // This repository serves the public marketing site, not the authenticated app.
     analytics.trackSessionStart();
-    analytics.track(EVENTS.SESSION.LOGIN);
-    analytics.track(EVENTS.SESSION.APP_OPENED);
-    
-    // Track when user leaves/backgrounds app
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        analytics.track(EVENTS.SESSION.APP_BACKGROUNDED);
-      } else {
-        analytics.track(EVENTS.SESSION.APP_OPENED);
-      }
-    };
-    
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
   
   return (
