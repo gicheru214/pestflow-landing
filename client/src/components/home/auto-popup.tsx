@@ -270,7 +270,7 @@ export function AutoPopup() {
     pushPartial({ ...snapshotRef.current, reason: "guide_submit_signup_success" });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    window.location.href = `/signup-success?${buildForwardParams().toString()}`;
+    window.location.href = `/playbook?download=1&${buildForwardParams().toString()}`;
   };
 
   // Build the params bundle (name/email/phone) we forward into the success

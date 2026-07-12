@@ -43,7 +43,7 @@ export function LeadGen() {
         routes: formData.routes,
       });
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
-      window.location.href = "/onboarding";
+      window.location.href = "/playbook?download=1&source=homepage";
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       setIsSubmitting(false);
@@ -75,53 +75,45 @@ export function LeadGen() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary-foreground font-medium mb-6">
               <BookOpen className="w-4 h-4" />
-              Free Quiz + Playbook
+              Free 27-Point Owner Scorecard
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold font-heading mb-4 leading-tight">
-              How 3 Pest Control Owners Doubled Stops Per Truck Without Hiring
+              Find the revenue leaks hiding between the sale, the route, and the invoice.
             </h2>
             <p className="text-lg text-slate-300 mb-8 max-w-lg">
-              The $1M Playbook + a 15-question Revenue Accelerator quiz that scores your business and shows the exact 3 levers leaving the most money on the table.
+              Score 27 operating checks across recurring revenue, route capacity, technician closeout, estimates, retention, and owner visibility.
             </p>
 
             <div className="space-y-3 mb-8">
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">The route-stacking system that 3x'd revenue without adding a truck</span>
+                <span className="text-slate-200">A 0–2 score for every check, based on visible proof</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">The Google formula that puts you #1 in your city — and keeps you there</span>
+                <span className="text-slate-200">The exact records, owners, dates, and queues to look for</span>
               </div>
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">The recurring billing flow that cut cancellations 38% on average</span>
+                <span className="text-slate-200">A one-page, 7-day plan for fixing the three worst leaks</span>
               </div>
             </div>
 
-            {/* Proof row */}
             <div className="grid grid-cols-2 gap-3 mb-6 max-w-lg">
               <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                <div className="text-2xl font-extrabold text-emerald-400">$92K</div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Avg. yr-1 lift</div>
+                <div className="text-2xl font-extrabold text-emerald-400">27</div>
+                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Operating checks</div>
               </div>
               <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
                 <div className="text-2xl font-extrabold text-emerald-400 flex items-center justify-center gap-0.5">
-                  4.8 <Star className="w-4 h-4 fill-emerald-400" />
+                  6 <Star className="w-4 h-4 fill-emerald-400" />
                 </div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Owner rating</div>
+                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Leak categories</div>
               </div>
             </div>
 
-            <div className="space-y-3 max-w-lg">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <p className="text-sm text-slate-200 italic mb-2">"Dumped two apps and a billing service. PestFlow paid for itself in week one — recurring billing alone saved us 8 hours of admin a week."</p>
-                <p className="text-xs text-slate-400">— Marcus T., Owner · Tampa, FL</p>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                <p className="text-sm text-slate-200 italic mb-2">"Switched from PestPac. Stops per truck went from 9 to 14 in three months once the route board was live."</p>
-                <p className="text-xs text-slate-400">— Jenna R., Co-Owner · Phoenix, AZ</p>
-              </div>
+            <div className="max-w-lg rounded-xl border border-white/10 bg-white/5 p-4">
+              <p className="text-sm text-slate-200">Every check asks for evidence another person can find. If the process only lives in someone’s memory, it does not earn the point.</p>
             </div>
           </motion.div>
 
@@ -167,9 +159,9 @@ export function LeadGen() {
 
             {stage === "form" && (
               <>
-                <h3 className="text-xl font-bold mb-2">Get the playbook + start your quiz</h3>
+                <h3 className="text-xl font-bold mb-2">Get the 27-point playbook</h3>
                 <p className="text-slate-400 text-sm mb-6">
-                  Takes about 4 minutes. We score your business and show you the 3 fastest revenue levers.
+                  Download it instantly, score your operation, and circle the three zeroes closest to cash or customer trust.
                 </p>
 
                 <form className="space-y-4" onSubmit={handleSubmit}>
@@ -234,8 +226,8 @@ export function LeadGen() {
                     size="lg"
                     className="w-full min-h-[52px] h-auto py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-base whitespace-normal leading-snug rounded-lg"
                   >
-                    {isSubmitting ? "Sending..." : (
-                      <>Start My Free Quiz On How To Make A Higher Income <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></>
+                    {isSubmitting ? "Preparing..." : (
+                      <>Send Me The Revenue Leak Playbook <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></>
                     )}
                   </Button>
 
