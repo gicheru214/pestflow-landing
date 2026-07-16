@@ -3,12 +3,6 @@ import { CheckCircle2, Wrench, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
 
-declare global {
-  interface Window {
-    fbq: any;
-  }
-}
-
 const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
 
@@ -67,10 +61,6 @@ export default function SignupSuccess() {
     const anonId = sessionStorage.getItem('pestflow_user_id') || `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     sessionStorage.setItem('pestflow_user_id', anonId);
     analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
-
-    if (window.fbq) {
-      window.fbq('track', 'Lead', { value: type === 'tech' ? 0 : 10.00, currency: 'USD' });
-    }
 
     if (type === 'tech') {
       setIsTech(true);
