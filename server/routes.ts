@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import path from "path";
 import fs from "fs";
 import { createServer, type Server } from "http";
@@ -14,6 +14,69 @@ import {
   sendJobSummary,
 } from "./email";
 import { syncSubmissionToMtaInBackground } from "./mta";
+import { sendLeadEvent, type LeadEventData } from "./meta-capi";
+
+const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
+
+function parseCookies(value: string | undefined): Record<string, string> {
+  if (!value) return {};
+  return Object.fromEntries(
+    value.split(";").map((part) => {
+      const [name, ...rawValue] = part.trim().split("=");
+      let decoded = rawValue.join("=");
+      try { decoded = decodeURIComponent(decoded); } catch { /* keep raw */ }
+      return [name, decoded];
+    }),
+  );
+}
+
+function firstHeaderValue(value: string | string[] | undefined): string | undefined {
+  const first = Array.isArray(value) ? value[0] : value?.split(",")[0];
+  return first?.trim() || undefined;
+}
+
+function fbcFromUrl(eventSourceUrl: string): string | undefined {
+  try {
+    const fbclid = new URL(eventSourceUrl).searchParams.get("fbclid")?.trim();
+    return fbclid ? `fb.1.${Date.now()}.${fbclid}` : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
+  const leadSource = body?.type === "tech_lead"
+    ? "tech-landing"
+    : body?.type === "popup_partial" && body?.reason === "accept_offer_signup_success"
+      ? "owner-offer"
+      : null;
+  if (!leadSource || typeof body.metaEventId !== "string") return null;
+
+  const cookies = parseCookies(req.headers.cookie);
+  const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
+  const forwardedHost = firstHeaderValue(req.headers["x-forwarded-host"]) || req.get("host") || "pestflow.org";
+  const eventSourceUrl = req.get("referer") || `${forwardedProto}://${forwardedHost}/`;
+
+  return {
+    eventId: body.metaEventId,
+    eventSourceUrl,
+    leadSource,
+    userData: {
+      email: typeof body.email === "string" ? body.email : undefined,
+      phone: typeof body.phone === "string" ? body.phone : undefined,
+      firstName: typeof body.firstName === "string" ? body.firstName : undefined,
+      lastName: typeof body.lastName === "string" ? body.lastName : undefined,
+      clientIpAddress:
+        firstHeaderValue(req.headers["x-forwarded-for"])
+        || firstHeaderValue(req.headers["cf-connecting-ip"])
+        || firstHeaderValue(req.headers["x-real-ip"])
+        || req.ip,
+      clientUserAgent: req.get("user-agent"),
+      fbc: cookies._fbc || fbcFromUrl(eventSourceUrl),
+      fbp: cookies._fbp,
+    },
+  };
+}
 
 const optimizeRouteSchema = z.object({
   jobs: z.array(z.string()).min(1, "At least one job is required"),
@@ -519,6 +582,10 @@ export async function registerRoutes(
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
       syncSubmissionToMtaInBackground(submission);
+      const metaLead = qualifiedLeadData(req, body);
+      if (metaLead) {
+        await sendLeadEvent(metaLead);
+      }
       res.status(201).json(submission);
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -290,11 +290,16 @@ export function AutoPopup() {
 
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
-    pushPartial({ ...snapshotRef.current, reason: "accept_offer_signup_success" });
+    const metaEventId = beginMetaLeadEvent();
+    pushPartial({
+      ...snapshotRef.current,
+      reason: "accept_offer_signup_success",
+      metaEventId,
+    });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
     const params = buildForwardParams();
-    params.set("meta_event_id", beginMetaLeadEvent());
+    params.set("meta_event_id", metaEventId);
     // The success page sends the qualified browser Lead. The same event ID
     // follows the visitor into signup so the server copy is deduplicated.
     window.location.href = `/signup-success?${params.toString()}`;
