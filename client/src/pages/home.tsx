@@ -8,10 +8,15 @@ import { CTA } from "@/components/home/cta";
 import { LeadGen } from "@/components/home/lead-gen";
 import { Widgets } from "@/components/home/widgets";
 import { AutoPopup } from "@/components/home/auto-popup";
+import { IntentFirstPopup } from "@/components/home/intent-first-popup";
 import { MobileDownloadBanner } from "@/components/home/mobile-download-banner";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 export default function Home() {
+  const showIntentFirstFunnel =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("funnel") === "intent-first";
+
   useEffect(() => {
     // Save UTM params for later use in signup tracking
     const urlParams = new URLSearchParams(window.location.search);
@@ -34,7 +39,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
-      <AutoPopup />
+      {showIntentFirstFunnel ? <IntentFirstPopup /> : <AutoPopup />}
       <MobileDownloadBanner />
       <Navbar />
       <main className="flex-grow">

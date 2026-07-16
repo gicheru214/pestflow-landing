@@ -21,8 +21,9 @@ import {
   type LeadMagnetId,
 } from "@/lead-magnets/config";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
 
-export const PESTFLOW_CALENDLY_URL = "https://calendly.com/tgicheru21/pestflow-set-up-call";
+export { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
 
 type PopupStep = "offer" | "contact" | "result";
 
