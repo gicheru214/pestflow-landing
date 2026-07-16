@@ -292,8 +292,8 @@ export function AutoPopup() {
     pushPartial({ ...snapshotRef.current, reason: "accept_offer_signup_success" });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    // Route through signup-success so Meta's Lead event and the handoff screen
-    // both happen before the visitor lands in PestFlow onboarding.
+    // Route through signup-success so the handoff screen appears before the
+    // visitor lands in PestFlow onboarding. Lead tracking happens at account creation.
     window.location.href = `/signup-success?${buildForwardParams().toString()}`;
   };
 
