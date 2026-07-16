@@ -87,6 +87,7 @@ export function TechPopup() {
     if (!validate()) return;
     setSubmitting(true);
 
+    const metaEventId = beginMetaLeadEvent();
     const payload = {
       name: form.name.trim(),
       email: form.email.trim(),
@@ -96,6 +97,7 @@ export function TechPopup() {
       role: "technician",
       source: "tech-landing",
       timestamp: new Date().toISOString(),
+      metaEventId,
     };
 
     pushTechLead(payload);
@@ -106,7 +108,7 @@ export function TechPopup() {
       name: payload.name,
       email: payload.email,
       employer: payload.employer,
-      meta_event_id: beginMetaLeadEvent(),
+      meta_event_id: metaEventId,
     });
     window.location.href = `/signup-success?${params.toString()}`;
   };
