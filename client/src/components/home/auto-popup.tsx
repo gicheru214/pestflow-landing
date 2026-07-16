@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { beginMetaLeadEvent } from "@/lib/metaLeadEvent";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -292,9 +293,11 @@ export function AutoPopup() {
     pushPartial({ ...snapshotRef.current, reason: "accept_offer_signup_success" });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    // Route through signup-success so the handoff screen appears before the
-    // visitor lands in PestFlow onboarding. Lead tracking happens at account creation.
-    window.location.href = `/signup-success?${buildForwardParams().toString()}`;
+    const params = buildForwardParams();
+    params.set("meta_event_id", beginMetaLeadEvent());
+    // The success page sends the qualified browser Lead. The same event ID
+    // follows the visitor into signup so the server copy is deduplicated.
+    window.location.href = `/signup-success?${params.toString()}`;
   };
 
   const slideVariants = {
