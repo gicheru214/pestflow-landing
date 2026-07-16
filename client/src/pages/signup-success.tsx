@@ -48,7 +48,6 @@ export default function SignupSuccess() {
   const [techEmail, setTechEmail] = useState("");
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
-  const [techMetaEventId, setTechMetaEventId] = useState("");
   const [showTechCta, setShowTechCta] = useState(false);
 
   useEffect(() => {
@@ -61,9 +60,6 @@ export default function SignupSuccess() {
     const type = urlParams.get('type') || hashParams.get('type');
     const email = urlParams.get('email') || '';
     const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
-    const metaEventId = getOrCreateMetaLeadEventId(
-      urlParams.get('meta_event_id') || hashParams.get('meta_event_id'),
-    );
 
     analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
     analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
@@ -73,7 +69,21 @@ export default function SignupSuccess() {
     sessionStorage.setItem('pestflow_user_id', anonId);
     analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
 
-    // Lead remains the qualified Meta conversion. Retry during the short
+    // The discontinued tech flow is not a qualified Meta conversion.
+    if (type === 'tech') {
+      setIsTech(true);
+      setTechEmail(email);
+      setTechName(urlParams.get('name') || '');
+      setTechEmployer(urlParams.get('employer') || '');
+      const timer = setTimeout(() => setShowTechCta(true), 1500);
+      return () => clearTimeout(timer);
+    }
+
+    const metaEventId = getOrCreateMetaLeadEventId(
+      urlParams.get('meta_event_id') || hashParams.get('meta_event_id'),
+    );
+
+    // Lead remains the qualified owner conversion. Retry during the short
     // success flash if the Pixel is still initializing, and use the same ID
     // as CAPI so Meta keeps one conversion when both copies arrive.
     const firedKey = `pestflow_meta_lead_fired:${metaEventId}`;
@@ -89,7 +99,7 @@ export default function SignupSuccess() {
       window.fbq(
         'track',
         'Lead',
-        { value: type === 'tech' ? 0 : 10.00, currency: 'USD' },
+        { value: 10.00, currency: 'USD' },
         { eventID: metaEventId },
       );
       try { sessionStorage.setItem(firedKey, '1'); } catch { /* ignore */ }
@@ -107,19 +117,6 @@ export default function SignupSuccess() {
     const stopLeadRetry = () => {
       if (leadRetryTimer !== undefined) window.clearInterval(leadRetryTimer);
     };
-
-    if (type === 'tech') {
-      setIsTech(true);
-      setTechEmail(email);
-      setTechName(urlParams.get('name') || '');
-      setTechEmployer(urlParams.get('employer') || '');
-      setTechMetaEventId(metaEventId);
-      const timer = setTimeout(() => setShowTechCta(true), 1500);
-      return () => {
-        stopLeadRetry();
-        clearTimeout(timer);
-      };
-    }
 
     // Owner: brief confirmation flash, then hand off to the app.
     const handoff = buildAppHandoffUrl({
@@ -141,7 +138,6 @@ export default function SignupSuccess() {
     if (techEmail) params.set('email', techEmail);
     if (techName) params.set('name', techName);
     if (techEmployer) params.set('employer', techEmployer);
-    if (techMetaEventId) params.set('meta_event_id', techMetaEventId);
     const qs = params.toString() ? `?${params.toString()}` : '';
     window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
   };

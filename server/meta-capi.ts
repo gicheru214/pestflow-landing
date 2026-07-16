@@ -30,8 +30,16 @@ interface PurchaseEventData {
 export interface LeadEventData {
   eventId: string;
   eventSourceUrl: string;
-  leadSource: 'owner-offer' | 'tech-landing';
+  leadSource: 'owner-offer';
   userData: UserData;
+}
+
+export function isQualifiedOwnerLeadSubmission(body: unknown): boolean {
+  if (!body || typeof body !== 'object') return false;
+  const candidate = body as Record<string, unknown>;
+  return candidate.type === 'popup_partial'
+    && candidate.reason === 'accept_offer_signup_success'
+    && typeof candidate.metaEventId === 'string';
 }
 
 function clean(value: string | undefined): string | undefined {
@@ -131,7 +139,7 @@ export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
         },
         custom_data: {
           currency: 'USD',
-          value: data.leadSource === 'tech-landing' ? 0 : 10,
+          value: 10,
           content_name: 'PestFlow qualified lead',
           lead_source: data.leadSource,
         },

@@ -14,7 +14,7 @@ import {
   sendJobSummary,
 } from "./email";
 import { syncSubmissionToMtaInBackground } from "./mta";
-import { sendLeadEvent, type LeadEventData } from "./meta-capi";
+import { isQualifiedOwnerLeadSubmission, sendLeadEvent, type LeadEventData } from "./meta-capi";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
@@ -45,12 +45,7 @@ function fbcFromUrl(eventSourceUrl: string): string | undefined {
 }
 
 function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
-  const leadSource = body?.type === "tech_lead"
-    ? "tech-landing"
-    : body?.type === "popup_partial" && body?.reason === "accept_offer_signup_success"
-      ? "owner-offer"
-      : null;
-  if (!leadSource || typeof body.metaEventId !== "string") return null;
+  if (!isQualifiedOwnerLeadSubmission(body)) return null;
 
   const cookies = parseCookies(req.headers.cookie);
   const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
@@ -60,7 +55,7 @@ function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
   return {
     eventId: body.metaEventId,
     eventSourceUrl,
-    leadSource,
+    leadSource: "owner-offer",
     userData: {
       email: typeof body.email === "string" ? body.email : undefined,
       phone: typeof body.phone === "string" ? body.phone : undefined,

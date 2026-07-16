@@ -5,7 +5,20 @@ process.env.META_PIXEL_ID = "test-pixel";
 process.env.META_CAPI_ACCESS_TOKEN = "test-token";
 process.env.META_GRAPH_API_VERSION = "v24.0";
 
-const { sendLeadEvent } = await import("./meta-capi");
+const { isQualifiedOwnerLeadSubmission, sendLeadEvent } = await import("./meta-capi");
+
+test("only the regular owner offer is a qualified Meta Lead", () => {
+  assert.equal(isQualifiedOwnerLeadSubmission({
+    type: "popup_partial",
+    reason: "accept_offer_signup_success",
+    metaEventId: "pestflow-lead-owner-123",
+  }), true);
+  assert.equal(isQualifiedOwnerLeadSubmission({
+    type: "tech_lead",
+    reason: "accept_offer_signup_success",
+    metaEventId: "pestflow-lead-tech-123",
+  }), false);
+});
 
 test("qualified Lead uses the browser event ID and hashed match fields", async () => {
   const originalFetch = globalThis.fetch;
@@ -65,7 +78,7 @@ test("invalid event IDs are not sent", async () => {
     assert.equal(await sendLeadEvent({
       eventId: "bad id",
       eventSourceUrl: "https://pestflow.org/",
-      leadSource: "tech-landing",
+      leadSource: "owner-offer",
       userData: {},
     }), false);
     assert.equal(called, false);
