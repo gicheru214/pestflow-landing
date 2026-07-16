@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Wrench, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { getOrCreateMetaLeadEventId } from "@/lib/metaLeadEvent";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
@@ -41,6 +48,7 @@ export default function SignupSuccess() {
   const [techEmail, setTechEmail] = useState("");
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
+  const [techMetaEventId, setTechMetaEventId] = useState("");
   const [showTechCta, setShowTechCta] = useState(false);
 
   useEffect(() => {
@@ -53,6 +61,9 @@ export default function SignupSuccess() {
     const type = urlParams.get('type') || hashParams.get('type');
     const email = urlParams.get('email') || '';
     const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
+    const metaEventId = getOrCreateMetaLeadEventId(
+      urlParams.get('meta_event_id') || hashParams.get('meta_event_id'),
+    );
 
     analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
     analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
@@ -62,13 +73,52 @@ export default function SignupSuccess() {
     sessionStorage.setItem('pestflow_user_id', anonId);
     analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
 
+    // Lead remains the qualified Meta conversion. Retry during the short
+    // success flash if the Pixel is still initializing, and use the same ID
+    // as CAPI so Meta keeps one conversion when both copies arrive.
+    const firedKey = `pestflow_meta_lead_fired:${metaEventId}`;
+    let leadRetryTimer: number | undefined;
+    let leadRetryAttempts = 0;
+    const fireMetaLead = () => {
+      try {
+        if (sessionStorage.getItem(firedKey) === '1') return true;
+      } catch {
+        // Meta's event ID still deduplicates a repeated browser call.
+      }
+      if (typeof window.fbq !== 'function') return false;
+      window.fbq(
+        'track',
+        'Lead',
+        { value: type === 'tech' ? 0 : 10.00, currency: 'USD' },
+        { eventID: metaEventId },
+      );
+      try { sessionStorage.setItem(firedKey, '1'); } catch { /* ignore */ }
+      return true;
+    };
+    if (!fireMetaLead()) {
+      leadRetryTimer = window.setInterval(() => {
+        leadRetryAttempts += 1;
+        if (fireMetaLead() || leadRetryAttempts >= 10) {
+          if (leadRetryTimer !== undefined) window.clearInterval(leadRetryTimer);
+          leadRetryTimer = undefined;
+        }
+      }, 100);
+    }
+    const stopLeadRetry = () => {
+      if (leadRetryTimer !== undefined) window.clearInterval(leadRetryTimer);
+    };
+
     if (type === 'tech') {
       setIsTech(true);
       setTechEmail(email);
       setTechName(urlParams.get('name') || '');
       setTechEmployer(urlParams.get('employer') || '');
+      setTechMetaEventId(metaEventId);
       const timer = setTimeout(() => setShowTechCta(true), 1500);
-      return () => clearTimeout(timer);
+      return () => {
+        stopLeadRetry();
+        clearTimeout(timer);
+      };
     }
 
     // Owner: brief confirmation flash, then hand off to the app.
@@ -77,9 +127,13 @@ export default function SignupSuccess() {
       utm_source: utmSource || '',
       utm_campaign: utmCampaign || '',
       utm_content: utmContent || '',
+      meta_event_id: metaEventId,
     }, returnTo);
     const timer = setTimeout(() => { window.location.href = handoff; }, 1200);
-    return () => clearTimeout(timer);
+    return () => {
+      stopLeadRetry();
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleTechGoToApp = () => {
@@ -87,6 +141,7 @@ export default function SignupSuccess() {
     if (techEmail) params.set('email', techEmail);
     if (techName) params.set('name', techName);
     if (techEmployer) params.set('employer', techEmployer);
+    if (techMetaEventId) params.set('meta_event_id', techMetaEventId);
     const qs = params.toString() ? `?${params.toString()}` : '';
     window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
   };
