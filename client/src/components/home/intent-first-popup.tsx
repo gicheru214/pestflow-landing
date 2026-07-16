@@ -5,8 +5,6 @@ import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
-  Check,
-  Clock3,
   ExternalLink,
   MonitorPlay,
   Rocket,
@@ -14,19 +12,16 @@ import {
   X,
 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
-import {
-  PESTFLOW_CALENDLY_URL,
-  PESTFLOW_PWA_ONBOARD_URL,
-} from "@/lib/intent-funnel";
+import { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
-type IntentStep = "choice" | "video" | "handoff";
+type IntentStep = "choice" | "video";
 type IntentChoice = "start" | "watch" | "call";
 
 function initialStepFromUrl(): IntentStep {
   if (typeof window === "undefined") return "choice";
   const requested = new URLSearchParams(window.location.search).get("intent_step");
-  return requested === "video" || requested === "handoff" ? requested : "choice";
+  return requested === "video" ? requested : "choice";
 }
 
 export function IntentFirstPopup() {
@@ -84,14 +79,16 @@ export function IntentFirstPopup() {
       return;
     }
 
-    setStep(intent === "watch" ? "video" : "handoff");
-  };
+    if (intent === "watch") {
+      setStep("video");
+      return;
+    }
 
-  const openPwa = (surface: string) => {
-    analytics.track("PWA Handoff Clicked", {
+    analytics.track("Inside Signup Started", {
       funnel: "intent_first",
-      surface,
+      surface: "intent_prompt",
     });
+    window.location.href = "/experiments/intent-first/success?intent=start";
   };
 
   return (
@@ -107,7 +104,7 @@ export function IntentFirstPopup() {
         aria-describedby="intent-first-description"
         hideCloseButton
       >
-        <DialogTitle className="sr-only">PestFlow intent-first funnel</DialogTitle>
+        <DialogTitle className="sr-only">Choose how to start with PestFlow</DialogTitle>
         <button
           type="button"
           aria-label="Close intent prompt"
@@ -128,9 +125,7 @@ export function IntentFirstPopup() {
               </div>
               <div>
                 <p className="text-sm font-bold tracking-wide text-white">PestFlow</p>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">
-                  Staging · intent-first funnel
-                </p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">Choose how to start</p>
               </div>
             </div>
           </div>
@@ -164,7 +159,7 @@ export function IntentFirstPopup() {
                       <span className="rounded-full bg-emerald-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-emerald-950">Recommended</span>
                     </span>
                     <span className="mt-1 block text-sm leading-5 text-slate-300">
-                      Open a guided workspace in your browser and save your details inside the app—no PDF gate.
+                      Enter PestFlow first, then save your contact information from inside your workspace.
                     </span>
                   </span>
                   <ArrowRight className="mt-3 h-5 w-5 shrink-0 text-emerald-300 transition group-hover:translate-x-1" />
@@ -240,8 +235,11 @@ export function IntentFirstPopup() {
               </div>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="h-12 flex-1 bg-emerald-400 font-bold text-emerald-950 hover:bg-emerald-300">
-                  <a href={PESTFLOW_PWA_ONBOARD_URL} onClick={() => openPwa("video_step")}>
-                    Open guided PestFlow <ArrowRight className="ml-2 h-4 w-4" />
+                  <a
+                    href="/experiments/intent-first/success?intent=video"
+                    onClick={() => analytics.track("Inside Signup Started", { funnel: "intent_first", surface: "video_step" })}
+                  >
+                    Start setting up PestFlow <ArrowRight className="ml-2 h-4 w-4" />
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="h-12 border-white/15 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
@@ -258,69 +256,6 @@ export function IntentFirstPopup() {
             </div>
           )}
 
-          {step === "handoff" && (
-            <div className="relative px-5 pb-6 pt-7 sm:px-8 sm:pb-8">
-              <button
-                type="button"
-                onClick={() => setStep("choice")}
-                className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-300 transition hover:text-white"
-              >
-                <ArrowLeft className="h-4 w-4" /> Back to options
-              </button>
-              <div className="grid gap-6 sm:grid-cols-[1.05fr_.95fr] sm:items-center">
-                <div>
-                  <div className="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-400 text-emerald-950 shadow-xl shadow-emerald-500/20">
-                    <Rocket className="h-7 w-7" />
-                  </div>
-                  <h2 className="text-2xl font-black tracking-tight text-white sm:text-4xl">Your guided workspace is ready</h2>
-                  <p id="intent-first-description" className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
-                    Try PestFlow in the browser first. Your contact and business details stay inside the setup flow instead of being traded for a download.
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">What happens next</p>
-                  <ul className="mt-4 space-y-3 text-sm text-slate-200">
-                    {[
-                      "Open the guided PestFlow PWA",
-                      "Save your setup and contact details there",
-                      "Choose self-serve, app install, or a setup call",
-                    ].map((item) => (
-                      <li key={item} className="flex gap-3">
-                        <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300">
-                          <Check className="h-3 w-3" />
-                        </span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              <Button asChild className="mt-7 h-14 w-full bg-emerald-400 text-base font-black text-emerald-950 shadow-lg shadow-emerald-500/20 hover:bg-emerald-300">
-                <a href={PESTFLOW_PWA_ONBOARD_URL} onClick={() => openPwa("handoff_step")}>
-                  Start inside PestFlow <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
-              <div className="mt-4 flex flex-col items-center justify-center gap-3 text-sm sm:flex-row sm:gap-5">
-                <a
-                  href="/experiments/intent-first/success"
-                  className="font-semibold text-cyan-200 underline decoration-cyan-200/30 underline-offset-4 hover:text-cyan-100"
-                >
-                  Preview the post-setup screen
-                </a>
-                <span className="hidden h-1 w-1 rounded-full bg-slate-600 sm:block" />
-                <a
-                  href={PESTFLOW_CALENDLY_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 font-semibold text-slate-300 hover:text-white"
-                  onClick={() => analytics.track("Calendar Opened", { funnel: "intent_first", surface: "handoff_step" })}
-                >
-                  <Clock3 className="h-4 w-4" /> Book a setup call instead
-                </a>
-              </div>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>

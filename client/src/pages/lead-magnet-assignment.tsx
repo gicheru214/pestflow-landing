@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LEAD_MAGNET_IDS, isLeadMagnetId } from "@/lead-magnets/config";
+import { PRIMARY_LEAD_MAGNET_IDS, isLeadMagnetId } from "@/lead-magnets/config";
 import { analytics } from "@/lib/analytics";
 
 function selectVariant(pool: string[]) {
@@ -11,9 +11,23 @@ function selectVariant(pool: string[]) {
 export default function LeadMagnetAssignment() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const experiment = params.get("experiment") || "jtbd";
+
+    if (experiment === "jtbd" || experiment === "all-five") {
+      params.delete("variant");
+      params.delete("pool");
+      params.delete("reset");
+      params.delete("lm_assignment");
+      params.delete("popup");
+      params.set("funnel", "jtbd");
+      if (params.get("internal") === "1") params.set("popup-check", "1");
+      analytics.track("JTBD Experience Routed", { experiment: "activation-entry-v1" });
+      window.location.replace(`/?${params.toString()}`);
+      return;
+    }
+
     const requestedPool = (params.get("pool") || "").split(",").map((value) => value.trim()).filter(isLeadMagnetId);
-    const pool = requestedPool.length >= 2 ? requestedPool : [...LEAD_MAGNET_IDS];
-    const experiment = params.get("experiment") || "all-five";
+    const pool = requestedPool.length >= 2 ? requestedPool : [...PRIMARY_LEAD_MAGNET_IDS];
     const storageKey = `pestflow_lm_assignment_${experiment}_${pool.join("_")}`;
     if (params.get("reset") === "1") localStorage.removeItem(storageKey);
 

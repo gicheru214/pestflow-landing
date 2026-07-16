@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/home/hero";
@@ -9,13 +9,41 @@ import { LeadGen } from "@/components/home/lead-gen";
 import { Widgets } from "@/components/home/widgets";
 import { AutoPopup } from "@/components/home/auto-popup";
 import { IntentFirstPopup } from "@/components/home/intent-first-popup";
+import { JtbdPopup } from "@/components/home/jtbd-popup";
 import { MobileDownloadBanner } from "@/components/home/mobile-download-banner";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 export default function Home() {
-  const showIntentFirstFunnel =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("funnel") === "intent-first";
+  const requestedFunnel = useMemo(
+    () =>
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("funnel")
+        : null,
+    [],
+  );
+  const [experimentFunnel, setExperimentFunnel] = useState<string | null>(null);
+  const selectedFunnel = requestedFunnel || experimentFunnel;
+
+  useEffect(() => {
+    if (requestedFunnel || !window.posthog?.onFeatureFlags) return;
+
+    const applyFeatureFlag = () => {
+      const assignment = window.posthog?.getFeatureFlag?.("activation-entry-v1");
+      if (assignment !== "control" && assignment !== "jtbd") return;
+      setExperimentFunnel((current) => {
+        if (current === assignment) return current;
+        analytics.track("Activation Entry Experiment Assigned", {
+          experiment: "activation-entry-v1",
+          funnel_variant: assignment,
+        });
+        return assignment;
+      });
+    };
+
+    applyFeatureFlag();
+    const unsubscribe = window.posthog.onFeatureFlags(applyFeatureFlag);
+    return typeof unsubscribe === "function" ? unsubscribe : undefined;
+  }, [requestedFunnel]);
 
   useEffect(() => {
     // Save UTM params for later use in signup tracking
@@ -39,7 +67,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
-      {showIntentFirstFunnel ? <IntentFirstPopup /> : <AutoPopup />}
+      {selectedFunnel === "intent-first" ? (
+        <IntentFirstPopup />
+      ) : selectedFunnel === "jtbd" ? (
+        <JtbdPopup />
+      ) : selectedFunnel === "control" ? null : (
+        <AutoPopup />
+      )}
       <MobileDownloadBanner />
       <Navbar />
       <main className="flex-grow">

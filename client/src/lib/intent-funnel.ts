@@ -1,6 +1,3 @@
-export const PESTFLOW_PWA_ONBOARD_URL =
-  "https://app.pestflow.org/mobile/onboard/feature?source=intent_first_staging";
-
 export const PESTFLOW_PWA_APP_URL = "https://app.pestflow.org/mobile-v2-field.html";
 
 export const PESTFLOW_APP_STORE_URL =

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -16,7 +16,6 @@ import { analytics, EVENTS } from "@/lib/analytics";
 import {
   getLeadMagnet,
   LEAD_MAGNETS,
-  US_STATES,
   type LeadMagnetConfig,
   type LeadMagnetId,
 } from "@/lead-magnets/config";
@@ -57,14 +56,10 @@ const QUICK_QUESTIONS: Record<LeadMagnetId, QuickQuestion> = {
     helper: "This determines the export and pilot checklist.",
     options: [
       { value: "fieldroutes-pestpac", label: "FieldRoutes or PestPac" },
-      { value: "gorilladesk-briostack", label: "GorillaDesk or Briostack" },
+      { value: "gorilladesk", label: "GorillaDesk — watch the migration video" },
+      { value: "briostack", label: "Briostack" },
       { value: "spreadsheets-other", label: "Spreadsheets or another system" },
     ],
-  },
-  "state-compliance": {
-    question: "Which state should the checklist start with?",
-    helper: "A production pack must be reviewed against that state’s current guidance.",
-    options: US_STATES.map((state) => ({ value: state, label: state })),
   },
   "bid-radar": {
     question: "Which contracts are worth surfacing first?",
@@ -115,6 +110,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-black border-slate-800">
+        <DialogTitle className="sr-only">PestFlow product demo</DialogTitle>
         <div className="relative aspect-video w-full bg-black">
           <iframe
             width="100%"
@@ -194,6 +190,19 @@ export function AutoPopup() {
     analytics.track(EVENTS.LANDING.LEAD_MAGNET_QUALIFIED, { variant: config.id, quick_answer: quickAnswer });
   };
 
+  const selectQuickAnswer = (value: string) => {
+    setFormError("");
+    if (config.id === "competitor-exit" && value === "gorilladesk") {
+      analytics.track("Competitor Migration Video Selected", {
+        competitor: "gorilladesk",
+        surface: "homepage_popup",
+      });
+      window.location.href = "/competitors/gorilladesk?video=1#gorilladesk-migration-video";
+      return;
+    }
+    setQuickAnswer(value);
+  };
+
   const submitLead = async () => {
     const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
     const normalizedEmail = email.trim().toLowerCase();
@@ -235,7 +244,6 @@ export function AutoPopup() {
           companyName: companyName.trim(),
           technicians,
           routes,
-          state: config.id === "state-compliance" ? quickAnswer : undefined,
           routeAnswers: {
             leadMagnet: config.id,
             answers: { quickAnswer },
@@ -268,6 +276,7 @@ export function AutoPopup() {
         className="w-[calc(100vw-1.25rem)] overflow-hidden rounded-[26px] border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[510px]"
         hideCloseButton
       >
+        <DialogTitle className="sr-only">{config.shortName}</DialogTitle>
         <button
           onClick={closePopup}
           className="absolute right-3 top-3 z-20 rounded-full bg-white/5 p-2 text-slate-400 transition-colors hover:bg-white/15 hover:text-white"
@@ -280,9 +289,8 @@ export function AutoPopup() {
           <div className="h-1.5 w-full" style={{ background: config.accent }} />
           {step === "offer" && (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="p-5 sm:p-7">
-              <div className="flex items-center justify-between gap-4 pr-8">
+              <div className="pr-8">
                 <img src={logoImage} alt="PestFlow" className="h-12 w-auto object-contain" />
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[9px] font-black uppercase tracking-[.15em] text-white/45">{config.experimentLabel}</span>
               </div>
               <div className="mt-5 flex items-center gap-2 text-[10px] font-black uppercase tracking-[.16em]" style={{ color: config.accent }}><Icon className="h-4 w-4" />{config.eyebrow}</div>
               <h2 className="mt-3 text-3xl font-black leading-[1.02] tracking-[-.04em] text-white">{config.headline} <span style={{ color: config.accent }}>{config.highlight}</span></h2>
@@ -296,14 +304,7 @@ export function AutoPopup() {
               <div className="mt-5">
                 <p className="text-sm font-bold text-white">{question.question}</p>
                 <p className="mt-1 text-[11px] text-slate-500">{question.helper}</p>
-                {config.id === "state-compliance" ? (
-                  <select value={quickAnswer} onChange={(event) => { setQuickAnswer(event.target.value); setFormError(""); }} className="mt-3 h-12 w-full rounded-xl border border-white/10 bg-white/[.05] px-3 text-sm font-semibold text-white outline-none" aria-label={question.question}>
-                    <option value="" className="text-slate-900">Choose a state</option>
-                    {question.options.map((option) => <option key={option.value} value={option.value} className="text-slate-900">{option.label}</option>)}
-                  </select>
-                ) : (
-                  <div className="mt-3 grid gap-2">{question.options.map((option) => <button key={option.value} onClick={() => { setQuickAnswer(option.value); setFormError(""); }} className={`flex h-11 items-center justify-between rounded-xl border px-3.5 text-left text-xs font-bold transition ${quickAnswer === option.value ? "text-white" : "border-white/10 bg-white/[.035] text-slate-300 hover:border-white/20"}`} style={quickAnswer === option.value ? { borderColor: config.accent, background: `${config.accent}20` } : undefined}>{option.label}<ChevronRight className="h-4 w-4 opacity-45" /></button>)}</div>
-                )}
+                <div className="mt-3 grid gap-2">{question.options.map((option) => <button key={option.value} onClick={() => selectQuickAnswer(option.value)} className={`flex min-h-11 items-center justify-between rounded-xl border px-3.5 py-3 text-left text-xs font-bold transition ${quickAnswer === option.value ? "text-white" : "border-white/10 bg-white/[.035] text-slate-300 hover:border-white/20"}`} style={quickAnswer === option.value ? { borderColor: config.accent, background: `${config.accent}20` } : undefined}>{option.label}<ChevronRight className="h-4 w-4 shrink-0 opacity-45" /></button>)}</div>
               </div>
               {formError && <p className="mt-3 text-xs font-semibold text-red-400">{formError}</p>}
               <Button onClick={continueToContact} className="mt-4 h-12 w-full text-sm font-black text-white" style={{ background: config.accent }}>{config.primaryCta}<ArrowRight className="ml-2 h-4 w-4" /></Button>

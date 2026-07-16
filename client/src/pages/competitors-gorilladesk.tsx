@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, PlayCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { analytics } from "@/lib/analytics";
 
 type Cell = boolean | string;
 
@@ -27,6 +29,21 @@ function Mark({ value, win }: { value: Cell; win: boolean }) {
 }
 
 export default function CompetitorsGorillaDesk() {
+  const videoRequested =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("video") === "1";
+
+  useEffect(() => {
+    if (!videoRequested) return;
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("gorilladesk-migration-video")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [videoRequested]);
+
   return (
     <div className="min-h-screen bg-white font-sans">
       <Navbar />
@@ -46,6 +63,34 @@ export default function CompetitorsGorillaDesk() {
             GorillaDesk is a great first step for a solo operator. But teams past 2–3 trucks hit its limits fast.
             Here's where the gap shows up.
           </p>
+        </div>
+      </section>
+
+      <section id="gorilladesk-migration-video" className="scroll-mt-20 border-b bg-slate-950 px-4 py-14 text-white">
+        <div className="mx-auto grid max-w-4xl gap-7 md:grid-cols-[.75fr_1.25fr] md:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
+              <PlayCircle className="h-4 w-4" /> 33-second walkthrough
+            </div>
+            <h2 className="mt-4 font-heading text-3xl font-extrabold leading-tight">Moving from GorillaDesk?</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-400">
+              See the fast path for bringing a GorillaDesk operation into PestFlow before deciding whether to start.
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">
+            <div className="relative aspect-video">
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/3ie0svq4kT4?rel=0${videoRequested ? "&autoplay=1&mute=1" : ""}`}
+                title="Move from GorillaDesk to PestFlow"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 h-full w-full"
+                onLoad={() => analytics.track("GorillaDesk Migration Video Viewed", { source: videoRequested ? "competitor_popup" : "comparison_page" })}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
