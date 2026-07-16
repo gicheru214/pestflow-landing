@@ -9,20 +9,37 @@ declare global {
   }
 }
 
-function buildAppHandoffUrl(extras: Record<string, string>) {
+const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
+const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
+
+export function resolveAppHandoffUrl(returnTo?: string | null): URL {
+  if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
+  try {
+    const candidate = new URL(returnTo, "https://app.pestflow.org");
+    if (candidate.protocol === "https:" && ALLOWED_APP_RETURN_HOSTS.has(candidate.hostname)) {
+      return candidate;
+    }
+  } catch {
+    // Keep the established onboarding destination for malformed return URLs.
+  }
+  return new URL(DEFAULT_APP_HANDOFF_URL);
+}
+
+function buildAppHandoffUrl(extras: Record<string, string>, returnTo?: string | null) {
   const popupData = (() => {
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); } catch { return {}; }
   })();
-  const params = new URLSearchParams();
+  const url = resolveAppHandoffUrl(returnTo);
+  const params = url.searchParams;
   const routesRaw = parseInt(popupData.routeSize || "1", 10);
   const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
-  params.set("routes", String(routes));
+  if (!params.has("routes")) params.set("routes", String(routes));
   ["email", "firstName", "lastName", "phone", "utm_source", "utm_campaign", "utm_content"].forEach((k) => {
     const v = popupData[k] || extras[k];
     if (v) params.set(k, v);
   });
   Object.entries(extras).forEach(([k, v]) => { if (v && !params.has(k)) params.set(k, v); });
-  return `https://app.pestflow.org/mobile/onboard/feature?${params.toString()}`;
+  return url.toString();
 }
 
 export default function SignupSuccess() {
@@ -41,6 +58,7 @@ export default function SignupSuccess() {
     const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
     const type = urlParams.get('type') || hashParams.get('type');
     const email = urlParams.get('email') || '';
+    const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
 
     analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
     analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
@@ -69,7 +87,7 @@ export default function SignupSuccess() {
       utm_source: utmSource || '',
       utm_campaign: utmCampaign || '',
       utm_content: utmContent || '',
-    });
+    }, returnTo);
     const timer = setTimeout(() => { window.location.href = handoff; }, 1200);
     return () => clearTimeout(timer);
   }, []);
