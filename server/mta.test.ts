@@ -42,7 +42,7 @@ test("requires the dedicated marketing group", async () => {
   });
 });
 
-test("explicitly enrolls a new subscriber with drip campaigns enabled", async () => {
+test("atomically enters the workflow and verifies group enrollment", async () => {
   await withMtaEnv("4242", async () => {
     const originalFetch = globalThis.fetch;
     const calls: Array<{ url: string; method: string; body: Record<string, unknown> }> = [];
@@ -70,6 +70,7 @@ test("explicitly enrolls a new subscriber with drip campaigns enabled", async ()
         groupIds: [4242],
       });
       assert.equal(calls[0]?.url, "https://api.mobile-text-alerts.com/v3/subscribers");
+      assert.deepEqual(calls[0]?.body.groupIds, [4242]);
       assert.equal(
         calls[1]?.url,
         "https://api.mobile-text-alerts.com/v3/groups/4242/subscribers",
@@ -87,13 +88,16 @@ test("explicitly enrolls a new subscriber with drip campaigns enabled", async ()
 test("updates and enrolls an existing subscriber instead of dropping the lead", async () => {
   await withMtaEnv("4242", async () => {
     const originalFetch = globalThis.fetch;
-    const methods: string[] = [];
+    const calls: Array<{ method: string; body: Record<string, unknown> }> = [];
     globalThis.fetch = async (_url, init) => {
-      methods.push(String(init?.method));
-      if (methods.length === 1) {
+      calls.push({
+        method: String(init?.method),
+        body: JSON.parse(String(init?.body)),
+      });
+      if (calls.length === 1) {
         return new Response(JSON.stringify({ message: "Subscriber exists" }), { status: 409 });
       }
-      if (methods.length === 2) {
+      if (calls.length === 2) {
         return new Response(
           JSON.stringify({ data: { id: 77, e164Number: "+19015550123" } }),
           { status: 200 },
@@ -105,7 +109,9 @@ test("updates and enrolls an existing subscriber instead of dropping the lead", 
     try {
       const result = await syncSubmissionToMta(lead);
       assert.equal(result.ok, true);
-      assert.deepEqual(methods, ["POST", "PATCH", "POST"]);
+      assert.deepEqual(calls.map((call) => call.method), ["POST", "PATCH", "POST"]);
+      assert.deepEqual(calls[0]?.body.groupIds, [4242]);
+      assert.deepEqual(calls[1]?.body.groupIds, [4242]);
     } finally {
       globalThis.fetch = originalFetch;
     }
