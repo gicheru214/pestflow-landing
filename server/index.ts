@@ -3,6 +3,7 @@ import path from "path";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { ensureMtaEnrollmentSchema, startMtaEnrollmentWorker } from "./mta-enrollment";
 
 const app = express();
 const httpServer = createServer(app);
@@ -75,7 +76,10 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  await ensureMtaEnrollmentSchema();
   await registerRoutes(httpServer, app);
+  const stopMtaEnrollmentWorker = startMtaEnrollmentWorker();
+  httpServer.once("close", stopMtaEnrollmentWorker);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

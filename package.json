@@ -9,6 +9,7 @@
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
+    "test:mta": "tsx --test server/mta.test.ts",
     "blog:build-backlog": "node scripts/build-prewritten-pestflow-backlog.mjs",
     "blog:wait": "node scripts/wait-for-blog-deploy.mjs",
     "db:push": "drizzle-kit push",
