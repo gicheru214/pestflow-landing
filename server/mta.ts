@@ -100,6 +100,10 @@ export async function syncSubmissionToMta(
     firstName,
     lastName,
     email: cleanText(submission.email) ?? undefined,
+    // Workflow Builder's join_group trigger is fired reliably when the group
+    // is part of the subscriber create/update request. Keep the explicit group
+    // enrollment below as a durable verification and recovery step.
+    groupIds,
   };
 
   let postResult;
@@ -121,9 +125,10 @@ export async function syncSubmissionToMta(
   let response = postResult.response;
   let data = postResult.data;
 
-  // Existing subscribers must still be updated and explicitly re-enrolled in
-  // the marketing group. Including groupIds in a subscriber upsert alone does
-  // not reliably start an MTA drip campaign.
+  // Existing subscribers must still be updated and explicitly enrolled in the
+  // marketing group. The atomic groupIds handoff starts Workflow Builder; the
+  // explicit call prevents MTA from silently accepting a subscriber without
+  // actually attaching the campaign group.
   if (!response.ok && (response.status === 409 || response.status === 422 || response.status >= 500)) {
     const lookup = toMtaSubscriberLookup(submission.phone);
     if (lookup) {
