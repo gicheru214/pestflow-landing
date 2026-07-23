@@ -13,8 +13,8 @@ import {
   sendOverdueReminder,
   sendJobSummary,
 } from "./email";
-import { syncSubmissionToMtaInBackground } from "./mta";
 import { isQualifiedOwnerLeadSubmission, sendLeadEvent, type LeadEventData } from "./meta-capi";
+import { processSubmissionMtaEnrollment, queueSubmissionForMta } from "./mta-enrollment";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
@@ -576,7 +576,16 @@ export async function registerRoutes(
       }
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
-      syncSubmissionToMtaInBackground(submission);
+      // Persist the handoff before responding. The immediate attempt keeps the
+      // signup-to-text delay low; the worker retries if the process restarts or
+      // MTA temporarily accepts the subscriber but rejects group enrollment.
+      await queueSubmissionForMta(submission.id, "landing_form");
+      void processSubmissionMtaEnrollment(submission.id).catch((error) => {
+        console.warn(
+          "[mta] immediate enrollment failed:",
+          error instanceof Error ? error.message : error,
+        );
+      });
       const metaLead = qualifiedLeadData(req, body);
       if (metaLead) {
         await sendLeadEvent(metaLead);

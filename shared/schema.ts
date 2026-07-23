@@ -190,11 +190,33 @@ export const submissions = pgTable("submissions", {
   // Activation tracking
   customersImported: integer("customers_imported").default(0),
   activated: boolean("activated").default(false),
+  // Durable MTA handoff state. A subscriber is not considered enrolled until
+  // the explicit marketing-group request succeeds with drip campaigns enabled.
+  mtaStatus: text("mta_status").notNull().default("not_requested"),
+  mtaError: text("mta_error"),
+  mtaAttempts: integer("mta_attempts").notNull().default(0),
+  mtaSubscriberId: integer("mta_subscriber_id"),
+  mtaE164Number: text("mta_e164_number"),
+  mtaGroupIds: jsonb("mta_group_ids").$type<number[]>(),
+  mtaSource: text("mta_source"),
+  mtaLastAttemptAt: timestamp("mta_last_attempt_at"),
+  mtaSyncedAt: timestamp("mta_synced_at"),
+  mtaNextRetryAt: timestamp("mta_next_retry_at"),
 });
 
 export const insertSubmissionSchema = createInsertSchema(submissions).omit({
   id: true,
   submittedAt: true,
+  mtaStatus: true,
+  mtaError: true,
+  mtaAttempts: true,
+  mtaSubscriberId: true,
+  mtaE164Number: true,
+  mtaGroupIds: true,
+  mtaSource: true,
+  mtaLastAttemptAt: true,
+  mtaSyncedAt: true,
+  mtaNextRetryAt: true,
 });
 
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
