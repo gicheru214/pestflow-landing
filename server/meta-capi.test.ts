@@ -5,7 +5,11 @@ process.env.META_PIXEL_ID = "test-pixel";
 process.env.META_CAPI_ACCESS_TOKEN = "test-token";
 process.env.META_GRAPH_API_VERSION = "v24.0";
 
-const { isQualifiedOwnerLeadSubmission, sendLeadEvent } = await import("./meta-capi");
+const {
+  isQualifiedOwnerLeadSubmission,
+  sendAppStoreHandoffEvent,
+  sendLeadEvent,
+} = await import("./meta-capi");
 
 test("contact capture and the regular owner offer are qualified Meta Leads", () => {
   assert.equal(isQualifiedOwnerLeadSubmission({
@@ -94,6 +98,42 @@ test("invalid event IDs are not sent", async () => {
       userData: {},
     }), false);
     assert.equal(called, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("App Store handoff uses the same custom event ID for CAPI deduplication", async () => {
+  const originalFetch = globalThis.fetch;
+  let payload: any;
+  globalThis.fetch = async (_input, init) => {
+    payload = JSON.parse(String(init?.body));
+    return new Response(JSON.stringify({ events_received: 1 }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
+  try {
+    const sent = await sendAppStoreHandoffEvent({
+      eventId: "pestflow-appstore-event-123",
+      eventSourceUrl: "https://pestflow.org/app-store-success?fbclid=test",
+      source: "home_mobile_top",
+      userData: {
+        clientIpAddress: "203.0.113.5",
+        clientUserAgent: "test-agent",
+        fbc: "fb.1.123.test",
+        fbp: "fb.1.123.browser",
+      },
+    });
+
+    assert.equal(sent, true);
+    const event = payload.data[0];
+    assert.equal(event.event_name, "AppStoreHandoff");
+    assert.equal(event.event_id, "pestflow-appstore-event-123");
+    assert.equal(event.custom_data.destination, "apple_app_store");
+    assert.equal(event.custom_data.source, "home_mobile_top");
+    assert.equal(event.user_data.fbc, "fb.1.123.test");
   } finally {
     globalThis.fetch = originalFetch;
   }

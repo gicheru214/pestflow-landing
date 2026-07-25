@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { analytics } from "@/lib/analytics";
+import {
+  buildAppStoreSuccessPath,
+  createAppStoreHandoffEventId,
+} from "@/lib/appStoreHandoff";
+import { captureMarketingAttribution } from "@/lib/marketingAttribution";
 
-const APP_STORE_URL = "https://apps.apple.com/us/app/pestflow/id6773204838";
 const APP_ICON_SRC = "/assets/pestflow-app-store-icon.jpg";
 
 function shouldUseNativeSafariBanner() {
@@ -14,6 +18,7 @@ function shouldUseNativeSafariBanner() {
 }
 
 export function MobileDownloadBanner() {
+  const [handoffUrl, setHandoffUrl] = useState("/app-store-success?source=home_mobile_top");
   const [hidden, setHidden] = useState(() => {
     if (typeof window === "undefined") return true;
     return shouldUseNativeSafariBanner() || sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1";
@@ -21,6 +26,14 @@ export function MobileDownloadBanner() {
 
   useEffect(() => {
     setHidden(shouldUseNativeSafariBanner() || sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1");
+    const attribution = captureMarketingAttribution(
+      new URLSearchParams(window.location.search),
+      new URLSearchParams(window.location.hash.split("?")[1]),
+    );
+    setHandoffUrl(buildAppStoreSuccessPath(
+      attribution,
+      createAppStoreHandoffEventId(),
+    ));
   }, []);
 
   if (hidden) return null;
@@ -66,9 +79,7 @@ export function MobileDownloadBanner() {
           </div>
         </div>
         <a
-          href={APP_STORE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={handoffUrl}
           onClick={openAppStore}
           className="inline-flex h-10 shrink-0 items-center justify-center rounded-[20px] bg-[#0a84ff] px-5 text-[15px] font-bold uppercase tracking-normal text-white shadow-[0_1px_2px_rgba(0,0,0,0.24)] transition hover:bg-[#1f8fff]"
           aria-label="Download Pest Flow from the App Store"

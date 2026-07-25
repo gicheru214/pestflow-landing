@@ -34,6 +34,16 @@ export interface LeadEventData {
   userData: UserData;
 }
 
+export interface AppStoreHandoffEventData {
+  eventId: string;
+  eventSourceUrl: string;
+  source: 'home_mobile_top';
+  userData: Pick<
+    UserData,
+    'clientIpAddress' | 'clientUserAgent' | 'fbc' | 'fbp'
+  >;
+}
+
 export function isQualifiedOwnerLeadSubmission(body: unknown): boolean {
   if (!body || typeof body !== 'object') return false;
   const candidate = body as Record<string, unknown>;
@@ -156,6 +166,41 @@ export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
   };
 
   return postMetaEvent(payload, 'Lead');
+}
+
+export async function sendAppStoreHandoffEvent(
+  data: AppStoreHandoffEventData,
+): Promise<boolean> {
+  if (!validEventId(data.eventId)) {
+    console.warn('[Meta CAPI] Invalid AppStoreHandoff event ID, skipping event');
+    return false;
+  }
+
+  const payload = {
+    data: [
+      {
+        event_name: 'AppStoreHandoff',
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: data.eventId.trim(),
+        event_source_url: data.eventSourceUrl,
+        action_source: 'website',
+        user_data: {
+          client_ip_address: clean(data.userData.clientIpAddress),
+          client_user_agent: clean(data.userData.clientUserAgent),
+          fbc: clean(data.userData.fbc),
+          fbp: clean(data.userData.fbp),
+        },
+        custom_data: {
+          content_name: 'PestFlow iOS App',
+          content_category: 'mobile_app',
+          destination: 'apple_app_store',
+          source: data.source,
+        },
+      },
+    ],
+  };
+
+  return postMetaEvent(payload, 'AppStoreHandoff');
 }
 
 export async function sendPurchaseEvent(data: PurchaseEventData): Promise<boolean> {

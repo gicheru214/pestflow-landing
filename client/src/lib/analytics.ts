@@ -149,6 +149,8 @@ export const EVENTS = {
     POPUP_SUBMIT: 'Popup Submit',
     POPUP_DISMISSED: 'Popup Dismissed',
     QUALIFIED_LEAD_HANDOFF: 'Qualified Lead Handoff',
+    APP_STORE_HANDOFF: 'App Store Handoff',
+    APP_STORE_OPEN_ATTEMPT: 'App Store Open Attempt',
     PRICING_VIEW: 'Pricing Section View',
     FEATURES_VIEW: 'Features Section View',
     TESTIMONIALS_VIEW: 'Testimonials Section View',

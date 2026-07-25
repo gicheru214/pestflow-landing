@@ -13,6 +13,7 @@ import Terms from "@/pages/terms";
 import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
 import SignupSuccess from "@/pages/signup-success";
+import AppStoreSuccess from "@/pages/app-store-success";
 import Watch from "@/pages/watch";
 import TechLanding from "@/pages/tech";
 import AiTutorPage from "@/pages/ai-tutor";
@@ -52,6 +53,7 @@ function AppRouter() {
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/admin" component={Admin} />
         <Route path="/signup-success" component={SignupSuccess} />
+        <Route path="/app-store-success" component={AppStoreSuccess} />
         <Route path="/watch" component={Watch} />
         <Route path="/tech" component={TechLanding} />
         <Route path="/ai-tutor" component={AiTutorPage} />

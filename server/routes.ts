@@ -13,7 +13,13 @@ import {
   sendOverdueReminder,
   sendJobSummary,
 } from "./email";
-import { isQualifiedOwnerLeadSubmission, sendLeadEvent, type LeadEventData } from "./meta-capi";
+import {
+  isQualifiedOwnerLeadSubmission,
+  sendAppStoreHandoffEvent,
+  sendLeadEvent,
+  type AppStoreHandoffEventData,
+  type LeadEventData,
+} from "./meta-capi";
 import { processSubmissionMtaEnrollment, queueSubmissionForMta } from "./mta-enrollment";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
@@ -73,6 +79,53 @@ function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
   };
 }
 
+function appStoreHandoffData(
+  req: Request,
+  body: unknown,
+): AppStoreHandoffEventData | null {
+  if (!body || typeof body !== "object") return null;
+  const candidate = body as Record<string, unknown>;
+  if (
+    typeof candidate.eventId !== "string"
+    || candidate.source !== "home_mobile_top"
+  ) {
+    return null;
+  }
+
+  const cookies = parseCookies(req.headers.cookie);
+  const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
+  const forwardedHost = firstHeaderValue(req.headers["x-forwarded-host"]) || req.get("host") || "pestflow.org";
+  const eventSourceUrl = req.get("referer") || `${forwardedProto}://${forwardedHost}/app-store-success`;
+
+  try {
+    const sourceUrl = new URL(eventSourceUrl);
+    if (
+      sourceUrl.protocol !== "https:"
+      || (sourceUrl.hostname !== "pestflow.org" && !sourceUrl.hostname.endsWith(".pestflow.org"))
+    ) {
+      return null;
+    }
+  } catch {
+    return null;
+  }
+
+  return {
+    eventId: candidate.eventId,
+    eventSourceUrl,
+    source: "home_mobile_top",
+    userData: {
+      clientIpAddress:
+        firstHeaderValue(req.headers["x-forwarded-for"])
+        || firstHeaderValue(req.headers["cf-connecting-ip"])
+        || firstHeaderValue(req.headers["x-real-ip"])
+        || req.ip,
+      clientUserAgent: req.get("user-agent"),
+      fbc: cookies._fbc || fbcFromUrl(eventSourceUrl),
+      fbp: cookies._fbp,
+    },
+  };
+}
+
 const optimizeRouteSchema = z.object({
   jobs: z.array(z.string()).min(1, "At least one job is required"),
   startAddress: z.string().min(1, "Start address is required"),
@@ -84,6 +137,15 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  app.post("/api/meta/app-store-handoff", async (req, res) => {
+    const eventData = appStoreHandoffData(req, req.body);
+    if (!eventData) {
+      return res.status(400).json({ ok: false, error: "Invalid App Store handoff" });
+    }
+    const sent = await sendAppStoreHandoffEvent(eventData);
+    return res.status(sent ? 202 : 200).json({ ok: true });
+  });
+
   // Jobs API
   app.get("/api/jobs", async (req, res) => {
     try {
