@@ -30,16 +30,24 @@ interface PurchaseEventData {
 export interface LeadEventData {
   eventId: string;
   eventSourceUrl: string;
-  leadSource: 'owner-offer';
+  leadSource: 'contact-capture' | 'owner-offer';
   userData: UserData;
 }
 
 export function isQualifiedOwnerLeadSubmission(body: unknown): boolean {
   if (!body || typeof body !== 'object') return false;
   const candidate = body as Record<string, unknown>;
-  return candidate.type === 'popup_partial'
-    && candidate.reason === 'accept_offer_signup_success'
-    && typeof candidate.metaEventId === 'string';
+  if (typeof candidate.metaEventId !== 'string') return false;
+
+  const acceptedOwnerOffer = candidate.type === 'popup_partial'
+    && candidate.reason === 'accept_offer_signup_success';
+  const capturedContact = candidate.type === 'newsletter'
+    && typeof candidate.email === 'string'
+    && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(candidate.email.trim())
+    && typeof candidate.phone === 'string'
+    && candidate.phone.replace(/\D/g, '').length >= 10;
+
+  return acceptedOwnerOffer || capturedContact;
 }
 
 function clean(value: string | undefined): string | undefined {

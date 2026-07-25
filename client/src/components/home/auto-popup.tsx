@@ -5,7 +5,11 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { beginMetaLeadEvent } from "@/lib/metaLeadEvent";
+import {
+  beginMetaLeadEvent,
+  fireMetaLeadOnce,
+  getOrCreateMetaLeadEventId,
+} from "@/lib/metaLeadEvent";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -237,6 +241,7 @@ export function AutoPopup() {
     const parts = name.trim().split(" ");
     const firstName = parts[0] || "";
     const lastName = parts.slice(1).join(" ") || "";
+    const metaEventId = beginMetaLeadEvent();
 
     localStorage.setItem(
       "pestflow_popup_data",
@@ -244,7 +249,7 @@ export function AutoPopup() {
     );
 
     try {
-      await fetch("/api/submissions", {
+      const response = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -255,8 +260,13 @@ export function AutoPopup() {
           phone,
           companyName: "Guide Request",
           technicians: "N/A",
+          metaEventId,
         }),
       });
+      if (!response.ok) {
+        throw new Error(`Guide request failed (${response.status})`);
+      }
+      fireMetaLeadOnce(metaEventId);
       analytics.identify(email.trim(), {
         $email: email.trim(),
         $name: name.trim(),
@@ -268,7 +278,11 @@ export function AutoPopup() {
       console.error("Failed to save guide request", e);
     }
 
-    pushPartial({ ...snapshotRef.current, reason: "guide_submit_signup_success" });
+    pushPartial({
+      ...snapshotRef.current,
+      reason: "guide_submit_contact_capture",
+      metaEventId,
+    });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
     window.location.href = `/playbook?download=1&${buildForwardParams().toString()}`;
@@ -290,7 +304,7 @@ export function AutoPopup() {
 
   const handleAcceptOffer = () => {
     analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
-    const metaEventId = beginMetaLeadEvent();
+    const metaEventId = getOrCreateMetaLeadEventId();
     pushPartial({
       ...snapshotRef.current,
       reason: "accept_offer_signup_success",

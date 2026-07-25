@@ -7,7 +7,13 @@ process.env.META_GRAPH_API_VERSION = "v24.0";
 
 const { isQualifiedOwnerLeadSubmission, sendLeadEvent } = await import("./meta-capi");
 
-test("only the regular owner offer is a qualified Meta Lead", () => {
+test("contact capture and the regular owner offer are qualified Meta Leads", () => {
+  assert.equal(isQualifiedOwnerLeadSubmission({
+    type: "newsletter",
+    email: "owner@example.org",
+    phone: "(555) 123-4567",
+    metaEventId: "pestflow-lead-contact-123",
+  }), true);
   assert.equal(isQualifiedOwnerLeadSubmission({
     type: "popup_partial",
     reason: "accept_offer_signup_success",
@@ -17,6 +23,12 @@ test("only the regular owner offer is a qualified Meta Lead", () => {
     type: "tech_lead",
     reason: "accept_offer_signup_success",
     metaEventId: "pestflow-lead-tech-123",
+  }), false);
+  assert.equal(isQualifiedOwnerLeadSubmission({
+    type: "newsletter",
+    email: "not-an-email",
+    phone: "123",
+    metaEventId: "pestflow-lead-invalid-123",
   }), false);
 });
 

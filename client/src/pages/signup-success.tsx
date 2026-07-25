@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Wrench, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { getOrCreateMetaLeadEventId } from "@/lib/metaLeadEvent";
-
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-  }
-}
+import {
+  fireMetaLeadOnce,
+  getOrCreateMetaLeadEventId,
+} from "@/lib/metaLeadEvent";
+import {
+  captureMarketingAttribution,
+  MARKETING_ATTRIBUTION_KEYS,
+} from "@/lib/marketingAttribution";
 
 const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
@@ -35,7 +36,7 @@ function buildAppHandoffUrl(extras: Record<string, string>, returnTo?: string | 
   const routesRaw = parseInt(popupData.routeSize || "1", 10);
   const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
   if (!params.has("routes")) params.set("routes", String(routes));
-  ["email", "firstName", "lastName", "phone", "utm_source", "utm_campaign", "utm_content"].forEach((k) => {
+  ["email", "firstName", "lastName", "phone", ...MARKETING_ATTRIBUTION_KEYS].forEach((k) => {
     const v = popupData[k] || extras[k];
     if (v) params.set(k, v);
   });
@@ -53,21 +54,25 @@ export default function SignupSuccess() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
-    const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
-    const utmSource = urlParams.get('utm_source') || hashParams.get('utm_source') || sessionStorage.getItem('utm_source') || undefined;
-    const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign') || undefined;
-    const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
+    const attribution = captureMarketingAttribution(urlParams, hashParams);
     const type = urlParams.get('type') || hashParams.get('type');
     const email = urlParams.get('email') || '';
     const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
+    const source = urlParams.get('source') || hashParams.get('source');
+    const completedAccountSignup = source === 'app_signup';
 
-    analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
-    analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
-    analytics.track(EVENTS.ACCOUNT.SIGNUP_COMPLETE);
-
-    const anonId = sessionStorage.getItem('pestflow_user_id') || `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    sessionStorage.setItem('pestflow_user_id', anonId);
-    analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
+    if (completedAccountSignup) {
+      analytics.track(EVENTS.SIGNUP.COMPLETE, {
+        ...attribution,
+        role: type === 'tech' ? 'technician' : 'owner',
+      });
+      analytics.track(EVENTS.ACCOUNT.SIGNUP_COMPLETE, attribution);
+    } else {
+      analytics.track(EVENTS.LANDING.QUALIFIED_LEAD_HANDOFF, {
+        ...attribution,
+        destination: 'app_onboarding',
+      });
+    }
 
     // The discontinued tech flow is not a qualified Meta conversion.
     if (type === 'tech') {
@@ -86,29 +91,12 @@ export default function SignupSuccess() {
     // Lead remains the qualified owner conversion. Retry during the short
     // success flash if the Pixel is still initializing, and use the same ID
     // as CAPI so Meta keeps one conversion when both copies arrive.
-    const firedKey = `pestflow_meta_lead_fired:${metaEventId}`;
     let leadRetryTimer: number | undefined;
     let leadRetryAttempts = 0;
-    const fireMetaLead = () => {
-      try {
-        if (sessionStorage.getItem(firedKey) === '1') return true;
-      } catch {
-        // Meta's event ID still deduplicates a repeated browser call.
-      }
-      if (typeof window.fbq !== 'function') return false;
-      window.fbq(
-        'track',
-        'Lead',
-        { value: 10.00, currency: 'USD' },
-        { eventID: metaEventId },
-      );
-      try { sessionStorage.setItem(firedKey, '1'); } catch { /* ignore */ }
-      return true;
-    };
-    if (!fireMetaLead()) {
+    if (!fireMetaLeadOnce(metaEventId)) {
       leadRetryTimer = window.setInterval(() => {
         leadRetryAttempts += 1;
-        if (fireMetaLead() || leadRetryAttempts >= 10) {
+        if (fireMetaLeadOnce(metaEventId) || leadRetryAttempts >= 10) {
           if (leadRetryTimer !== undefined) window.clearInterval(leadRetryTimer);
           leadRetryTimer = undefined;
         }
@@ -121,9 +109,7 @@ export default function SignupSuccess() {
     // Owner: brief confirmation flash, then hand off to the app.
     const handoff = buildAppHandoffUrl({
       email,
-      utm_source: utmSource || '',
-      utm_campaign: utmCampaign || '',
-      utm_content: utmContent || '',
+      ...attribution,
       meta_event_id: metaEventId,
     }, returnTo);
     const timer = setTimeout(() => { window.location.href = handoff; }, 1200);

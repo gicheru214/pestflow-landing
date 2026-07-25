@@ -55,7 +55,7 @@ function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
   return {
     eventId: body.metaEventId,
     eventSourceUrl,
-    leadSource: "owner-offer",
+    leadSource: body.type === "newsletter" ? "contact-capture" : "owner-offer",
     userData: {
       email: typeof body.email === "string" ? body.email : undefined,
       phone: typeof body.phone === "string" ? body.phone : undefined,

@@ -148,6 +148,7 @@ export const EVENTS = {
     POPUP_SHOWN: 'Popup Shown',
     POPUP_SUBMIT: 'Popup Submit',
     POPUP_DISMISSED: 'Popup Dismissed',
+    QUALIFIED_LEAD_HANDOFF: 'Qualified Lead Handoff',
     PRICING_VIEW: 'Pricing Section View',
     FEATURES_VIEW: 'Features Section View',
     TESTIMONIALS_VIEW: 'Testimonials Section View',

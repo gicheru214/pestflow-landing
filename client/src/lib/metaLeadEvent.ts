@@ -2,6 +2,13 @@ export const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
 const EVENT_ID_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 48;
+const FIRED_KEY_PREFIX = "pestflow_meta_lead_fired:";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 export function normalizeMetaLeadEventId(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -47,4 +54,34 @@ export function getOrCreateMetaLeadEventId(preferred?: string | null): string {
       ?? readMetaLeadEventId()
       ?? createMetaLeadEventId(),
   );
+}
+
+/**
+ * Fire the browser copy of a qualified Lead exactly once per tab. The same
+ * event ID is sent by CAPI so Meta can deduplicate the two copies.
+ */
+export function fireMetaLeadOnce(eventId: string): boolean {
+  const normalized = normalizeMetaLeadEventId(eventId);
+  if (!normalized) return false;
+
+  const firedKey = `${FIRED_KEY_PREFIX}${normalized}`;
+  try {
+    if (sessionStorage.getItem(firedKey) === "1") return true;
+  } catch {
+    // Meta still deduplicates a repeated browser call by event ID.
+  }
+
+  if (typeof window.fbq !== "function") return false;
+  window.fbq(
+    "track",
+    "Lead",
+    { value: 10, currency: "USD" },
+    { eventID: normalized },
+  );
+  try {
+    sessionStorage.setItem(firedKey, "1");
+  } catch {
+    // A storage restriction should not block the conversion event.
+  }
+  return true;
 }
