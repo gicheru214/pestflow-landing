@@ -25,10 +25,6 @@ import {
   registerSubmissionProspect,
   type ProspectRequestContext,
 } from "./meta-prospect-registration";
-import {
-  getCombinedMetaHistory,
-  importMetaHistoricalData,
-} from "./meta-history";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
@@ -526,12 +522,6 @@ export async function registerRoutes(
     res.setHeader("Access-Control-Allow-Headers", "x-audit-secret, x-admin-password, content-type");
     res.sendStatus(204);
   });
-  app.options("/api/meta-history", (_req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "x-audit-secret, x-admin-password, content-type");
-    res.sendStatus(204);
-  });
   app.get("/api/audit-leads", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     const secret = req.headers["x-audit-secret"];
@@ -561,44 +551,6 @@ export async function registerRoutes(
       res.json(await getProspectTrackingSummary());
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch prospect tracking summary" });
-    }
-  });
-  app.get("/api/meta-history", async (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    const secret = req.headers["x-audit-secret"];
-    const adminPwd = req.headers["x-admin-password"];
-    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
-    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
-    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    try {
-      res.json(await getCombinedMetaHistory());
-    } catch (error) {
-      console.warn(
-        "[meta-history] read failed:",
-        error instanceof Error ? error.message : error,
-      );
-      res.status(500).json({ error: "Failed to fetch Meta history" });
-    }
-  });
-  app.post("/api/meta-history", async (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    const secret = req.headers["x-audit-secret"];
-    const adminPwd = req.headers["x-admin-password"];
-    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
-    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
-    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    try {
-      res.json(await importMetaHistoricalData(req.body));
-    } catch (error) {
-      console.warn(
-        "[meta-history] import rejected:",
-        error instanceof Error ? error.message : error,
-      );
-      res.status(400).json({ error: "Invalid Meta history import" });
     }
   });
 
