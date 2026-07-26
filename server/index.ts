@@ -9,6 +9,7 @@ import {
   reconcileAllProspectRegistrations,
   startMetaProspectWorker,
 } from "./meta-prospect-registration";
+import { ensureMetaHistoricalSchema } from "./meta-history";
 
 const app = express();
 const httpServer = createServer(app);
@@ -87,6 +88,7 @@ app.use((req, res, next) => {
 (async () => {
   await ensureMtaEnrollmentSchema();
   await ensureMetaProspectSchema();
+  await ensureMetaHistoricalSchema();
   const prospectSummary = await reconcileAllProspectRegistrations();
   log(
     `prospect tracking ledger: ${prospectSummary.total} total, `
