@@ -221,3 +221,40 @@ export const insertSubmissionSchema = createInsertSchema(submissions).omit({
 
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
 export type Submission = typeof submissions.$inferSelect;
+
+// Canonical delivery ledger for the prospect list shown in app.pestflow.org/admin.
+// A prospect can create many raw submissions, but has one durable Meta event ID
+// and one delivery state. This makes the database—not the browser Pixel or
+// PostHog session capture—the source of truth for conversion delivery.
+export const metaProspectRegistrations = pgTable("meta_prospect_registrations", {
+  prospectKeyHash: varchar("prospect_key_hash", { length: 64 }).primaryKey(),
+  eventId: varchar("event_id", { length: 100 }).notNull(),
+  firstSubmissionId: varchar("first_submission_id").notNull(),
+  latestSubmissionId: varchar("latest_submission_id").notNull(),
+  firstSubmittedAt: timestamp("first_submitted_at").notNull(),
+  latestSubmittedAt: timestamp("latest_submitted_at").notNull(),
+  eventTime: timestamp("event_time").notNull(),
+  sourceType: text("source_type").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  email: text("email"),
+  phone: text("phone"),
+  eventSourceUrl: text("event_source_url"),
+  clientIpAddress: text("client_ip_address"),
+  clientUserAgent: text("client_user_agent"),
+  fbc: text("fbc"),
+  fbp: text("fbp"),
+  status: text("status").notNull().default("queued"),
+  attempts: integer("attempts").notNull().default(0),
+  error: text("error"),
+  eventsReceived: integer("events_received"),
+  fbtraceId: text("fbtrace_id"),
+  lastAttemptAt: timestamp("last_attempt_at"),
+  nextRetryAt: timestamp("next_retry_at"),
+  sentAt: timestamp("sent_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type MetaProspectRegistration =
+  typeof metaProspectRegistrations.$inferSelect;

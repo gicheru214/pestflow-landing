@@ -266,7 +266,17 @@ export function AutoPopup() {
       if (!response.ok) {
         throw new Error(`Guide request failed (${response.status})`);
       }
-      fireMetaLeadOnce(metaEventId);
+      const saved = await response.json().catch(() => null) as {
+        metaRegistration?: {
+          eventId?: string;
+          shouldFireBrowser?: boolean;
+        };
+      } | null;
+      const canonicalMetaEventId =
+        saved?.metaRegistration?.eventId || metaEventId;
+      if (saved?.metaRegistration?.shouldFireBrowser !== false) {
+        fireMetaLeadOnce(canonicalMetaEventId);
+      }
       analytics.identify(email.trim(), {
         $email: email.trim(),
         $name: name.trim(),

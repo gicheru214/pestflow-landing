@@ -6,7 +6,7 @@ const GRAPH_API_VERSION = process.env.META_GRAPH_API_VERSION || 'v24.0';
 const REQUEST_TIMEOUT_MS = 5_000;
 const EVENT_ID_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;
 
-interface UserData {
+export interface UserData {
   email?: string;
   phone?: string;
   firstName?: string;
@@ -30,8 +30,24 @@ interface PurchaseEventData {
 export interface LeadEventData {
   eventId: string;
   eventSourceUrl: string;
-  leadSource: 'contact-capture' | 'owner-offer';
+  leadSource:
+    | 'contact-capture'
+    | 'owner-offer'
+    | 'prospect-ledger'
+    | 'prospect-backfill';
+  eventTime?: Date | number;
+  prospectKeyHash?: string;
   userData: UserData;
+}
+
+export interface MetaEventResult {
+  ok: boolean;
+  retryable: boolean;
+  configured: boolean;
+  status?: number;
+  error?: string;
+  eventsReceived?: number;
+  fbtraceId?: string;
 }
 
 export interface AppStoreHandoffEventData {
@@ -85,10 +101,18 @@ function metaEndpoint(): string {
   return `https://graph.facebook.com/${GRAPH_API_VERSION}/${encodeURIComponent(PIXEL_ID)}/events`;
 }
 
-async function postMetaEvent(payload: Record<string, unknown>, eventLabel: string): Promise<boolean> {
+async function postMetaEvent(
+  payload: Record<string, unknown>,
+  eventLabel: string,
+): Promise<MetaEventResult> {
   if (!ACCESS_TOKEN) {
     console.log(`[Meta CAPI] No access token configured, skipping ${eventLabel} event`);
-    return false;
+    return {
+      ok: false,
+      retryable: false,
+      configured: false,
+      error: 'META_CAPI_ACCESS_TOKEN is not configured',
+    };
   }
 
   const controller = new AbortController();
@@ -114,34 +138,74 @@ async function postMetaEvent(payload: Record<string, unknown>, eventLabel: strin
         eventId: (payload.data as Array<{ event_id?: string }> | undefined)?.[0]?.event_id,
         eventsReceived: result.events_received,
       });
-      return true;
+      return {
+        ok: (result.events_received ?? 0) > 0,
+        retryable: false,
+        configured: true,
+        status: response.status,
+        error: (result.events_received ?? 0) > 0
+          ? undefined
+          : 'Meta accepted the request but did not receive an event',
+        eventsReceived: result.events_received,
+        fbtraceId: result.fbtrace_id,
+      };
     }
 
+    const errorMessage =
+      result.error?.message || `Meta request failed with HTTP ${response.status}`;
     console.error(`[Meta CAPI] failed ${eventLabel}`, {
       status: response.status,
       code: result.error?.code,
-      message: result.error?.message,
+      message: errorMessage,
     });
-    return false;
+    return {
+      ok: false,
+      retryable: response.status === 408 || response.status === 429 || response.status >= 500,
+      configured: true,
+      status: response.status,
+      error: errorMessage,
+      eventsReceived: result.events_received,
+      fbtraceId: result.fbtrace_id,
+    };
   } catch (error) {
     console.error(`[Meta CAPI] error sending ${eventLabel}`, error);
-    return false;
+    return {
+      ok: false,
+      retryable: true,
+      configured: true,
+      error: error instanceof Error ? error.message : 'Unexpected Meta request error',
+    };
   } finally {
     clearTimeout(timeout);
   }
 }
 
-export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
+function eventTimeSeconds(value: Date | number | undefined): number {
+  if (value instanceof Date) return Math.floor(value.getTime() / 1000);
+  if (typeof value === 'number') {
+    return value > 10_000_000_000 ? Math.floor(value / 1000) : Math.floor(value);
+  }
+  return Math.floor(Date.now() / 1000);
+}
+
+export async function sendLeadEventDetailed(
+  data: LeadEventData,
+): Promise<MetaEventResult> {
   if (!validEventId(data.eventId)) {
     console.warn('[Meta CAPI] Invalid Lead event ID, skipping event');
-    return false;
+    return {
+      ok: false,
+      retryable: false,
+      configured: Boolean(ACCESS_TOKEN),
+      error: 'Invalid Meta Lead event ID',
+    };
   }
 
   const payload = {
     data: [
       {
         event_name: 'Lead',
-        event_time: Math.floor(Date.now() / 1000),
+        event_time: eventTimeSeconds(data.eventTime),
         event_id: data.eventId.trim(),
         event_source_url: data.eventSourceUrl,
         action_source: 'website',
@@ -154,6 +218,9 @@ export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
           client_user_agent: clean(data.userData.clientUserAgent),
           fbc: clean(data.userData.fbc),
           fbp: clean(data.userData.fbp),
+          external_id: data.prospectKeyHash
+            ? [data.prospectKeyHash]
+            : undefined,
         },
         custom_data: {
           currency: 'USD',
@@ -166,6 +233,11 @@ export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
   };
 
   return postMetaEvent(payload, 'Lead');
+}
+
+export async function sendLeadEvent(data: LeadEventData): Promise<boolean> {
+  const result = await sendLeadEventDetailed(data);
+  return result.ok;
 }
 
 export async function sendAppStoreHandoffEvent(
@@ -200,7 +272,8 @@ export async function sendAppStoreHandoffEvent(
     ],
   };
 
-  return postMetaEvent(payload, 'AppStoreHandoff');
+  const result = await postMetaEvent(payload, 'AppStoreHandoff');
+  return result.ok;
 }
 
 export async function sendPurchaseEvent(data: PurchaseEventData): Promise<boolean> {
@@ -234,5 +307,6 @@ export async function sendPurchaseEvent(data: PurchaseEventData): Promise<boolea
       },
     ],
   };
-  return postMetaEvent(payload, 'Purchase');
+  const result = await postMetaEvent(payload, 'Purchase');
+  return result.ok;
 }

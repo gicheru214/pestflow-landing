@@ -4,6 +4,11 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { ensureMtaEnrollmentSchema, startMtaEnrollmentWorker } from "./mta-enrollment";
+import {
+  ensureMetaProspectSchema,
+  reconcileAllProspectRegistrations,
+  startMetaProspectWorker,
+} from "./meta-prospect-registration";
 
 const app = express();
 const httpServer = createServer(app);
@@ -52,6 +57,10 @@ export function log(message: string, source = "express") {
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
+  const containsLeadPii =
+    path === "/api/submissions"
+    || path === "/api/audit-leads"
+    || path === "/api/tech-leads";
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
@@ -64,7 +73,7 @@ app.use((req, res, next) => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
+      if (capturedJsonResponse && !containsLeadPii) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
@@ -77,9 +86,19 @@ app.use((req, res, next) => {
 
 (async () => {
   await ensureMtaEnrollmentSchema();
+  await ensureMetaProspectSchema();
+  const prospectSummary = await reconcileAllProspectRegistrations();
+  log(
+    `prospect tracking ledger: ${prospectSummary.total} total, `
+    + `${prospectSummary.sent} sent, ${prospectSummary.queued} queued, `
+    + `${prospectSummary.expired} historical`,
+    "meta-prospect",
+  );
   await registerRoutes(httpServer, app);
   const stopMtaEnrollmentWorker = startMtaEnrollmentWorker();
+  const stopMetaProspectWorker = startMetaProspectWorker();
   httpServer.once("close", stopMtaEnrollmentWorker);
+  httpServer.once("close", stopMetaProspectWorker);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

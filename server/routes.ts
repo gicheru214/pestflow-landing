@@ -14,13 +14,17 @@ import {
   sendJobSummary,
 } from "./email";
 import {
-  isQualifiedOwnerLeadSubmission,
   sendAppStoreHandoffEvent,
-  sendLeadEvent,
   type AppStoreHandoffEventData,
-  type LeadEventData,
 } from "./meta-capi";
 import { processSubmissionMtaEnrollment, queueSubmissionForMta } from "./mta-enrollment";
+import {
+  getAuditSubmissionsWithMetaStatus,
+  getProspectTrackingSummary,
+  processProspectRegistration,
+  registerSubmissionProspect,
+  type ProspectRequestContext,
+} from "./meta-prospect-registration";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
@@ -50,32 +54,27 @@ function fbcFromUrl(eventSourceUrl: string): string | undefined {
   }
 }
 
-function qualifiedLeadData(req: Request, body: any): LeadEventData | null {
-  if (!isQualifiedOwnerLeadSubmission(body)) return null;
-
+function prospectRequestContext(
+  req: Request,
+  body: Record<string, unknown>,
+): ProspectRequestContext {
   const cookies = parseCookies(req.headers.cookie);
   const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
   const forwardedHost = firstHeaderValue(req.headers["x-forwarded-host"]) || req.get("host") || "pestflow.org";
   const eventSourceUrl = req.get("referer") || `${forwardedProto}://${forwardedHost}/`;
 
   return {
-    eventId: body.metaEventId,
+    preferredEventId:
+      typeof body.metaEventId === "string" ? body.metaEventId : undefined,
     eventSourceUrl,
-    leadSource: body.type === "newsletter" ? "contact-capture" : "owner-offer",
-    userData: {
-      email: typeof body.email === "string" ? body.email : undefined,
-      phone: typeof body.phone === "string" ? body.phone : undefined,
-      firstName: typeof body.firstName === "string" ? body.firstName : undefined,
-      lastName: typeof body.lastName === "string" ? body.lastName : undefined,
-      clientIpAddress:
-        firstHeaderValue(req.headers["x-forwarded-for"])
-        || firstHeaderValue(req.headers["cf-connecting-ip"])
-        || firstHeaderValue(req.headers["x-real-ip"])
-        || req.ip,
-      clientUserAgent: req.get("user-agent"),
-      fbc: cookies._fbc || fbcFromUrl(eventSourceUrl),
-      fbp: cookies._fbp,
-    },
+    clientIpAddress:
+      firstHeaderValue(req.headers["x-forwarded-for"])
+      || firstHeaderValue(req.headers["cf-connecting-ip"])
+      || firstHeaderValue(req.headers["x-real-ip"])
+      || req.ip,
+    clientUserAgent: req.get("user-agent"),
+    fbc: cookies._fbc || fbcFromUrl(eventSourceUrl),
+    fbp: cookies._fbp,
   };
 }
 
@@ -517,6 +516,12 @@ export async function registerRoutes(
     res.setHeader("Access-Control-Allow-Headers", "x-audit-secret, x-admin-password, content-type");
     res.sendStatus(204);
   });
+  app.options("/api/prospect-tracking-summary", (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "x-audit-secret, x-admin-password, content-type");
+    res.sendStatus(204);
+  });
   app.get("/api/audit-leads", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     const secret = req.headers["x-audit-secret"];
@@ -527,10 +532,25 @@ export async function registerRoutes(
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
-      const allSubmissions = await storage.getSubmissions();
+      const allSubmissions = await getAuditSubmissionsWithMetaStatus();
       res.json(allSubmissions);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch audit leads" });
+    }
+  });
+  app.get("/api/prospect-tracking-summary", async (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    const secret = req.headers["x-audit-secret"];
+    const adminPwd = req.headers["x-admin-password"];
+    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
+    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
+    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    try {
+      res.json(await getProspectTrackingSummary());
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch prospect tracking summary" });
     }
   });
 
@@ -638,6 +658,10 @@ export async function registerRoutes(
       }
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
+      const metaRegistration = await registerSubmissionProspect(
+        submission,
+        prospectRequestContext(req, body),
+      );
       // Persist the handoff before responding. The immediate attempt keeps the
       // signup-to-text delay low; the worker retries if the process restarts or
       // MTA temporarily accepts the subscriber but rejects group enrollment.
@@ -648,11 +672,22 @@ export async function registerRoutes(
           error instanceof Error ? error.message : error,
         );
       });
-      const metaLead = qualifiedLeadData(req, body);
-      if (metaLead) {
-        await sendLeadEvent(metaLead);
+      if (
+        metaRegistration.tracked
+        && metaRegistration.prospectKeyHash
+        && metaRegistration.status !== "sent"
+        && metaRegistration.status !== "expired"
+      ) {
+        void processProspectRegistration(
+          metaRegistration.prospectKeyHash,
+        ).catch((error) => {
+          console.warn(
+            "[meta-prospect] immediate delivery failed:",
+            error instanceof Error ? error.message : error,
+          );
+        });
       }
-      res.status(201).json(submission);
+      res.status(201).json({ ...submission, metaRegistration });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
