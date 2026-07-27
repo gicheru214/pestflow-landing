@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { hasAtMostTenPhoneDigits } from "./phone";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -204,20 +205,25 @@ export const submissions = pgTable("submissions", {
   mtaNextRetryAt: timestamp("mta_next_retry_at"),
 });
 
-export const insertSubmissionSchema = createInsertSchema(submissions).omit({
-  id: true,
-  submittedAt: true,
-  mtaStatus: true,
-  mtaError: true,
-  mtaAttempts: true,
-  mtaSubscriberId: true,
-  mtaE164Number: true,
-  mtaGroupIds: true,
-  mtaSource: true,
-  mtaLastAttemptAt: true,
-  mtaSyncedAt: true,
-  mtaNextRetryAt: true,
-});
+export const insertSubmissionSchema = createInsertSchema(submissions)
+  .omit({
+    id: true,
+    submittedAt: true,
+    mtaStatus: true,
+    mtaError: true,
+    mtaAttempts: true,
+    mtaSubscriberId: true,
+    mtaE164Number: true,
+    mtaGroupIds: true,
+    mtaSource: true,
+    mtaLastAttemptAt: true,
+    mtaSyncedAt: true,
+    mtaNextRetryAt: true,
+  })
+  .refine((submission) => hasAtMostTenPhoneDigits(submission.phone), {
+    path: ["phone"],
+    message: "Phone number cannot exceed 10 digits",
+  });
 
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
 export type Submission = typeof submissions.$inferSelect;

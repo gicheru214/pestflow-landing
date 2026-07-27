@@ -10,6 +10,7 @@ import {
   fireMetaLeadOnce,
   getOrCreateMetaLeadEventId,
 } from "@/lib/metaLeadEvent";
+import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -127,7 +128,9 @@ export function AutoPopup() {
     return cachedPopup.name || "";
   })();
   const [name, setName] = useState(seedName);
-  const [phone, setPhone] = useState(urlParams.get("phone") || cachedPopup.phone || "");
+  const [phone, setPhone] = useState(
+    limitPhoneInput(urlParams.get("phone") || cachedPopup.phone || ""),
+  );
   const [email, setEmail] = useState(urlParams.get("email") || cachedPopup.email || "");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -224,8 +227,8 @@ export function AutoPopup() {
     } else {
       setNameError("");
     }
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 10) {
-      setPhoneError("Please enter a valid phone number");
+    if (!isTenDigitPhone(phone)) {
+      setPhoneError("Please enter exactly 10 digits");
       valid = false;
     } else {
       setPhoneError("");
@@ -414,9 +417,16 @@ export function AutoPopup() {
                     </label>
                     <Input
                       value={phone}
-                      onChange={(e) => { setPhone(e.target.value); setPhoneError(""); }}
-                      placeholder="(555) 123-4567"
+                      onChange={(e) => {
+                        setPhone(limitPhoneInput(e.target.value));
+                        setPhoneError("");
+                      }}
+                      placeholder="5551234567"
                       type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel-national"
+                      maxLength={10}
+                      pattern="[0-9]{10}"
                       className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${phoneError ? "border-red-500" : ""}`}
                     />
                     {phoneError && <p className="text-red-400 text-xs mt-0.5">{phoneError}</p>}
