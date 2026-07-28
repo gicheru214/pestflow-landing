@@ -1,5 +1,6 @@
 export const MOBILE_FIELD_URL =
   "https://app.pestflow.org/mobile-v2-field.html";
+export const SIGNUP_SUCCESS_PATH = "/signup-success";
 
 const ATTRIBUTION_KEYS = [
   "utm_source",
@@ -48,4 +49,28 @@ export function buildMobileFieldSignupUrl(lead: MobileFieldLead): string {
   });
 
   return url.toString();
+}
+
+export function buildMobileFieldSuccessPath(lead: MobileFieldLead): string {
+  const params = new URLSearchParams({
+    return_to: buildMobileFieldSignupUrl(lead),
+    source: lead.source,
+  });
+
+  const values = {
+    email: lead.email,
+    meta_event_id: lead.metaEventId,
+  };
+  Object.entries(values).forEach(([key, value]) => {
+    const normalized = value?.trim();
+    if (normalized) params.set(key, normalized);
+  });
+
+  const current = new URLSearchParams(lead.search || "");
+  ATTRIBUTION_KEYS.forEach((key) => {
+    const value = current.get(key)?.trim();
+    if (value) params.set(key, value);
+  });
+
+  return `${SIGNUP_SUCCESS_PATH}?${params.toString()}`;
 }

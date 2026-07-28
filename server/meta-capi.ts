@@ -53,7 +53,7 @@ export interface MetaEventResult {
 export interface AppStoreHandoffEventData {
   eventId: string;
   eventSourceUrl: string;
-  source: 'home_mobile_top';
+  source: string;
   userData: Pick<
     UserData,
     'clientIpAddress' | 'clientUserAgent' | 'fbc' | 'fbp'

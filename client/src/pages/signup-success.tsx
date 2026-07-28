@@ -10,9 +10,16 @@ import {
   captureMarketingAttribution,
   MARKETING_ATTRIBUTION_KEYS,
 } from "@/lib/marketingAttribution";
+import {
+  APP_STORE_URL,
+  createAppStoreHandoffEventId,
+  fireMetaAppStoreHandoffOnce,
+  normalizeAppStoreHandoffEventId,
+} from "@/lib/appStoreHandoff";
 
 const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
+const APP_STORE_OPEN_DELAY_MS = 1200;
 
 export function resolveAppHandoffUrl(returnTo?: string | null): URL {
   if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
@@ -45,6 +52,11 @@ function buildAppHandoffUrl(extras: Record<string, string>, returnTo?: string | 
 }
 
 export default function SignupSuccess() {
+  const [isAppStoreHandoff] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.split("?")[1]);
+    return (urlParams.get("handoff") || hashParams.get("handoff")) === "app_store";
+  });
   const [isTech, setIsTech] = useState(false);
   const [techEmail, setTechEmail] = useState("");
   const [techName, setTechName] = useState("");
@@ -60,6 +72,59 @@ export default function SignupSuccess() {
     const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
     const source = urlParams.get('source') || hashParams.get('source');
     const completedAccountSignup = source === 'app_signup';
+
+    if (isAppStoreHandoff) {
+      const appStoreSource = source || "mobile_banner";
+      const eventId = normalizeAppStoreHandoffEventId(
+        urlParams.get("app_store_event_id") || hashParams.get("app_store_event_id"),
+      ) ?? createAppStoreHandoffEventId();
+      const eventProperties = {
+        ...attribution,
+        source: appStoreSource,
+        surface: "signup_success",
+        destination: "apple_app_store",
+      };
+
+      analytics.pageView("Signup Success", eventProperties);
+      analytics.track(EVENTS.LANDING.APP_STORE_HANDOFF, eventProperties);
+
+      void fetch("/api/meta/app-store-handoff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId,
+          source: appStoreSource,
+        }),
+        keepalive: true,
+      }).catch(() => {
+        // The browser event still records the handoff when CAPI is unavailable.
+      });
+
+      let metaRetryTimer: number | undefined;
+      let metaRetryAttempts = 0;
+      if (!fireMetaAppStoreHandoffOnce(eventId)) {
+        metaRetryTimer = window.setInterval(() => {
+          metaRetryAttempts += 1;
+          if (fireMetaAppStoreHandoffOnce(eventId) || metaRetryAttempts >= 8) {
+            if (metaRetryTimer !== undefined) window.clearInterval(metaRetryTimer);
+            metaRetryTimer = undefined;
+          }
+        }, 100);
+      }
+
+      const openTimer = window.setTimeout(() => {
+        analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
+          ...eventProperties,
+          method: "automatic",
+        });
+        window.location.replace(APP_STORE_URL);
+      }, APP_STORE_OPEN_DELAY_MS);
+
+      return () => {
+        window.clearTimeout(openTimer);
+        if (metaRetryTimer !== undefined) window.clearInterval(metaRetryTimer);
+      };
+    }
 
     if (completedAccountSignup) {
       analytics.track(EVENTS.SIGNUP.COMPLETE, {
@@ -117,7 +182,7 @@ export default function SignupSuccess() {
       stopLeadRetry();
       clearTimeout(timer);
     };
-  }, []);
+  }, [isAppStoreHandoff]);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
@@ -126,6 +191,15 @@ export default function SignupSuccess() {
     if (techEmployer) params.set('employer', techEmployer);
     const qs = params.toString() ? `?${params.toString()}` : '';
     window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
+  };
+
+  const handleManualAppStoreOpen = () => {
+    analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
+      source: new URLSearchParams(window.location.search).get("source") || "mobile_banner",
+      surface: "signup_success",
+      destination: "apple_app_store",
+      method: "manual",
+    });
   };
 
   return (
@@ -188,9 +262,25 @@ export default function SignupSuccess() {
               <CheckCircle2 className="w-12 h-12 text-emerald-600" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
-              <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
+              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
+                {isAppStoreHandoff ? "Success!" : "You're In!"}
+              </h1>
+              <p className="text-lg text-slate-500 max-w-sm mx-auto">
+                {isAppStoreHandoff
+                  ? "Taking you to PestFlow in the Apple App Store…"
+                  : "Taking you into PestFlow…"}
+              </p>
             </div>
+            {isAppStoreHandoff && (
+              <a
+                href={APP_STORE_URL}
+                onClick={handleManualAppStoreOpen}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0a84ff] px-5 py-3 font-bold text-white shadow-lg shadow-blue-500/20"
+              >
+                Open the App Store
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -11,7 +11,7 @@ import {
   getOrCreateMetaLeadEventId,
 } from "@/lib/metaLeadEvent";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
-import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
+import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -307,7 +307,7 @@ export function AutoPopup() {
     });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    window.location.href = buildMobileFieldSignupUrl({
+    window.location.href = buildMobileFieldSuccessPath({
       source: "popup_playbook",
       firstName,
       lastName,
@@ -343,7 +343,7 @@ export function AutoPopup() {
     setOpen(false);
     const params = buildForwardParams();
     params.set("meta_event_id", metaEventId);
-    window.location.href = buildMobileFieldSignupUrl({
+    window.location.href = buildMobileFieldSuccessPath({
       source: "popup_offer",
       firstName: params.get("firstName") || undefined,
       lastName: params.get("lastName") || undefined,

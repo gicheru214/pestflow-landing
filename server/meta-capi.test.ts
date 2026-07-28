@@ -117,8 +117,8 @@ test("App Store handoff uses the same custom event ID for CAPI deduplication", a
   try {
     const sent = await sendAppStoreHandoffEvent({
       eventId: "pestflow-appstore-event-123",
-      eventSourceUrl: "https://pestflow.org/app-store-success?fbclid=test",
-      source: "home_mobile_top",
+      eventSourceUrl: "https://pestflow.org/signup-success?handoff=app_store&fbclid=test",
+      source: "mobile_v2_auth_signup",
       userData: {
         clientIpAddress: "203.0.113.5",
         clientUserAgent: "test-agent",
@@ -132,7 +132,7 @@ test("App Store handoff uses the same custom event ID for CAPI deduplication", a
     assert.equal(event.event_name, "AppStoreHandoff");
     assert.equal(event.event_id, "pestflow-appstore-event-123");
     assert.equal(event.custom_data.destination, "apple_app_store");
-    assert.equal(event.custom_data.source, "home_mobile_top");
+    assert.equal(event.custom_data.source, "mobile_v2_auth_signup");
     assert.equal(event.user_data.fbc, "fb.1.123.test");
   } finally {
     globalThis.fetch = originalFetch;

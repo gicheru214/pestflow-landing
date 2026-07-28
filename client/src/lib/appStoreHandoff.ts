@@ -36,7 +36,8 @@ export function buildAppStoreSuccessPath(
   Object.entries(attribution).forEach(([key, value]) => {
     if (value) params.set(key, value);
   });
-  return `/app-store-success?${params.toString()}`;
+  params.set("handoff", "app_store");
+  return `/signup-success?${params.toString()}`;
 }
 
 /**

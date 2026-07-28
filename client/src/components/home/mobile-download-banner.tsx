@@ -9,23 +9,15 @@ import { captureMarketingAttribution } from "@/lib/marketingAttribution";
 
 const APP_ICON_SRC = "/assets/pestflow-app-store-icon.jpg";
 
-function shouldUseNativeSafariBanner() {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  const isIos = /iPad|iPhone|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const isSafari = /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|FBAN|FBAV|FBIOS|Instagram|Messenger/i.test(ua);
-  return isIos && isSafari;
-}
-
 export function MobileDownloadBanner() {
-  const [handoffUrl, setHandoffUrl] = useState("/app-store-success?source=home_mobile_top");
+  const [handoffUrl, setHandoffUrl] = useState("/signup-success?handoff=app_store&source=home_mobile_top");
   const [hidden, setHidden] = useState(() => {
     if (typeof window === "undefined") return true;
-    return shouldUseNativeSafariBanner() || sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1";
+    return sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1";
   });
 
   useEffect(() => {
-    setHidden(shouldUseNativeSafariBanner() || sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1");
+    setHidden(sessionStorage.getItem("pf_mobile_download_banner_dismissed") === "1");
     const attribution = captureMarketingAttribution(
       new URLSearchParams(window.location.search),
       new URLSearchParams(window.location.hash.split("?")[1]),

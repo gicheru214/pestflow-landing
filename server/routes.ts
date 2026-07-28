@@ -87,7 +87,8 @@ function appStoreHandoffData(
   const candidate = body as Record<string, unknown>;
   if (
     typeof candidate.eventId !== "string"
-    || candidate.source !== "home_mobile_top"
+    || typeof candidate.source !== "string"
+    || !/^[a-z0-9_:-]{2,64}$/.test(candidate.source)
   ) {
     return null;
   }
@@ -95,7 +96,7 @@ function appStoreHandoffData(
   const cookies = parseCookies(req.headers.cookie);
   const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
   const forwardedHost = firstHeaderValue(req.headers["x-forwarded-host"]) || req.get("host") || "pestflow.org";
-  const eventSourceUrl = req.get("referer") || `${forwardedProto}://${forwardedHost}/app-store-success`;
+  const eventSourceUrl = req.get("referer") || `${forwardedProto}://${forwardedHost}/signup-success?handoff=app_store`;
 
   try {
     const sourceUrl = new URL(eventSourceUrl);
@@ -112,7 +113,7 @@ function appStoreHandoffData(
   return {
     eventId: candidate.eventId,
     eventSourceUrl,
-    source: "home_mobile_top",
+    source: candidate.source,
     userData: {
       clientIpAddress:
         firstHeaderValue(req.headers["x-forwarded-for"])

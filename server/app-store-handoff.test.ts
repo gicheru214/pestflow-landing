@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   APP_STORE_HANDOFF_EVENT,
@@ -6,8 +7,9 @@ import {
   fireMetaAppStoreHandoffOnce,
   normalizeAppStoreHandoffEventId,
 } from "../client/src/lib/appStoreHandoff";
+import { buildMobileFieldSuccessPath } from "../client/src/lib/mobileFieldHandoff";
 
-test("builds a dedicated App Store success path with paid attribution", () => {
+test("builds the shared success path for an App Store handoff with paid attribution", () => {
   const path = buildAppStoreSuccessPath(
     {
       utm_source: "facebook",
@@ -18,12 +20,45 @@ test("builds a dedicated App Store success path with paid attribution", () => {
   );
   const url = new URL(path, "https://pestflow.org");
 
-  assert.equal(url.pathname, "/app-store-success");
+  assert.equal(url.pathname, "/signup-success");
+  assert.equal(url.searchParams.get("handoff"), "app_store");
   assert.equal(url.searchParams.get("source"), "home_mobile_top");
   assert.equal(url.searchParams.get("app_store_event_id"), "pestflow-appstore-event-123");
   assert.equal(url.searchParams.get("utm_source"), "facebook");
   assert.equal(url.searchParams.get("utm_campaign"), "july-winners");
   assert.equal(url.searchParams.get("fbclid"), "fb-click-123");
+});
+
+test("builds the shared success path before mobile-v2 signup", () => {
+  const path = buildMobileFieldSuccessPath({
+    source: "popup_playbook",
+    firstName: "Alex",
+    email: "alex@example.com",
+    metaEventId: "pestflow-lead-event-123",
+    search: "?utm_source=facebook&fbclid=fb-click-123",
+  });
+  const successUrl = new URL(path, "https://pestflow.org");
+  const finalUrl = new URL(successUrl.searchParams.get("return_to") || "");
+
+  assert.equal(successUrl.pathname, "/signup-success");
+  assert.equal(successUrl.searchParams.get("source"), "popup_playbook");
+  assert.equal(successUrl.searchParams.get("meta_event_id"), "pestflow-lead-event-123");
+  assert.equal(successUrl.searchParams.get("utm_source"), "facebook");
+  assert.equal(finalUrl.pathname, "/mobile-v2-field.html");
+  assert.equal(finalUrl.searchParams.get("screen"), "auth-signup");
+  assert.equal(finalUrl.searchParams.get("firstName"), "Alex");
+  assert.equal(finalUrl.searchParams.get("email"), "alex@example.com");
+});
+
+test("uses the controllable mobile banner instead of Safari's direct App Store banner", () => {
+  const indexHtml = readFileSync("client/index.html", "utf8");
+  const bannerSource = readFileSync(
+    "client/src/components/home/mobile-download-banner.tsx",
+    "utf8",
+  );
+
+  assert.doesNotMatch(indexHtml, /apple-itunes-app/);
+  assert.match(bannerSource, /signup-success\?handoff=app_store/);
 });
 
 test("uses a separate Meta event rather than a Lead or Signup", () => {

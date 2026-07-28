@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, ClipboardCheck, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
+import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 export default function Playbook() {
@@ -15,7 +15,7 @@ export default function Playbook() {
   useEffect(() => {
     document.title = "Free Pest Control Revenue Leak Playbook | PestFlow";
     if (!legacyHandoff) return;
-    window.location.replace(buildMobileFieldSignupUrl({
+    window.location.replace(buildMobileFieldSuccessPath({
       source: params.get("source") || "legacy_playbook_link",
       firstName: params.get("firstName") || undefined,
       lastName: params.get("lastName") || undefined,
@@ -47,7 +47,7 @@ export default function Playbook() {
       if (saved?.playbookDelivery?.accepted === false) {
         throw new Error("Resend did not accept the playbook email");
       }
-      window.location.href = buildMobileFieldSignupUrl({
+      window.location.href = buildMobileFieldSuccessPath({
         source: params.get("source") || "playbook_page",
         firstName: form.firstName,
         lastName: form.lastName,
@@ -62,7 +62,7 @@ export default function Playbook() {
   };
 
   if (legacyHandoff) {
-    const fallback = buildMobileFieldSignupUrl({
+    const fallback = buildMobileFieldSuccessPath({
       source: params.get("source") || "legacy_playbook_link",
       firstName: params.get("firstName") || undefined,
       lastName: params.get("lastName") || undefined,

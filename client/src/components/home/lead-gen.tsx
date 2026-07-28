@@ -5,7 +5,7 @@ import { BookOpen, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
+import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 
 type Stage = "gate" | "form" | "exit";
 
@@ -49,7 +49,7 @@ export function LeadGen() {
         routes: formData.routes,
       });
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
-      window.location.href = buildMobileFieldSignupUrl({
+      window.location.href = buildMobileFieldSuccessPath({
         source: "homepage_playbook",
         firstName: formData.firstName,
         lastName: formData.lastName,

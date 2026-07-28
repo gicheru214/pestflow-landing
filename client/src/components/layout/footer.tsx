@@ -25,7 +25,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><button onClick={() => scrollToSection('features')} className="hover:text-primary transition-colors cursor-pointer">Features</button></li>
               <li><button onClick={() => scrollToSection('pricing')} className="hover:text-primary transition-colors cursor-pointer">Pricing</button></li>
-              <li><a href="https://apps.apple.com/us/app/pestflow/id6773204838" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors cursor-pointer">Mobile App</a></li>
+              <li><a href="/signup-success?handoff=app_store&source=footer_mobile_app" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors cursor-pointer">Mobile App</a></li>
               <li><span className="text-muted-foreground/50">Integrations</span></li>
             </ul>
           </div>

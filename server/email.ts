@@ -6,10 +6,15 @@ function getResend() {
   return _resend;
 }
 const FROM = process.env.RESEND_FROM_EMAIL || "PestFlow <noreply@pestflow.org>";
-export const PESTFLOW_MOBILE_SIGNUP_URL =
+const PESTFLOW_MOBILE_FIELD_SIGNUP_URL =
   "https://app.pestflow.org/mobile-v2-field.html?screen=auth-signup&authfresh=true&source=playbook_email";
+export const PESTFLOW_MOBILE_SIGNUP_URL =
+  `https://pestflow.org/signup-success?${new URLSearchParams({
+    return_to: PESTFLOW_MOBILE_FIELD_SIGNUP_URL,
+    source: "playbook_email",
+  }).toString()}`;
 export const PESTFLOW_APP_STORE_URL =
-  "https://apps.apple.com/us/app/pestflow/id6773204838";
+  "https://pestflow.org/signup-success?handoff=app_store&source=playbook_email_app_store";
 export const REVENUE_LEAK_PLAYBOOK_URL =
   "https://pestflow.org/pest-control-revenue-leak-playbook.pdf";
 
