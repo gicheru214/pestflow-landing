@@ -6,6 +6,84 @@ function getResend() {
   return _resend;
 }
 const FROM = process.env.RESEND_FROM_EMAIL || "PestFlow <noreply@pestflow.org>";
+export const PESTFLOW_MOBILE_SIGNUP_URL =
+  "https://app.pestflow.org/mobile-v2-field.html?screen=auth-signup&authfresh=true&source=playbook_email";
+export const PESTFLOW_APP_STORE_URL =
+  "https://apps.apple.com/us/app/pestflow/id6773204838";
+export const REVENUE_LEAK_PLAYBOOK_URL =
+  "https://pestflow.org/pest-control-revenue-leak-playbook.pdf";
+
+function escapeEmailHtml(value: string): string {
+  return value.replace(
+    /[&<>"']/g,
+    (character) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    })[character] || character,
+  );
+}
+
+export function buildRevenueLeakPlaybookEmail(
+  to: string,
+  firstName = "",
+) {
+  const greeting = firstName.trim()
+    ? `Hi ${escapeEmailHtml(firstName.trim())},`
+    : "Hi there,";
+  const textGreeting = firstName.trim() ? `Hi ${firstName.trim()},` : "Hi there,";
+
+  return {
+    from: FROM,
+    to,
+    subject: "Your PestFlow playbook — now put it to work",
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#17211a;line-height:1.6">
+        <div style="padding:28px 30px;background:#123b24;border-radius:18px 18px 0 0;color:#fff">
+          <div style="font-size:13px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#86efac">PestFlow</div>
+          <h1 style="margin:10px 0 0;font-size:28px;line-height:1.2">Your 27-point Revenue Leak Playbook</h1>
+        </div>
+        <div style="padding:30px;border:1px solid #dce7df;border-top:0;border-radius:0 0 18px 18px">
+          <p style="margin-top:0">${greeting}</p>
+          <p>Your playbook is attached. Use it to find the leaks between the sale, the route, the field visit, and the invoice.</p>
+          <p>The faster next step is to open PestFlow on your phone and start setting up the workflow while the scorecard is fresh.</p>
+          <a href="${PESTFLOW_MOBILE_SIGNUP_URL}" style="display:block;margin:24px 0 12px;padding:15px 20px;background:#16a34a;color:#fff;border-radius:12px;text-decoration:none;text-align:center;font-weight:800">Open PestFlow and create my account →</a>
+          <a href="${PESTFLOW_APP_STORE_URL}" style="display:block;margin:0 0 24px;padding:13px 20px;background:#111827;color:#fff;border-radius:12px;text-decoration:none;text-align:center;font-weight:800">Download on the Apple App Store</a>
+          <p style="margin-bottom:0;color:#5c6a61;font-size:13px">The PDF is attached so you can keep it, print it, or share it with your team.</p>
+        </div>
+      </div>
+    `,
+    text: `${textGreeting}
+
+Your 27-point Pest Control Revenue Leak Playbook is attached.
+
+Open PestFlow and create your account:
+${PESTFLOW_MOBILE_SIGNUP_URL}
+
+Download PestFlow on the Apple App Store:
+${PESTFLOW_APP_STORE_URL}
+
+The attached PDF is yours to keep, print, or share with your team.`,
+    attachments: [
+      {
+        path: REVENUE_LEAK_PLAYBOOK_URL,
+        filename: "PestFlow-Revenue-Leak-Playbook.pdf",
+      },
+    ],
+    tags: [
+      { name: "email_type", value: "revenue_leak_playbook" },
+    ],
+  };
+}
+
+export async function sendRevenueLeakPlaybookEmail(
+  to: string,
+  firstName = "",
+) {
+  return getResend().emails.send(buildRevenueLeakPlaybookEmail(to, firstName));
+}
 
 export async function sendReviewRequest(to: string, customerName: string, companyName: string) {
   return getResend().emails.send({

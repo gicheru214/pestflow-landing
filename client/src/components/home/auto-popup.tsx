@@ -11,6 +11,7 @@ import {
   getOrCreateMetaLeadEventId,
 } from "@/lib/metaLeadEvent";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
+import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -274,7 +275,13 @@ export function AutoPopup() {
           eventId?: string;
           shouldFireBrowser?: boolean;
         };
+        playbookDelivery?: {
+          accepted?: boolean;
+        };
       } | null;
+      if (saved?.playbookDelivery?.accepted === false) {
+        throw new Error("Resend did not accept the playbook email");
+      }
       const canonicalMetaEventId =
         saved?.metaRegistration?.eventId || metaEventId;
       if (saved?.metaRegistration?.shouldFireBrowser !== false) {
@@ -289,6 +296,8 @@ export function AutoPopup() {
       localStorage.setItem("pestflow_popup_submitted", "true");
     } catch (e) {
       console.error("Failed to save guide request", e);
+      setEmailError("We couldn't email the playbook yet. Please try again.");
+      return;
     }
 
     pushPartial({
@@ -298,11 +307,18 @@ export function AutoPopup() {
     });
     localStorage.setItem("pestflow_popup_submitted", "true");
     setOpen(false);
-    window.location.href = `/playbook?download=1&${buildForwardParams().toString()}`;
+    window.location.href = buildMobileFieldSignupUrl({
+      source: "popup_playbook",
+      firstName,
+      lastName,
+      email,
+      phone,
+      metaEventId,
+      search: window.location.search,
+    });
   };
 
-  // Build the params bundle (name/email/phone) we forward into the success
-  // page and then into the app onboarding handoff.
+  // Build the contact bundle forwarded into the app signup handoff.
   const buildForwardParams = () => {
     const parts = name.trim().split(" ");
     const params = new URLSearchParams();
@@ -327,9 +343,15 @@ export function AutoPopup() {
     setOpen(false);
     const params = buildForwardParams();
     params.set("meta_event_id", metaEventId);
-    // The success page sends the qualified browser Lead. The same event ID
-    // follows the visitor into signup so the server copy is deduplicated.
-    window.location.href = `/signup-success?${params.toString()}`;
+    window.location.href = buildMobileFieldSignupUrl({
+      source: "popup_offer",
+      firstName: params.get("firstName") || undefined,
+      lastName: params.get("lastName") || undefined,
+      email: params.get("email") || undefined,
+      phone: params.get("phone") || undefined,
+      metaEventId,
+      search: window.location.search,
+    });
   };
 
   const slideVariants = {

@@ -12,6 +12,7 @@ import {
   sendQuoteFollowup,
   sendOverdueReminder,
   sendJobSummary,
+  sendRevenueLeakPlaybookEmail,
 } from "./email";
 import {
   sendAppStoreHandoffEvent,
@@ -662,6 +663,39 @@ export async function registerRoutes(
         submission,
         prospectRequestContext(req, body),
       );
+      let playbookDelivery: {
+        requested: boolean;
+        accepted: boolean;
+        id?: string;
+      } = {
+        requested: submission.type === "newsletter",
+        accepted: false,
+      };
+      if (submission.type === "newsletter") {
+        try {
+          const delivery = await sendRevenueLeakPlaybookEmail(
+            submission.email,
+            submission.firstName,
+          );
+          if (delivery.error) {
+            console.warn(
+              "[playbook-email] Resend rejected delivery:",
+              delivery.error.message,
+            );
+          } else {
+            playbookDelivery = {
+              requested: true,
+              accepted: true,
+              id: delivery.data?.id,
+            };
+          }
+        } catch (error) {
+          console.warn(
+            "[playbook-email] delivery failed:",
+            error instanceof Error ? error.message : error,
+          );
+        }
+      }
       // Persist the handoff before responding. The immediate attempt keeps the
       // signup-to-text delay low; the worker retries if the process restarts or
       // MTA temporarily accepts the subscriber but rejects group enrollment.
@@ -687,7 +721,11 @@ export async function registerRoutes(
           );
         });
       }
-      res.status(201).json({ ...submission, metaRegistration });
+      res.status(201).json({
+        ...submission,
+        metaRegistration,
+        playbookDelivery,
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });

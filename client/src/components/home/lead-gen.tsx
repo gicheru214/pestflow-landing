@@ -4,13 +4,12 @@ import { motion } from "framer-motion";
 import { BookOpen, CheckCircle2, ArrowRight, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useLocation } from "wouter";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
 
 type Stage = "gate" | "form" | "exit";
 
 export function LeadGen() {
-  const [, setLocation] = useLocation();
   const [stage, setStage] = useState<Stage>("gate");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -25,7 +24,7 @@ export function LeadGen() {
     setIsSubmitting(true);
 
     try {
-      await fetch("/api/submissions", {
+      const response = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -36,6 +35,13 @@ export function LeadGen() {
           companyName: `Routes: ${formData.routes || "unspecified"}`
         })
       });
+      if (!response.ok) throw new Error("Submission failed");
+      const saved = await response.json().catch(() => null) as {
+        playbookDelivery?: { accepted?: boolean };
+      } | null;
+      if (saved?.playbookDelivery?.accepted === false) {
+        throw new Error("Resend did not accept the playbook email");
+      }
 
       analytics.identify(formData.email.trim(), {
         $email: formData.email.trim(),
@@ -43,7 +49,14 @@ export function LeadGen() {
         routes: formData.routes,
       });
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
-      window.location.href = "/playbook?download=1&source=homepage";
+      window.location.href = buildMobileFieldSignupUrl({
+        source: "homepage_playbook",
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        routes: formData.routes,
+        search: window.location.search,
+      });
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
       setIsSubmitting(false);

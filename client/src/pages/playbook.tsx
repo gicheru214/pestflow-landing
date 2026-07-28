@@ -1,21 +1,30 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckCircle2, ClipboardCheck, Download, ShieldCheck } from "lucide-react";
+import { ArrowRight, CheckCircle2, ClipboardCheck, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { buildMobileFieldSignupUrl } from "@/lib/mobileFieldHandoff";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
-
-const PDF_URL = "/pest-control-revenue-leak-playbook.pdf";
 
 export default function Playbook() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
-  const [delivered, setDelivered] = useState(params.get("download") === "1");
+  const legacyHandoff = params.get("download") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", companyName: "" });
 
   useEffect(() => {
     document.title = "Free Pest Control Revenue Leak Playbook | PestFlow";
-  }, []);
+    if (!legacyHandoff) return;
+    window.location.replace(buildMobileFieldSignupUrl({
+      source: params.get("source") || "legacy_playbook_link",
+      firstName: params.get("firstName") || undefined,
+      lastName: params.get("lastName") || undefined,
+      email: params.get("email") || undefined,
+      phone: params.get("phone") || undefined,
+      routes: params.get("routes") || undefined,
+      search: window.location.search,
+    }));
+  }, [legacyHandoff, params]);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -32,13 +41,48 @@ export default function Playbook() {
         }),
       });
       if (!response.ok) throw new Error("Submission failed");
-      setDelivered(true);
+      const saved = await response.json().catch(() => null) as {
+        playbookDelivery?: { accepted?: boolean };
+      } | null;
+      if (saved?.playbookDelivery?.accepted === false) {
+        throw new Error("Resend did not accept the playbook email");
+      }
+      window.location.href = buildMobileFieldSignupUrl({
+        source: params.get("source") || "playbook_page",
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        search: window.location.search,
+      });
     } catch {
       setError("We couldn't save that yet. Please try once more.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (legacyHandoff) {
+    const fallback = buildMobileFieldSignupUrl({
+      source: params.get("source") || "legacy_playbook_link",
+      firstName: params.get("firstName") || undefined,
+      lastName: params.get("lastName") || undefined,
+      email: params.get("email") || undefined,
+      phone: params.get("phone") || undefined,
+      routes: params.get("routes") || undefined,
+      search: window.location.search,
+    });
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f4f8f4] px-5 text-center">
+        <div>
+          <h1 className="text-2xl font-black text-[#123b24]">Opening PestFlow…</h1>
+          <p className="mt-2 text-slate-600">Your playbook is being sent by email.</p>
+          <a href={fallback} className="mt-5 inline-block font-bold text-emerald-700 hover:underline">
+            Continue to PestFlow <ArrowRight className="inline h-4 w-4" />
+          </a>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f4f8f4] text-slate-950">
@@ -83,27 +127,13 @@ export default function Playbook() {
           </div>
 
           <aside className="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-[0_24px_80px_rgba(18,59,36,0.14)] sm:p-8">
-            {delivered ? (
-              <div className="py-5 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
-                  <Download className="h-7 w-7" />
+            <>
+                <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
+                  <Mail className="h-6 w-6" />
                 </div>
-                <h2 className="mt-5 text-2xl font-black text-[#123b24]">Your playbook is ready.</h2>
-                <p className="mt-2 text-slate-600">Open the scorecard, mark each check 0–2, then use the final page to build your 7-day fix plan.</p>
-                <Button asChild size="lg" className="mt-6 w-full bg-emerald-600 font-bold hover:bg-emerald-700">
-                  <a href={PDF_URL} download>
-                    Download the 27-point playbook <Download className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-                <a href="https://app.pestflow.org/login" className="mt-4 inline-block text-sm font-semibold text-emerald-700 hover:underline">
-                  See PestFlow in action <ArrowRight className="inline h-4 w-4" />
-                </a>
-              </div>
-            ) : (
-              <>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Instant access</p>
+                <p className="text-center text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Delivered by email</p>
                 <h2 className="mt-2 text-2xl font-black text-[#123b24]">Get the full scorecard.</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">No vague theory and no made-up benchmark. Just the operating checks and the evidence that proves each one is controlled.</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">We’ll email the PDF, then open PestFlow so you can put the scorecard to work without another dead-end download screen.</p>
                 <form onSubmit={submit} className="mt-6 space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <Input aria-label="First name" placeholder="First name" required value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} />
@@ -113,7 +143,7 @@ export default function Playbook() {
                   <Input aria-label="Company name" placeholder="Pest control company" value={form.companyName} onChange={(event) => setForm({ ...form, companyName: event.target.value })} />
                   {error && <p role="alert" className="text-sm font-medium text-red-600">{error}</p>}
                   <Button type="submit" size="lg" disabled={submitting} className="w-full bg-emerald-600 font-bold hover:bg-emerald-700">
-                    {submitting ? "Preparing your playbook…" : "Send me the playbook"}
+                    {submitting ? "Emailing your playbook…" : "Email my playbook & open PestFlow"}
                     {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
                   </Button>
                 </form>
@@ -121,7 +151,6 @@ export default function Playbook() {
                   <ShieldCheck className="h-4 w-4 text-emerald-600" /> Built for pest control owners. Unsubscribe anytime.
                 </div>
               </>
-            )}
           </aside>
         </div>
       </section>

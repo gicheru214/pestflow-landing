@@ -10,6 +10,7 @@
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "test:mta": "tsx --test server/mta.test.ts",
+    "test:playbook-email": "tsx --test server/playbook-email.test.ts",
     "blog:build-backlog": "node scripts/build-prewritten-pestflow-backlog.mjs",
     "blog:wait": "node scripts/wait-for-blog-deploy.mjs",
     "db:push": "drizzle-kit push",
