@@ -1,82 +1,59 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  CalendarDays,
+  CalendarClock,
   CheckCircle2,
-  CreditCard,
-  MapPinned,
-  Radio,
-  RefreshCcw,
-  Rocket,
+  FileText,
+  RefreshCw,
   X,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
-type PlaybookVariant =
-  | "playbook-jtbd"
-  | "playbook-pwa"
-  | "playbook-calendar";
-type PopupStep = "playbook" | "activation";
-type WorkflowId = "routes" | "billing" | "field" | "switching";
+export type WorkflowId = "recurring" | "invoice" | "schedule";
 
-const APP_ENTRY_URL = "https://app.pestflow.org/mobile/onboard/feature";
-const POPUP_SEEN_KEY = "pestflow_popup_seen";
-const POPUP_SUBMITTED_KEY = "pestflow_popup_submitted";
+type PopupStep = "playbook" | "workflow";
 
-const WORKFLOWS: Record<
-  WorkflowId,
+const FUNNEL_ID = "playbook-workflow-v2";
+const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v2";
+const POPUP_SUBMITTED_KEY = "pestflow_popup_submitted_workflow_v2";
+const POPUP_DATA_KEY = "pestflow_popup_data";
+
+const WORKFLOWS: Array<{
+  id: WorkflowId;
+  label: string;
+  description: string;
+  icon: typeof RefreshCw;
+}> = [
   {
-    label: string;
-    description: string;
-    icon: typeof MapPinned;
-  }
-> = {
-  routes: {
-    label: "Build and adjust routes",
-    description: "See recurring stops, route gaps, and technician assignments.",
-    icon: MapPinned,
+    id: "recurring",
+    label: "Set up recurring service agreements",
+    description: "Create the agreement once, then build the future visits.",
+    icon: RefreshCw,
   },
-  billing: {
-    label: "Get billing under control",
-    description: "Connect completed work, invoices, cards, and payment follow-up.",
-    icon: CreditCard,
+  {
+    id: "invoice",
+    label: "Send an invoice and collect payment",
+    description: "Turn finished work into a professional invoice in seconds.",
+    icon: FileText,
   },
-  field: {
-    label: "See what is happening in the field",
-    description: "Keep job status, notes, photos, and customer updates together.",
-    icon: Radio,
+  {
+    id: "schedule",
+    label: "Untangle my schedule and routes",
+    description: "Organize recurring stops, assignments, and day-of changes.",
+    icon: CalendarClock,
   },
-  switching: {
-    label: "Plan a safer software switch",
-    description: "Test one real workflow before moving the whole operation.",
-    icon: RefreshCcw,
-  },
-};
+];
 
-function playbookVariantFromUrl(): PlaybookVariant {
-  if (typeof window === "undefined") return "playbook-jtbd";
-  const requested = new URLSearchParams(window.location.search).get("funnel");
-  if (
-    requested === "playbook-jtbd" ||
-    requested === "playbook-pwa" ||
-    requested === "playbook-calendar"
-  ) {
-    return requested;
-  }
-  return "playbook-jtbd";
-}
-
-function initialStepFromUrl(): PopupStep {
+function initialStep(): PopupStep {
   if (typeof window === "undefined") return "playbook";
   return new URLSearchParams(window.location.search).get("preview_step") ===
-    "activation"
-    ? "activation"
+    "workflow"
+    ? "workflow"
     : "playbook";
 }
 
@@ -106,161 +83,32 @@ function pushPartial(payload: Record<string, unknown>) {
       keepalive: true,
     }).catch(() => {});
   } catch {
-    // A partial snapshot should never interrupt the visitor's next step.
+    // Capturing an unfinished lead should never block the visitor.
   }
 }
 
-function appEntryUrl(
-  workflow: WorkflowId | null,
-  fields: {
-    name: string;
-    email: string;
-    phone: string;
-  },
-  variant: PlaybookVariant,
-) {
-  const url = new URL(APP_ENTRY_URL);
-  const [firstName, ...lastNameParts] = fields.name.trim().split(/\s+/);
-  if (firstName) url.searchParams.set("firstName", firstName);
-  if (lastNameParts.length) {
-    url.searchParams.set("lastName", lastNameParts.join(" "));
-  }
-  if (fields.email) url.searchParams.set("email", fields.email.trim());
-  if (fields.phone) url.searchParams.set("phone", fields.phone.trim());
-  if (workflow) url.searchParams.set("intent", workflow);
-  url.searchParams.set("source", "playbook_activation_popup");
-  url.searchParams.set("funnel_variant", variant);
-  return url.toString();
-}
-
-function calendlyEmbedUrl(name: string, email: string) {
-  const url = new URL(PESTFLOW_CALENDLY_URL);
-  url.searchParams.set("hide_gdpr_banner", "1");
-  url.searchParams.set("hide_event_type_details", "1");
-  url.searchParams.set("background_color", "0b1220");
-  url.searchParams.set("text_color", "e2e8f0");
-  url.searchParams.set("primary_color", "22c55e");
-  if (name.trim()) url.searchParams.set("name", name.trim());
-  if (email.trim()) url.searchParams.set("email", email.trim());
-  return url.toString();
-}
-
-function CalendarEmbed({
-  name,
-  email,
-  variant,
-}: {
-  name: string;
-  email: string;
-  variant: PlaybookVariant;
-}) {
-  const trackedLoad = useRef(false);
-
-  return (
-    <section className="mt-4">
-      <div className="mb-2 flex items-center gap-2.5">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
-          <CalendarDays className="h-4.5 w-4.5" />
-        </span>
-        <div>
-          <h3 className="text-sm font-black text-white">
-            Want help getting set up?
-          </h3>
-          <p className="mt-0.5 text-[11px] leading-4 text-slate-400">
-            Pick a time below—we’ll use the information you already entered.
-          </p>
-        </div>
-      </div>
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white">
-        <iframe
-          src={calendlyEmbedUrl(name, email)}
-          title="Book a PestFlow setup call"
-          className="h-[520px] w-full bg-white"
-          onLoad={() => {
-            if (trackedLoad.current) return;
-            trackedLoad.current = true;
-            analytics.track("Calendly Embed Loaded", {
-              source: "playbook_activation_popup",
-              funnel_variant: variant,
-              calendly_url: PESTFLOW_CALENDLY_URL,
-            });
-          }}
-        />
-      </div>
-    </section>
-  );
-}
-
-function WorkflowChoices({
-  name,
-  email,
-  phone,
-  variant,
-}: {
-  name: string;
-  email: string;
-  phone: string;
-  variant: PlaybookVariant;
-}) {
-  return (
-    <section className="mt-4">
-      <div className="mb-3">
-        <h3 className="text-base font-black text-white">
-          What do you need to get done first?
-        </h3>
-        <p className="mt-1 text-[11px] leading-4 text-slate-400">
-          Choose one and we’ll take you directly into that PestFlow workflow.
-          You can explore before creating the account.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        {(
-          Object.entries(WORKFLOWS) as Array<
-            [WorkflowId, (typeof WORKFLOWS)[WorkflowId]]
-          >
-        ).map(([id, workflow]) => {
-          const Icon = workflow.icon;
-          return (
-            <a
-              key={id}
-              href={appEntryUrl(id, { name, email, phone }, variant)}
-              onClick={() =>
-                analytics.track("Playbook Activation Need Selected", {
-                  workflow: id,
-                  funnel_variant: variant,
-                  destination: "pestflow_app",
-                })
-              }
-              className="group relative flex min-h-[96px] flex-col items-start rounded-2xl border border-white/10 bg-white/[0.045] p-3 text-left transition active:scale-[.985]"
-            >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-400/15 text-emerald-300">
-                <Icon className="h-4 w-4" />
-              </span>
-              <span className="mt-2 min-w-0 pr-4">
-                <span className="block text-xs font-black leading-4 text-white">
-                  {workflow.label}
-                </span>
-                <span className="mt-1 hidden text-[11px] leading-4 text-slate-400 sm:block">
-                  {workflow.description}
-                </span>
-              </span>
-              <ArrowRight className="absolute right-3 top-3 h-4 w-4 text-emerald-300 transition group-active:translate-x-1" />
-            </a>
-          );
-        })}
-      </div>
-    </section>
-  );
+function previewUrl(workflow: WorkflowId) {
+  const current = new URLSearchParams(window.location.search);
+  const next = new URLSearchParams({
+    workflow,
+    source: FUNNEL_ID,
+  });
+  ["internal", "device", "revision"].forEach((key) => {
+    const value = current.get(key);
+    if (value) next.set(key, value);
+  });
+  return `/experiments/pestflow-preview?${next.toString()}`;
 }
 
 export function PlaybookActivationPopup() {
-  const variant = useMemo(playbookVariantFromUrl, []);
-  const previewStep = useMemo(initialStepFromUrl, []);
-  const forced =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).has("popup-check");
+  const params =
+    typeof window === "undefined"
+      ? new URLSearchParams()
+      : new URLSearchParams(window.location.search);
+  const forced = params.has("popup-check");
+  const resetPreview = params.get("reset_preview") === "1";
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<PopupStep>(previewStep);
+  const [step, setStep] = useState<PopupStep>(initialStep);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -272,6 +120,36 @@ export function PlaybookActivationPopup() {
   const snapshotRef = useRef<Record<string, unknown>>({});
 
   useEffect(() => {
+    if (resetPreview) {
+      localStorage.removeItem(POPUP_SEEN_KEY);
+      localStorage.removeItem(POPUP_SUBMITTED_KEY);
+      localStorage.removeItem(POPUP_DATA_KEY);
+    }
+
+    const openPopup = (trigger: string) => {
+      setOpen(true);
+      analytics.track(EVENTS.LANDING.POPUP_SHOWN, {
+        trigger,
+        funnel: FUNNEL_ID,
+        step: initialStep(),
+      });
+    };
+
+    if (forced) {
+      openPopup(resetPreview ? "forced_reset_preview" : "forced_preview");
+      return;
+    }
+    if (localStorage.getItem(POPUP_SUBMITTED_KEY)) return;
+    if (localStorage.getItem(POPUP_SEEN_KEY)) return;
+
+    const timer = window.setTimeout(() => {
+      localStorage.setItem(POPUP_SEEN_KEY, "true");
+      openPopup("first_visit_timer");
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [forced, resetPreview]);
+
+  useEffect(() => {
     const parts = name.trim().split(/\s+/).filter(Boolean);
     snapshotRef.current = {
       name,
@@ -280,9 +158,9 @@ export function PlaybookActivationPopup() {
       phone,
       email,
       step,
-      funnelVariant: variant,
+      funnelVariant: FUNNEL_ID,
     };
-  }, [email, name, phone, step, variant]);
+  }, [email, name, phone, step]);
 
   useEffect(() => {
     const onLeave = () => {
@@ -300,62 +178,17 @@ export function PlaybookActivationPopup() {
   }, []);
 
   useEffect(() => {
-    const openPopup = (trigger: string) => {
-      setOpen(true);
-      analytics.track(EVENTS.LANDING.POPUP_SHOWN, {
-        trigger,
-        funnel: "playbook_activation",
-        funnel_variant: variant,
-        step: previewStep,
-      });
-    };
-
-    if (forced) {
-      openPopup("forced_preview");
-      return;
-    }
-    if (localStorage.getItem(POPUP_SUBMITTED_KEY)) return;
-    if (localStorage.getItem(POPUP_SEEN_KEY)) return;
-
-    const timer = window.setTimeout(() => {
-      localStorage.setItem(POPUP_SEEN_KEY, "true");
-      openPopup("first_visit_timer");
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, [forced, previewStep, variant]);
-
-  useEffect(() => {
-    if (step !== "activation") return;
-
-    analytics.track("Playbook Delivery Confirmation Viewed", {
-      funnel: "playbook_activation",
-      funnel_variant: variant,
+    if (step !== "workflow") return;
+    analytics.track("Playbook Workflow Choice Viewed", {
+      funnel: FUNNEL_ID,
       delivery_window_minutes: 10,
+      choices: WORKFLOWS.map((workflow) => workflow.id),
     });
-
-    const handleCalendlyMessage = (event: MessageEvent) => {
-      if (
-        event.origin !== "https://calendly.com" ||
-        typeof event.data?.event !== "string" ||
-        !event.data.event.startsWith("calendly.")
-      ) {
-        return;
-      }
-      analytics.track("Calendly Embed Event", {
-        source: "playbook_activation_popup",
-        funnel_variant: variant,
-        calendly_event: event.data.event,
-      });
-    };
-
-    window.addEventListener("message", handleCalendlyMessage);
-    return () => window.removeEventListener("message", handleCalendlyMessage);
-  }, [step, variant]);
+  }, [step]);
 
   const closePopup = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED, {
-      funnel: "playbook_activation",
-      funnel_variant: variant,
+      funnel: FUNNEL_ID,
       step,
     });
     const data = snapshotRef.current;
@@ -411,16 +244,15 @@ export function PlaybookActivationPopup() {
       });
       if (!response.ok) throw new Error("capture_failed");
 
-      const savedPopupData = {
-        name: name.trim(),
-        firstName,
-        lastName: lastNameParts.join(" "),
-        phone: phone.trim(),
-        email: normalizedEmail,
-      };
       localStorage.setItem(
-        "pestflow_popup_data",
-        JSON.stringify(savedPopupData),
+        POPUP_DATA_KEY,
+        JSON.stringify({
+          name: name.trim(),
+          firstName,
+          lastName: lastNameParts.join(" "),
+          phone: phone.trim(),
+          email: normalizedEmail,
+        }),
       );
       localStorage.setItem(POPUP_SUBMITTED_KEY, "true");
       analytics.identify(normalizedEmail, {
@@ -429,36 +261,34 @@ export function PlaybookActivationPopup() {
         $phone: phone.trim(),
       });
       analytics.track(EVENTS.LANDING.POPUP_SUBMIT, {
-        funnel: "playbook_activation",
-        funnel_variant: variant,
+        funnel: FUNNEL_ID,
         fields: ["full_name", "phone", "email"],
         ...campaignFromUrl(),
       });
       pushPartial({
         ...snapshotRef.current,
-        reason: "guide_submit_activation_step",
+        reason: "guide_submit_workflow_step",
       });
-      setStep("activation");
+      setStep("workflow");
     } catch {
-      setSubmitError(
-        "We could not save your request yet. Please try again.",
-      );
+      setSubmitError("We could not save your request yet. Please try again.");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const openGeneralApp = () => {
-    analytics.track("Playbook PWA Opened", {
-      funnel: "playbook_activation",
-      funnel_variant: variant,
-      destination: "pestflow_app",
+  const chooseWorkflow = (workflow: WorkflowId) => {
+    localStorage.setItem("pestflow_selected_workflow", workflow);
+    analytics.track("Playbook Workflow Selected", {
+      funnel: FUNNEL_ID,
+      workflow,
+      destination: "interactive_preview",
     });
-    window.location.href = appEntryUrl(
-      null,
-      { name, email, phone },
-      variant,
-    );
+    pushPartial({
+      ...snapshotRef.current,
+      workflow,
+      reason: "workflow_selected",
+    });
   };
 
   return (
@@ -470,25 +300,23 @@ export function PlaybookActivationPopup() {
       }}
     >
       <DialogContent
-        className="bottom-2 left-1/2 top-auto z-[90] max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-[430px] -translate-x-1/2 translate-y-0 gap-0 overflow-y-auto rounded-[28px] border border-white/10 bg-[#08111f] p-0 text-white shadow-[0_28px_90px_rgba(0,0,0,.55)] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+        className="top-[calc(50%+2.25rem)] max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[400px] xl:top-[50%]"
         hideCloseButton
         aria-describedby="playbook-popup-description"
       >
         <DialogTitle className="sr-only">
-          Get the PestFlow playbook and choose how to start
+          Get the $3 million Pest Control Playbook
         </DialogTitle>
         <button
           type="button"
           onClick={closePopup}
-          className="absolute right-4 top-4 z-30 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-slate-950/80 text-slate-200 shadow-lg transition active:scale-95"
+          className="absolute right-3 top-3 z-30 grid h-8 w-8 place-items-center rounded-full bg-white/5 text-slate-400 transition hover:bg-white/15 hover:text-white active:scale-95"
           aria-label="Close and keep browsing"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
 
-        <div className="relative overflow-hidden rounded-[28px]">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-emerald-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-28 -left-20 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
           <AnimatePresence mode="wait">
             {step === "playbook" ? (
               <motion.div
@@ -496,60 +324,51 @@ export function PlaybookActivationPopup() {
                 initial={{ opacity: 0, x: 18 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -18 }}
-                className="relative p-5 sm:p-6"
+                className="flex flex-col items-center p-4 sm:p-6"
               >
-                <div className="flex items-center gap-3 pr-14">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-lg">
-                    <img
-                      src={logoImage}
-                      alt="PestFlow"
-                      className="h-full w-full object-contain"
-                    />
+                <img
+                  src={logoImage}
+                  alt="PestFlow"
+                  className="mb-2 h-12 w-auto object-contain sm:h-14"
+                />
+
+                <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
+                    Free Download — $97 Value
                   </span>
-                  <div>
-                    <p className="text-sm font-black tracking-wide text-white">
-                      PestFlow
-                    </p>
-                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-300">
-                      Free playbook
-                    </p>
-                  </div>
                 </div>
 
-                <div className="mt-5 inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
-                  Free download · $97 value
-                </div>
-                <h2 className="mt-3 text-[28px] font-black leading-[1.02] tracking-[-.04em] text-white">
+                <h2 className="mb-1 text-center text-base font-bold leading-tight text-white sm:text-lg">
                   The $3M Pest Control Playbook
                 </h2>
                 <p
                   id="playbook-popup-description"
-                  className="mt-3 text-sm leading-6 text-slate-300"
+                  className="mb-3 text-center text-xs text-slate-400"
                 >
-                  The practical blueprint for scaling to $3 million without
-                  losing control of routes, billing, or the field.
+                  The exact blueprint top operators use to scale toward $3
+                  million—and finally get off the truck for good.
                 </p>
 
-                <ul className="mt-4 space-y-2">
+                <ul className="mb-4 w-full space-y-1">
                   {[
-                    "Stack routes without automatically adding another truck",
-                    "Create a repeatable local-growth and review system",
-                    "Collect faster and automate the follow-up owners hate",
+                    "The route-stacking system that grows revenue without automatically adding another truck",
+                    "The local-growth formula that helps you win your city",
+                    "How to collect faster and automate payment follow-up",
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-2 text-xs leading-5 text-slate-300"
+                      className="flex items-start gap-2 text-xs text-slate-300 sm:text-sm"
                     >
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                      <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500 sm:h-4 sm:w-4" />
                       {item}
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-5 space-y-3">
+                <div className="w-full space-y-2">
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
-                      Full name
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
+                      Full Name <span className="text-red-400">*</span>
                     </label>
                     <Input
                       value={name}
@@ -560,22 +379,20 @@ export function PlaybookActivationPopup() {
                       }}
                       placeholder="John Smith"
                       autoComplete="name"
-                      className={`h-11 border-white/10 bg-white/5 text-white placeholder:text-slate-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         nameError ? "border-red-500" : ""
                       }`}
                     />
                     {nameError && (
-                      <p className="mt-1 text-xs font-semibold text-red-400">
-                        {nameError}
-                      </p>
+                      <p className="mt-0.5 text-xs text-red-400">{nameError}</p>
                     )}
                   </div>
+
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
-                      Phone number
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
+                      Phone <span className="text-red-400">*</span>
                     </label>
                     <Input
-                      type="tel"
                       value={phone}
                       onChange={(event) => {
                         setPhone(event.target.value);
@@ -583,23 +400,22 @@ export function PlaybookActivationPopup() {
                         setSubmitError("");
                       }}
                       placeholder="(555) 123-4567"
+                      type="tel"
                       autoComplete="tel"
-                      className={`h-11 border-white/10 bg-white/5 text-white placeholder:text-slate-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         phoneError ? "border-red-500" : ""
                       }`}
                     />
                     {phoneError && (
-                      <p className="mt-1 text-xs font-semibold text-red-400">
-                        {phoneError}
-                      </p>
+                      <p className="mt-0.5 text-xs text-red-400">{phoneError}</p>
                     )}
                   </div>
+
                   <div>
-                    <label className="mb-1 block text-xs font-semibold text-slate-300">
-                      Email
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
+                      Email <span className="text-red-400">*</span>
                     </label>
                     <Input
-                      type="email"
                       value={email}
                       onChange={(event) => {
                         setEmail(event.target.value);
@@ -607,141 +423,98 @@ export function PlaybookActivationPopup() {
                         setSubmitError("");
                       }}
                       placeholder="john@example.com"
+                      type="email"
                       autoComplete="email"
-                      className={`h-11 border-white/10 bg-white/5 text-white placeholder:text-slate-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         emailError ? "border-red-500" : ""
                       }`}
                     />
                     {emailError && (
-                      <p className="mt-1 text-xs font-semibold text-red-400">
-                        {emailError}
-                      </p>
+                      <p className="mt-0.5 text-xs text-red-400">{emailError}</p>
                     )}
                   </div>
-                </div>
 
-                {submitError && (
-                  <p className="mt-3 text-xs font-semibold text-red-400">
-                    {submitError}
+                  {submitError && (
+                    <p className="text-center text-xs font-semibold text-red-400">
+                      {submitError}
+                    </p>
+                  )}
+                  <Button
+                    type="button"
+                    disabled={submitting}
+                    onClick={submitPlaybook}
+                    className="mt-1 h-11 w-full rounded-lg bg-emerald-600 text-sm font-bold text-white hover:bg-emerald-500"
+                  >
+                    {submitting ? "Sending the playbook…" : "Send Me the Free Playbook"}
+                    {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                  </Button>
+                  <p className="pt-0.5 text-center text-xs text-slate-500">
+                    No spam—we don’t do that.
                   </p>
-                )}
-                <Button
-                  type="button"
-                  onClick={submitPlaybook}
-                  disabled={submitting}
-                  className="mt-5 h-12 w-full bg-emerald-500 text-sm font-black text-emerald-950 hover:bg-emerald-400"
-                >
-                  {submitting ? "Saving your request…" : "Send me the playbook"}
-                  {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
-                </Button>
-                <p className="mt-3 text-center text-[11px] text-slate-500">
-                  No spam—we don’t do that.
-                </p>
-                <a
-                  href="https://app.pestflow.org/login"
-                  className="mt-4 block border-t border-white/10 pt-4 text-center text-[11px] font-semibold text-slate-400"
-                >
-                  Already use PestFlow? Log in
-                </a>
+                </div>
               </motion.div>
             ) : (
               <motion.div
-                key="activation"
+                key="workflow"
                 initial={{ opacity: 0, x: 18 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -18 }}
-                className="relative p-4 sm:p-5"
+                className="p-4 sm:p-5"
               >
-                <div className="flex items-center gap-3 pr-14">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
+                <div className="flex items-start gap-3 pr-8">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[.15em] text-emerald-300">
-                      Request saved
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
+                      Playbook requested
                     </p>
-                    <h2 className="mt-0.5 text-lg font-black leading-tight text-white">
+                    <h2 className="mt-1 text-lg font-black leading-tight text-white">
                       Okay—the playbook will be sent in 10 minutes.
                     </h2>
                   </div>
                 </div>
-                <p className="mt-3 text-xs leading-5 text-slate-300">
-                  While it’s on the way, choose whether you want to explore
-                  PestFlow yourself or get help setting it up.
+
+                <div className="my-4 h-px bg-white/10" />
+
+                <h3 className="text-base font-black text-white">
+                  What do you want to do first?
+                </h3>
+                <p className="mt-1 text-xs leading-5 text-slate-400">
+                  Pick the job that is slowing you down. You’ll try it before
+                  PestFlow asks you to create an account.
                 </p>
 
-                {variant === "playbook-jtbd" && (
-                  <>
-                    <WorkflowChoices
-                      name={name}
-                      email={email}
-                      phone={phone}
-                      variant={variant}
-                    />
-                    <CalendarEmbed
-                      name={name}
-                      email={email}
-                      variant={variant}
-                    />
-                  </>
-                )}
-
-                {variant === "playbook-pwa" && (
-                  <>
-                    <section className="mt-4 rounded-2xl border border-emerald-300/35 bg-emerald-400/10 p-3.5">
-                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
-                        <Rocket className="h-5 w-5" />
-                      </span>
-                      <h3 className="mt-2.5 text-base font-black text-white">
-                        Start inside PestFlow
-                      </h3>
-                      <p className="mt-1 text-[11px] leading-4 text-slate-300">
-                        Explore in your browser first. PestFlow will ask you to
-                        finish account setup when you use or save a live
-                        workflow.
-                      </p>
-                      <Button
-                        type="button"
-                        onClick={openGeneralApp}
-                        className="mt-4 h-12 w-full bg-emerald-400 text-sm font-black text-emerald-950 hover:bg-emerald-300"
+                <div className="mt-4 grid gap-2.5">
+                  {WORKFLOWS.map((workflow) => {
+                    const Icon = workflow.icon;
+                    return (
+                      <a
+                        key={workflow.id}
+                        href={previewUrl(workflow.id)}
+                        onClick={() => chooseWorkflow(workflow.id)}
+                        className="group relative flex min-h-[76px] items-center gap-3 rounded-xl border border-white/10 bg-white/[.045] p-3 pr-10 text-left transition hover:border-emerald-400/30 hover:bg-emerald-400/[.07] active:scale-[.99]"
                       >
-                        Open PestFlow <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                      <p className="mt-2 text-center text-[10px] leading-4 text-slate-500">
-                        The mobile-app option comes after you have seen the
-                        workflow.
-                      </p>
-                    </section>
-                    <CalendarEmbed
-                      name={name}
-                      email={email}
-                      variant={variant}
-                    />
-                  </>
-                )}
+                        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">
+                          <Icon className="h-5 w-5" />
+                        </span>
+                        <span>
+                          <span className="block text-xs font-black leading-4 text-white">
+                            {workflow.label}
+                          </span>
+                          <span className="mt-1 block text-[11px] leading-4 text-slate-400">
+                            {workflow.description}
+                          </span>
+                        </span>
+                        <ArrowRight className="absolute right-3 h-4 w-4 text-emerald-300 transition group-hover:translate-x-0.5" />
+                      </a>
+                    );
+                  })}
+                </div>
 
-                {variant === "playbook-calendar" && (
-                  <>
-                    <CalendarEmbed
-                      name={name}
-                      email={email}
-                      variant={variant}
-                    />
-                    <div className="mt-4 flex items-center gap-3">
-                      <div className="h-px flex-1 bg-white/10" />
-                      <span className="text-[10px] font-black uppercase tracking-[.15em] text-slate-500">
-                        Or start yourself
-                      </span>
-                      <div className="h-px flex-1 bg-white/10" />
-                    </div>
-                    <WorkflowChoices
-                      name={name}
-                      email={email}
-                      phone={phone}
-                      variant={variant}
-                    />
-                  </>
-                )}
+                <p className="mt-4 text-center text-[10px] leading-4 text-slate-500">
+                  No login yet. Your contact information is already saved.
+                </p>
               </motion.div>
             )}
           </AnimatePresence>

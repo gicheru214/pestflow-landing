@@ -24,6 +24,11 @@ export default function Home() {
   );
   const [experimentFunnel, setExperimentFunnel] = useState<string | null>(null);
   const selectedFunnel = requestedFunnel || experimentFunnel;
+  const isWorkflowFunnel =
+    selectedFunnel === "playbook-workflow-v2" ||
+    selectedFunnel === "playbook-jtbd" ||
+    selectedFunnel === "playbook-pwa" ||
+    selectedFunnel === "playbook-calendar";
 
   useEffect(() => {
     if (requestedFunnel || !window.posthog?.onFeatureFlags) return;
@@ -68,8 +73,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
-      {selectedFunnel?.startsWith("playbook-") ? (
-        <PlaybookActivationPopup />
+      {isWorkflowFunnel ? (
+        <PlaybookActivationPopup key={window.location.search} />
       ) : selectedFunnel === "intent-first" ? (
         <IntentFirstPopup />
       ) : selectedFunnel === "jtbd" ? (

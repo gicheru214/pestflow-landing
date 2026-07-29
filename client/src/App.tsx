@@ -29,6 +29,7 @@ import GeneratedBlogPostPage from "@/pages/blog/generated-post";
 import LeadMagnetLab from "@/pages/lead-magnet-lab";
 import LeadMagnetAssignment from "@/pages/lead-magnet-assignment";
 import IntentFunnelSuccess from "@/pages/intent-funnel-success";
+import PestFlowWorkflowPreview from "@/pages/pestflow-workflow-preview";
 import { isLeadMagnetId } from "@/lead-magnets/config";
 import { analytics } from "@/lib/analytics";
 
@@ -70,6 +71,7 @@ function AppRouter() {
         <Route path="/experiments/lead-magnets" component={LeadMagnetLab} />
         <Route path="/experiments/lead-magnets/assign" component={LeadMagnetAssignment} />
         <Route path="/experiments/intent-first/success" component={IntentFunnelSuccess} />
+        <Route path="/experiments/pestflow-preview" component={PestFlowWorkflowPreview} />
         <Route path="/experiments/lead-magnets/:variant">
           {(params) => <LeadMagnetPopupRedirect variant={params.variant} />}
         </Route>
