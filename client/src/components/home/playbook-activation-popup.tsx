@@ -106,19 +106,7 @@ function workflowHandoffUrl(workflow: WorkflowId) {
     const value = current.get(key);
     if (value) next.set(key, value);
   });
-  const requestedDevice = current.get("device");
-  const isIos =
-    requestedDevice === "ios" ||
-    (requestedDevice !== "android" &&
-      /iphone|ipad|ipod/i.test(navigator.userAgent));
-  if (isIos) {
-    next.set("handoff", "app_store");
-  } else {
-    const appUrl = new URL("https://app.pestflow.org/mobile/onboard/feature");
-    appUrl.searchParams.set("intent", workflow);
-    appUrl.searchParams.set("source", FUNNEL_ID);
-    next.set("return_to", appUrl.toString());
-  }
+  next.set("handoff", "app_store");
   return `/signup-success?${next.toString()}`;
 }
 
@@ -564,8 +552,8 @@ export function PlaybookActivationPopup() {
                   What do you want to do first?
                 </h3>
                 <p className="mt-1 text-xs leading-5 text-slate-400">
-                  Pick where you want to start. On iPhone, PestFlow will open
-                  in the Apple App Store.
+                  Pick where you want to start. PestFlow will open in the Apple
+                  App Store.
                 </p>
 
                 <div className="mt-4 grid gap-2.5">

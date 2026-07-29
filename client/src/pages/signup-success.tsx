@@ -16,6 +16,7 @@ const ALLOWED_APP_RETURN_HOSTS = new Set([
   "app.pestflow.org",
   "new.pestflow.org",
 ]);
+const APP_STORE_OPEN_DELAY_MS = 1400;
 
 function resolveAppHandoffUrl(returnTo?: string | null) {
   if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
@@ -153,7 +154,7 @@ export default function SignupSuccess() {
     if (isAppStoreHandoff) {
       const timer = setTimeout(() => {
         window.location.replace(PESTFLOW_APP_STORE_URL);
-      }, 1200);
+      }, APP_STORE_OPEN_DELAY_MS);
       return () => clearTimeout(timer);
     }
 
@@ -253,23 +254,12 @@ export default function SignupSuccess() {
             </div>
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
-                {isAppStoreHandoff ? "Success!" : "You're In!"}
+                You&apos;re In!
               </h1>
               <p className="text-lg text-slate-500 max-w-sm mx-auto">
-                {isAppStoreHandoff
-                  ? "Taking you to PestFlow in the Apple App Store…"
-                  : "Taking you into PestFlow…"}
+                Taking you into PestFlow…
               </p>
             </div>
-            {isAppStoreHandoff && (
-              <a
-                href={PESTFLOW_APP_STORE_URL}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0a84ff] px-5 py-3 font-bold text-white shadow-lg shadow-blue-500/20"
-              >
-                Open the App Store
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            )}
           </motion.div>
         )}
       </AnimatePresence>

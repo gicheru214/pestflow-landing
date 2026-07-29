@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
-type Device = "ios" | "android";
 type WorkflowId = "recurring" | "invoice" | "schedule";
 
 function workflowFromUrl(): WorkflowId {
@@ -16,17 +15,10 @@ function workflowFromUrl(): WorkflowId {
   return "recurring";
 }
 
-function deviceFromUrl(): Device {
-  const requested = new URLSearchParams(window.location.search).get("device");
-  if (requested === "ios" || requested === "android") return requested;
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) ? "ios" : "android";
-}
-
 export default function PestFlowWorkflowPreview() {
   useEffect(() => {
     const current = new URLSearchParams(window.location.search);
     const workflow = workflowFromUrl();
-    const device = deviceFromUrl();
     const next = new URLSearchParams({
       source: `playbook_workflow_${workflow}`,
       intent: workflow,
@@ -37,16 +29,7 @@ export default function PestFlowWorkflowPreview() {
         if (value) next.set(key, value);
       },
     );
-    if (device === "ios") {
-      next.set("handoff", "app_store");
-    } else {
-      const appUrl = new URL(
-        "https://app.pestflow.org/mobile/onboard/feature",
-      );
-      appUrl.searchParams.set("intent", workflow);
-      appUrl.searchParams.set("source", "playbook-workflow-v2");
-      next.set("return_to", appUrl.toString());
-    }
+    next.set("handoff", "app_store");
     window.location.replace(`/signup-success?${next.toString()}`);
   }, []);
 
