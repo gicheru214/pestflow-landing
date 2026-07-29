@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
+  CalendarDays,
   CalendarClock,
   CheckCircle2,
   FileText,
@@ -12,6 +13,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 export type WorkflowId = "recurring" | "invoice" | "schedule";
@@ -100,6 +102,18 @@ function previewUrl(workflow: WorkflowId) {
   return `/experiments/pestflow-preview?${next.toString()}`;
 }
 
+function calendlyEmbedUrl(name: string, email: string) {
+  const url = new URL(PESTFLOW_CALENDLY_URL);
+  url.searchParams.set("hide_gdpr_banner", "1");
+  url.searchParams.set("hide_event_type_details", "1");
+  url.searchParams.set("background_color", "ffffff");
+  url.searchParams.set("text_color", "0f172a");
+  url.searchParams.set("primary_color", "42a824");
+  if (name.trim()) url.searchParams.set("name", name.trim());
+  if (email.trim()) url.searchParams.set("email", email.trim());
+  return url.toString();
+}
+
 export function PlaybookActivationPopup() {
   const params =
     typeof window === "undefined"
@@ -184,6 +198,24 @@ export function PlaybookActivationPopup() {
       delivery_window_minutes: 10,
       choices: WORKFLOWS.map((workflow) => workflow.id),
     });
+
+    const handleCalendlyMessage = (event: MessageEvent) => {
+      if (
+        event.origin !== "https://calendly.com" ||
+        typeof event.data?.event !== "string" ||
+        !event.data.event.startsWith("calendly.")
+      ) {
+        return;
+      }
+      analytics.track("Calendly Embed Event", {
+        funnel: FUNNEL_ID,
+        calendly_event: event.data.event,
+        placement: "above_workflow_options",
+      });
+    };
+
+    window.addEventListener("message", handleCalendlyMessage);
+    return () => window.removeEventListener("message", handleCalendlyMessage);
   }, [step]);
 
   const closePopup = () => {
@@ -474,6 +506,37 @@ export function PlaybookActivationPopup() {
                     </h2>
                   </div>
                 </div>
+
+                <section className="mt-4">
+                  <div className="mb-2.5 flex items-center gap-2.5">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
+                      <CalendarDays className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <h3 className="text-sm font-black text-white">
+                        Book your PestFlow setup call
+                      </h3>
+                      <p className="mt-0.5 text-[10px] leading-4 text-slate-400">
+                        Pick a time now, or choose a workflow underneath.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="h-[360px] overflow-hidden rounded-xl border border-white/10 bg-white sm:h-[390px]">
+                    <iframe
+                      src={calendlyEmbedUrl(name, email)}
+                      title="Book a PestFlow setup call"
+                      className="h-full w-full bg-white"
+                      loading="eager"
+                      onLoad={() =>
+                        analytics.track("Calendly Embed Loaded", {
+                          funnel: FUNNEL_ID,
+                          placement: "above_workflow_options",
+                          calendly_url: PESTFLOW_CALENDLY_URL,
+                        })
+                      }
+                    />
+                  </div>
+                </section>
 
                 <div className="my-4 h-px bg-white/10" />
 

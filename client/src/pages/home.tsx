@@ -82,7 +82,7 @@ export default function Home() {
       ) : selectedFunnel === "control" ? null : (
         <AutoPopup />
       )}
-      <MobileDownloadBanner />
+      {!isWorkflowFunnel && <MobileDownloadBanner />}
       <Navbar />
       <main className="flex-grow">
         <Hero />
