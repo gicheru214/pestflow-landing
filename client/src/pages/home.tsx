@@ -29,6 +29,16 @@ export default function Home() {
     selectedFunnel === "playbook-jtbd" ||
     selectedFunnel === "playbook-pwa" ||
     selectedFunnel === "playbook-calendar";
+  const isMobileDevice = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const requestedDevice = new URLSearchParams(window.location.search).get(
+      "device",
+    );
+    if (requestedDevice === "ios" || requestedDevice === "android") return true;
+    if (requestedDevice === "desktop") return false;
+    return /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+  }, []);
+  const isMobileWorkflowFunnel = isWorkflowFunnel && isMobileDevice;
 
   useEffect(() => {
     if (requestedFunnel || !window.posthog?.onFeatureFlags) return;
@@ -73,7 +83,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
-      {isWorkflowFunnel ? (
+      {isMobileWorkflowFunnel ? (
         <PlaybookActivationPopup key={window.location.search} />
       ) : selectedFunnel === "intent-first" ? (
         <IntentFirstPopup />
@@ -82,7 +92,7 @@ export default function Home() {
       ) : selectedFunnel === "control" ? null : (
         <AutoPopup />
       )}
-      {!isWorkflowFunnel && <MobileDownloadBanner />}
+      {!isMobileWorkflowFunnel && <MobileDownloadBanner />}
       <Navbar />
       <main className="flex-grow">
         <Hero />

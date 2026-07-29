@@ -6,25 +6,22 @@ import {
   CalendarDays,
   Check,
   CheckCircle2,
-  ChevronRight,
   CircleDollarSign,
   Clock3,
+  Download,
+  ExternalLink,
   FileText,
   Home,
-  MapPin,
   Menu,
   RefreshCw,
   Route as RouteIcon,
-  Send,
   ShieldCheck,
   Smartphone,
   Sparkles,
   UserRound,
   Users,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { analytics } from "@/lib/analytics";
 import { PESTFLOW_APP_STORE_URL } from "@/lib/intent-funnel";
 import type { WorkflowId } from "@/components/home/playbook-activation-popup";
@@ -114,6 +111,16 @@ function savedLead(): SavedLead {
   } catch {
     return {};
   }
+}
+
+function initialSuccessView() {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("preview") === "success";
+}
+
+function successSource() {
+  if (typeof window === "undefined") return "workflow";
+  return new URLSearchParams(window.location.search).get("source") || "workflow";
 }
 
 function appEntryUrl(workflow: WorkflowId, lead: SavedLead) {
@@ -390,13 +397,168 @@ function SchedulePreview({ activated }: { activated: boolean }) {
   );
 }
 
+function SuccessScreen({
+  workflow,
+  device,
+  lead,
+  onBack,
+}: {
+  workflow: WorkflowId;
+  device: Device;
+  lead: SavedLead;
+  onBack: () => void;
+}) {
+  const source = successSource();
+  const bookedCall = source === "calendly";
+  const continueToApp = () => {
+    analytics.track("Workflow Success Account Handoff Clicked", {
+      funnel: "playbook-workflow-v2",
+      workflow,
+      device,
+      source,
+      has_saved_contact: Boolean(lead.email || lead.phone),
+      destination: "pestflow_web_onboarding",
+    });
+  };
+  const openAppStore = () => {
+    analytics.track("Workflow Success App Store Clicked", {
+      funnel: "playbook-workflow-v2",
+      workflow,
+      device,
+      source,
+    });
+  };
+
+  return (
+    <main className="min-h-[100dvh] overflow-hidden bg-[#07101c] text-white">
+      <div className="pointer-events-none fixed inset-0">
+        <div className="absolute -right-32 -top-40 h-[28rem] w-[28rem] rounded-full bg-emerald-500/20 blur-3xl" />
+        <div className="absolute -bottom-40 -left-32 h-[28rem] w-[28rem] rounded-full bg-cyan-500/10 blur-3xl" />
+      </div>
+
+      <div className="relative mx-auto flex min-h-[100dvh] max-w-[430px] flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:justify-center sm:py-10">
+        <header className="flex items-center gap-2.5">
+          <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-white p-1.5">
+            <img
+              src={logoImage}
+              alt="PestFlow"
+              className="h-full w-full object-contain"
+            />
+          </span>
+          <div>
+            <p className="text-sm font-black text-white">PestFlow</p>
+            <p className="text-[9px] font-bold uppercase tracking-[.14em] text-emerald-300">
+              Success
+            </p>
+          </div>
+        </header>
+
+        <section className="mt-10">
+          <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-emerald-400 text-emerald-950 shadow-[0_18px_50px_rgba(66,168,36,.25)]">
+            <CheckCircle2 className="h-8 w-8" />
+          </span>
+          <p className="mt-6 text-[10px] font-black uppercase tracking-[.15em] text-emerald-300">
+            {bookedCall ? "Setup call booked" : "Workflow ready"}
+          </p>
+          <h1 className="mt-2 text-4xl font-black leading-[1.03] tracking-[-.045em] text-white">
+            {bookedCall
+              ? "You’re booked. Keep PestFlow on your iPhone."
+              : "You’re ready for the real PestFlow app."}
+          </h1>
+          <p className="mt-4 text-sm leading-6 text-slate-300">
+            {bookedCall
+              ? "Your playbook request and setup call are saved. Download PestFlow now so the app is ready before the conversation."
+              : "Your starting workflow is selected. Download PestFlow to continue with your own customers, invoices, and schedule."}
+          </p>
+
+          {(lead.email || lead.phone) && (
+            <div className="mt-5 flex items-center gap-3 rounded-2xl border border-emerald-300/15 bg-emerald-400/[.07] p-3.5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300">
+                <UserRound className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-black text-white">
+                  {lead.name ||
+                    [lead.firstName, lead.lastName].filter(Boolean).join(" ")}
+                </p>
+                <p className="mt-0.5 truncate text-[10px] text-slate-400">
+                  {[lead.email, lead.phone].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-7 grid gap-3">
+            {device === "ios" ? (
+              <>
+                <Button
+                  asChild
+                  className="h-14 w-full rounded-xl bg-emerald-400 text-sm font-black text-emerald-950 hover:bg-emerald-300"
+                >
+                  <a
+                    href={PESTFLOW_APP_STORE_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={openAppStore}
+                  >
+                    <Download className="mr-2 h-5 w-5" />
+                    Download PestFlow for iPhone
+                  </a>
+                </Button>
+                <a
+                  href={appEntryUrl(workflow, lead)}
+                  onClick={continueToApp}
+                  className="flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.04] text-xs font-semibold text-slate-300"
+                >
+                  Finish setup in the browser
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  className="h-14 w-full rounded-xl bg-emerald-400 text-sm font-black text-emerald-950 hover:bg-emerald-300"
+                >
+                  <a href={appEntryUrl(workflow, lead)} onClick={continueToApp}>
+                    Continue into PestFlow
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
+                </Button>
+                <a
+                  href={PESTFLOW_APP_STORE_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={openAppStore}
+                  className="flex h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.04] text-xs font-semibold text-slate-300"
+                >
+                  <Smartphone className="h-4 w-4" />
+                  Send me to the iPhone app
+                </a>
+              </>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={onBack}
+            className="mt-5 w-full text-center text-[11px] font-semibold text-slate-500"
+          >
+            Back to the interactive preview
+          </button>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export default function PestFlowWorkflowPreview() {
   const workflow = useMemo(workflowFromUrl, []);
   const device = useMemo(deviceFromUrl, []);
   const lead = useMemo(savedLead, []);
   const copy = WORKFLOW_COPY[workflow];
   const [activated, setActivated] = useState(false);
-  const [signupOpen, setSignupOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(initialSuccessView);
 
   useEffect(() => {
     analytics.track("Workflow Preview Viewed", {
@@ -407,14 +569,34 @@ export default function PestFlowWorkflowPreview() {
     });
   }, [device, lead.email, lead.phone, workflow]);
 
+  useEffect(() => {
+    if (!showSuccess) return;
+    analytics.track("Workflow Success Viewed", {
+      funnel: "playbook-workflow-v2",
+      workflow,
+      device,
+      source: successSource(),
+      has_saved_contact: Boolean(lead.email || lead.phone),
+    });
+  }, [device, lead.email, lead.phone, showSuccess, workflow]);
+
+  const openSuccess = (trigger: string) => {
+    analytics.track("Workflow Success Opened", {
+      funnel: "playbook-workflow-v2",
+      workflow,
+      device,
+      trigger,
+    });
+    const params = new URLSearchParams(window.location.search);
+    params.set("preview", "success");
+    window.history.replaceState({}, "", `${window.location.pathname}?${params}`);
+    setShowSuccess(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const runPreviewAction = () => {
     if (activated) {
-      analytics.track("Workflow Preview Signup Gate Viewed", {
-        funnel: "playbook-workflow-v2",
-        workflow,
-        device,
-      });
-      setSignupOpen(true);
+      openSuccess("completed_workflow");
       return;
     }
     analytics.track("Workflow Preview Action Completed", {
@@ -425,26 +607,36 @@ export default function PestFlowWorkflowPreview() {
     setActivated(true);
   };
 
-  const continueToApp = () => {
-    analytics.track("Workflow Preview Account Handoff Clicked", {
-      funnel: "playbook-workflow-v2",
-      workflow,
-      device,
-      has_saved_contact: Boolean(lead.email || lead.phone),
-      destination: "pestflow_web_onboarding",
-    });
-  };
-
   const openSignupFromControl = (control: string) => {
     analytics.track("Workflow Preview Secondary Interaction", {
       funnel: "playbook-workflow-v2",
       workflow,
       device,
       control,
-      result: "signup_gate",
+      result: "success_page",
     });
-    setSignupOpen(true);
+    openSuccess(`preview_${control}`);
   };
+
+  if (showSuccess) {
+    return (
+      <SuccessScreen
+        workflow={workflow}
+        device={device}
+        lead={lead}
+        onBack={() => {
+          const params = new URLSearchParams(window.location.search);
+          params.delete("preview");
+          window.history.replaceState(
+            {},
+            "",
+            `${window.location.pathname}?${params}`,
+          );
+          setShowSuccess(false);
+        }}
+      />
+    );
+  }
 
   return (
     <main className="min-h-[100dvh] overflow-x-hidden bg-[#07101c] text-slate-950">
@@ -541,97 +733,6 @@ export default function PestFlowWorkflowPreview() {
           })}
         </nav>
       </div>
-
-      <Dialog open={signupOpen} onOpenChange={setSignupOpen}>
-        <DialogContent
-          className="bottom-0 left-1/2 top-auto w-full max-w-[430px] -translate-x-1/2 translate-y-0 gap-0 rounded-b-none rounded-t-[28px] border border-white/10 bg-[#0d1117] p-0 text-white shadow-2xl sm:bottom-auto sm:top-1/2 sm:w-[calc(100vw-1.5rem)] sm:-translate-y-1/2 sm:rounded-[28px]"
-          hideCloseButton
-        >
-          <DialogTitle className="sr-only">{copy.gateTitle}</DialogTitle>
-          <button
-            type="button"
-            onClick={() => setSignupOpen(false)}
-            className="absolute right-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-white/5 text-slate-400"
-            aria-label="Close signup prompt"
-          >
-            <X className="h-4 w-4" />
-          </button>
-
-          <div className="p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-            <span className="grid h-12 w-12 place-items-center rounded-2xl bg-emerald-400 text-emerald-950">
-              <CheckCircle2 className="h-6 w-6" />
-            </span>
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
-              You tried the workflow
-            </p>
-            <h2 className="mt-2 pr-8 text-2xl font-black leading-tight text-white">
-              {copy.gateTitle}
-            </h2>
-            <p className="mt-3 text-xs leading-5 text-slate-400">
-              {lead.email || lead.phone
-                ? "Your name, phone, and email are already saved. Continue without typing them into this funnel again."
-                : "Continue to create your PestFlow workspace. The preview stays available if you want to look around first."}
-            </p>
-
-            {(lead.email || lead.phone) && (
-              <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-300/15 bg-emerald-400/[.07] p-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-emerald-300">
-                  <UserRound className="h-4 w-4" />
-                </span>
-                <div className="min-w-0">
-                  <p className="truncate text-xs font-black text-white">
-                    {lead.name || [lead.firstName, lead.lastName].filter(Boolean).join(" ")}
-                  </p>
-                  <p className="mt-0.5 truncate text-[10px] text-slate-400">
-                    {[lead.email, lead.phone].filter(Boolean).join(" · ")}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <Button asChild className="mt-5 h-12 w-full rounded-xl bg-emerald-500 text-sm font-black text-white hover:bg-emerald-400">
-              <a href={appEntryUrl(workflow, lead)} onClick={continueToApp}>
-                Create my PestFlow workspace
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-
-            {device === "ios" && (
-              <a
-                href={PESTFLOW_APP_STORE_URL}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() =>
-                  analytics.track("Workflow Preview App Store Clicked", {
-                    funnel: "playbook-workflow-v2",
-                    workflow,
-                    device,
-                  })
-                }
-                className="mt-3 flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[.035] text-xs font-semibold text-slate-300"
-              >
-                <Smartphone className="h-4 w-4" />
-                Get the iPhone app instead
-              </a>
-            )}
-
-            {device === "android" && (
-              <p className="mt-3 text-center text-[10px] leading-4 text-slate-500">
-                PestFlow stays in the browser on Android for now—no second
-                download or login screen.
-              </p>
-            )}
-
-            <button
-              type="button"
-              onClick={() => setSignupOpen(false)}
-              className="mt-4 w-full text-center text-[11px] font-semibold text-slate-500"
-            >
-              Keep exploring the preview
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }

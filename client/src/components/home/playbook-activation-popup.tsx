@@ -114,6 +114,28 @@ function calendlyEmbedUrl(name: string, email: string) {
   return url.toString();
 }
 
+function calendlySuccessUrl() {
+  const current = new URLSearchParams(window.location.search);
+  const requestedDevice = current.get("device");
+  const detectedDevice =
+    requestedDevice === "ios" || requestedDevice === "android"
+      ? requestedDevice
+      : /iphone|ipad|ipod/i.test(navigator.userAgent)
+        ? "ios"
+        : "android";
+  const next = new URLSearchParams({
+    workflow: "recurring",
+    preview: "success",
+    source: "calendly",
+    device: detectedDevice,
+  });
+  ["internal", "revision"].forEach((key) => {
+    const value = current.get(key);
+    if (value) next.set(key, value);
+  });
+  return `/experiments/pestflow-preview?${next.toString()}`;
+}
+
 export function PlaybookActivationPopup() {
   const params =
     typeof window === "undefined"
@@ -212,6 +234,9 @@ export function PlaybookActivationPopup() {
         calendly_event: event.data.event,
         placement: "above_workflow_options",
       });
+      if (event.data.event === "calendly.event_scheduled") {
+        window.location.href = calendlySuccessUrl();
+      }
     };
 
     window.addEventListener("message", handleCalendlyMessage);
