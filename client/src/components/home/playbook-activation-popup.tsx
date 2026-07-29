@@ -89,17 +89,37 @@ function pushPartial(payload: Record<string, unknown>) {
   }
 }
 
-function previewUrl(workflow: WorkflowId) {
+function workflowHandoffUrl(workflow: WorkflowId) {
   const current = new URLSearchParams(window.location.search);
   const next = new URLSearchParams({
-    workflow,
-    source: FUNNEL_ID,
+    source: `playbook_workflow_${workflow}`,
+    intent: workflow,
   });
-  ["internal", "device", "revision"].forEach((key) => {
+  [
+    "internal",
+    "device",
+    "revision",
+    "utm_source",
+    "utm_campaign",
+    "utm_content",
+  ].forEach((key) => {
     const value = current.get(key);
     if (value) next.set(key, value);
   });
-  return `/experiments/pestflow-preview?${next.toString()}`;
+  const requestedDevice = current.get("device");
+  const isIos =
+    requestedDevice === "ios" ||
+    (requestedDevice !== "android" &&
+      /iphone|ipad|ipod/i.test(navigator.userAgent));
+  if (isIos) {
+    next.set("handoff", "app_store");
+  } else {
+    const appUrl = new URL("https://app.pestflow.org/mobile/onboard/feature");
+    appUrl.searchParams.set("intent", workflow);
+    appUrl.searchParams.set("source", FUNNEL_ID);
+    next.set("return_to", appUrl.toString());
+  }
+  return `/signup-success?${next.toString()}`;
 }
 
 function calendlyEmbedUrl(name: string, email: string) {
@@ -112,28 +132,6 @@ function calendlyEmbedUrl(name: string, email: string) {
   if (name.trim()) url.searchParams.set("name", name.trim());
   if (email.trim()) url.searchParams.set("email", email.trim());
   return url.toString();
-}
-
-function calendlySuccessUrl() {
-  const current = new URLSearchParams(window.location.search);
-  const requestedDevice = current.get("device");
-  const detectedDevice =
-    requestedDevice === "ios" || requestedDevice === "android"
-      ? requestedDevice
-      : /iphone|ipad|ipod/i.test(navigator.userAgent)
-        ? "ios"
-        : "android";
-  const next = new URLSearchParams({
-    workflow: "recurring",
-    preview: "success",
-    source: "calendly",
-    device: detectedDevice,
-  });
-  ["internal", "revision"].forEach((key) => {
-    const value = current.get(key);
-    if (value) next.set(key, value);
-  });
-  return `/experiments/pestflow-preview?${next.toString()}`;
 }
 
 export function PlaybookActivationPopup() {
@@ -234,9 +232,6 @@ export function PlaybookActivationPopup() {
         calendly_event: event.data.event,
         placement: "above_workflow_options",
       });
-      if (event.data.event === "calendly.event_scheduled") {
-        window.location.href = calendlySuccessUrl();
-      }
     };
 
     window.addEventListener("message", handleCalendlyMessage);
@@ -339,7 +334,7 @@ export function PlaybookActivationPopup() {
     analytics.track("Playbook Workflow Selected", {
       funnel: FUNNEL_ID,
       workflow,
-      destination: "interactive_preview",
+      destination: "existing_facebook_success_handoff",
     });
     pushPartial({
       ...snapshotRef.current,
@@ -546,7 +541,7 @@ export function PlaybookActivationPopup() {
                       </p>
                     </div>
                   </div>
-                  <div className="h-[360px] overflow-hidden rounded-xl border border-white/10 bg-white sm:h-[390px]">
+                  <div className="h-[320px] overflow-hidden rounded-xl border border-white/10 bg-white sm:h-[360px]">
                     <iframe
                       src={calendlyEmbedUrl(name, email)}
                       title="Book a PestFlow setup call"
@@ -569,8 +564,8 @@ export function PlaybookActivationPopup() {
                   What do you want to do first?
                 </h3>
                 <p className="mt-1 text-xs leading-5 text-slate-400">
-                  Pick the job that is slowing you down. You’ll try it before
-                  PestFlow asks you to create an account.
+                  Pick where you want to start. On iPhone, PestFlow will open
+                  in the Apple App Store.
                 </p>
 
                 <div className="mt-4 grid gap-2.5">
@@ -579,7 +574,7 @@ export function PlaybookActivationPopup() {
                     return (
                       <a
                         key={workflow.id}
-                        href={previewUrl(workflow.id)}
+                        href={workflowHandoffUrl(workflow.id)}
                         onClick={() => chooseWorkflow(workflow.id)}
                         className="group relative flex min-h-[76px] items-center gap-3 rounded-xl border border-white/10 bg-white/[.045] p-3 pr-10 text-left transition hover:border-emerald-400/30 hover:bg-emerald-400/[.07] active:scale-[.99]"
                       >

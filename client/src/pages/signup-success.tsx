@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, Wrench, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { PESTFLOW_APP_STORE_URL } from "@/lib/intent-funnel";
 
 declare global {
   interface Window {
@@ -9,23 +10,70 @@ declare global {
   }
 }
 
-function buildAppHandoffUrl(extras: Record<string, string>) {
+const DEFAULT_APP_HANDOFF_URL =
+  "https://app.pestflow.org/mobile/onboard/feature";
+const ALLOWED_APP_RETURN_HOSTS = new Set([
+  "app.pestflow.org",
+  "new.pestflow.org",
+]);
+
+function resolveAppHandoffUrl(returnTo?: string | null) {
+  if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
+  try {
+    const candidate = new URL(returnTo, DEFAULT_APP_HANDOFF_URL);
+    if (
+      candidate.protocol === "https:" &&
+      ALLOWED_APP_RETURN_HOSTS.has(candidate.hostname)
+    ) {
+      return candidate;
+    }
+  } catch {
+    // Malformed destinations fall back to the established PestFlow app entry.
+  }
+  return new URL(DEFAULT_APP_HANDOFF_URL);
+}
+
+function buildAppHandoffUrl(
+  extras: Record<string, string>,
+  returnTo?: string | null,
+) {
   const popupData = (() => {
-    try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); } catch { return {}; }
+    try {
+      return JSON.parse(
+        localStorage.getItem("pestflow_popup_data") || "{}",
+      );
+    } catch {
+      return {};
+    }
   })();
-  const params = new URLSearchParams();
+  const url = resolveAppHandoffUrl(returnTo);
+  const params = url.searchParams;
   const routesRaw = parseInt(popupData.routeSize || "1", 10);
   const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
   params.set("routes", String(routes));
-  ["email", "firstName", "lastName", "phone", "utm_source", "utm_campaign", "utm_content"].forEach((k) => {
+  [
+    "email",
+    "firstName",
+    "lastName",
+    "phone",
+    "utm_source",
+    "utm_campaign",
+    "utm_content",
+  ].forEach((k) => {
     const v = popupData[k] || extras[k];
     if (v) params.set(k, v);
   });
-  Object.entries(extras).forEach(([k, v]) => { if (v && !params.has(k)) params.set(k, v); });
-  return `https://app.pestflow.org/mobile/onboard/feature?${params.toString()}`;
+  Object.entries(extras).forEach(([k, v]) => {
+    if (v && !params.has(k)) params.set(k, v);
+  });
+  return url.toString();
 }
 
 export default function SignupSuccess() {
+  const [isAppStoreHandoff] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("handoff") === "app_store";
+  });
   const [isTech, setIsTech] = useState(false);
   const [techEmail, setTechEmail] = useState("");
   const [techName, setTechName] = useState("");
@@ -34,52 +82,103 @@ export default function SignupSuccess() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
-    const sessionId = urlParams.get('session_id') || hashParams.get('session_id') || 'unknown_session';
-    const utmSource = urlParams.get('utm_source') || hashParams.get('utm_source') || sessionStorage.getItem('utm_source') || undefined;
-    const utmCampaign = urlParams.get('utm_campaign') || hashParams.get('utm_campaign') || sessionStorage.getItem('utm_campaign') || undefined;
-    const utmContent = urlParams.get('utm_content') || hashParams.get('utm_content') || sessionStorage.getItem('utm_content') || undefined;
-    const type = urlParams.get('type') || hashParams.get('type');
-    const email = urlParams.get('email') || '';
+    const hashParams = new URLSearchParams(
+      window.location.hash.split("?")[1],
+    );
+    const sessionId =
+      urlParams.get("session_id") ||
+      hashParams.get("session_id") ||
+      "unknown_session";
+    const utmSource =
+      urlParams.get("utm_source") ||
+      hashParams.get("utm_source") ||
+      sessionStorage.getItem("utm_source") ||
+      undefined;
+    const utmCampaign =
+      urlParams.get("utm_campaign") ||
+      hashParams.get("utm_campaign") ||
+      sessionStorage.getItem("utm_campaign") ||
+      undefined;
+    const utmContent =
+      urlParams.get("utm_content") ||
+      hashParams.get("utm_content") ||
+      sessionStorage.getItem("utm_content") ||
+      undefined;
+    const type = urlParams.get("type") || hashParams.get("type");
+    const email = urlParams.get("email") || "";
+    const returnTo =
+      urlParams.get("return_to") || hashParams.get("return_to");
 
-    analytics.track(EVENTS.SIGNUP.COMPLETE, { utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent, role: type === 'tech' ? 'technician' : 'owner' });
-    analytics.track(EVENTS.CHECKOUT.SUCCESS, { sessionId, value: type === 'tech' ? 0 : 1.00, currency: 'USD' });
+    analytics.track(EVENTS.SIGNUP.COMPLETE, {
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
+      role: type === "tech" ? "technician" : "owner",
+    });
+    analytics.track(EVENTS.CHECKOUT.SUCCESS, {
+      sessionId,
+      value: type === "tech" ? 0 : 1.0,
+      currency: "USD",
+    });
     analytics.track(EVENTS.ACCOUNT.SIGNUP_COMPLETE);
 
-    const anonId = sessionStorage.getItem('pestflow_user_id') || `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    sessionStorage.setItem('pestflow_user_id', anonId);
-    analytics.identify(anonId, { signupDate: new Date().toISOString(), plan: type === 'tech' ? 'tech-free' : 'trial', utm_source: utmSource, utm_campaign: utmCampaign, utm_content: utmContent });
+    const anonId =
+      sessionStorage.getItem("pestflow_user_id") ||
+      `user_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    sessionStorage.setItem("pestflow_user_id", anonId);
+    analytics.identify(anonId, {
+      signupDate: new Date().toISOString(),
+      plan: type === "tech" ? "tech-free" : "trial",
+      utm_source: utmSource,
+      utm_campaign: utmCampaign,
+      utm_content: utmContent,
+    });
 
     if (window.fbq) {
-      window.fbq('track', 'Lead', { value: type === 'tech' ? 0 : 10.00, currency: 'USD' });
+      window.fbq("track", "Lead", {
+        value: type === "tech" ? 0 : 10.0,
+        currency: "USD",
+      });
     }
 
     if (type === 'tech') {
       setIsTech(true);
       setTechEmail(email);
-      setTechName(urlParams.get('name') || '');
-      setTechEmployer(urlParams.get('employer') || '');
+      setTechName(urlParams.get("name") || "");
+      setTechEmployer(urlParams.get("employer") || "");
       const timer = setTimeout(() => setShowTechCta(true), 1500);
       return () => clearTimeout(timer);
     }
 
+    if (isAppStoreHandoff) {
+      const timer = setTimeout(() => {
+        window.location.replace(PESTFLOW_APP_STORE_URL);
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+
     // Owner: brief confirmation flash, then hand off to the app.
-    const handoff = buildAppHandoffUrl({
-      email,
-      utm_source: utmSource || '',
-      utm_campaign: utmCampaign || '',
-      utm_content: utmContent || '',
-    });
-    const timer = setTimeout(() => { window.location.href = handoff; }, 1200);
+    const handoff = buildAppHandoffUrl(
+      {
+        email,
+        utm_source: utmSource || "",
+        utm_campaign: utmCampaign || "",
+        utm_content: utmContent || "",
+      },
+      returnTo,
+    );
+    const timer = setTimeout(() => {
+      window.location.href = handoff;
+    }, 1200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAppStoreHandoff]);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
-    if (techEmail) params.set('email', techEmail);
-    if (techName) params.set('name', techName);
-    if (techEmployer) params.set('employer', techEmployer);
-    const qs = params.toString() ? `?${params.toString()}` : '';
+    if (techEmail) params.set("email", techEmail);
+    if (techName) params.set("name", techName);
+    if (techEmployer) params.set("employer", techEmployer);
+    const qs = params.toString() ? `?${params.toString()}` : "";
     window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
   };
 
@@ -101,14 +200,21 @@ export default function SignupSuccess() {
             className="relative z-10 w-full max-w-md"
           >
             <div className="bg-white rounded-2xl shadow-xl p-8 text-center space-y-5">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style={{ background: "rgba(30,207,200,0.12)" }}>
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center mx-auto"
+                style={{ background: "rgba(30,207,200,0.12)" }}
+              >
                 <Wrench className="w-7 h-7" style={{ color: "#1ECFC8" }} />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 mb-1">Your free tech account is ready!</h1>
+                <h1 className="text-2xl font-bold text-slate-900 mb-1">
+                  Your free tech account is ready!
+                </h1>
                 <p className="text-slate-500 text-sm">
-                  {techName ? `Welcome, ${techName.split(' ')[0]}! ` : ''}
-                  Set a password and you're in — free, always.
+                  {techName
+                    ? `Welcome, ${techName.split(" ")[0]}! `
+                    : ""}
+                  Set a password and you&apos;re in — free, always.
                 </p>
               </div>
               {techEmail && (
@@ -119,7 +225,10 @@ export default function SignupSuccess() {
               <button
                 onClick={handleTechGoToApp}
                 className="w-full font-bold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg text-white"
-                style={{ background: "#1ECFC8", boxShadow: "0 6px 20px rgba(30,207,200,0.3)" }}
+                style={{
+                  background: "#1ECFC8",
+                  boxShadow: "0 6px 20px rgba(30,207,200,0.3)",
+                }}
               >
                 Set Up My Account
                 <ArrowRight className="w-4 h-4" />
@@ -143,9 +252,24 @@ export default function SignupSuccess() {
               <CheckCircle2 className="w-12 h-12 text-emerald-600" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
-              <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
+              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
+                {isAppStoreHandoff ? "Success!" : "You're In!"}
+              </h1>
+              <p className="text-lg text-slate-500 max-w-sm mx-auto">
+                {isAppStoreHandoff
+                  ? "Taking you to PestFlow in the Apple App Store…"
+                  : "Taking you into PestFlow…"}
+              </p>
             </div>
+            {isAppStoreHandoff && (
+              <a
+                href={PESTFLOW_APP_STORE_URL}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0a84ff] px-5 py-3 font-bold text-white shadow-lg shadow-blue-500/20"
+              >
+                Open the App Store
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
