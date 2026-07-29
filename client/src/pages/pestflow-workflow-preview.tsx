@@ -130,6 +130,20 @@ function appEntryUrl(workflow: WorkflowId, lead: SavedLead) {
   return url.toString();
 }
 
+function workflowChoiceUrl() {
+  const current = new URLSearchParams(window.location.search);
+  const next = new URLSearchParams({
+    funnel: "playbook-workflow-v2",
+    "popup-check": "1",
+    preview_step: "workflow",
+  });
+  ["internal", "device", "revision"].forEach((key) => {
+    const value = current.get(key);
+    if (value) next.set(key, value);
+  });
+  return `/?${next.toString()}`;
+}
+
 function PreviewHeader({
   lead,
   onEngage,
@@ -447,7 +461,7 @@ export default function PestFlowWorkflowPreview() {
 
         <div className="flex-1 overflow-y-auto px-4 pb-28 pt-4">
           <a
-            href="/?funnel=playbook-workflow-v2&popup-check=1&preview_step=workflow"
+            href={workflowChoiceUrl()}
             className="mb-3 inline-flex items-center gap-1.5 text-[10px] font-bold text-slate-500"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Change workflow
