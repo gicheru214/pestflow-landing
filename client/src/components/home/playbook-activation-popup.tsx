@@ -136,6 +136,7 @@ function appEntryUrl(
 function calendlyEmbedUrl(name: string, email: string) {
   const url = new URL(PESTFLOW_CALENDLY_URL);
   url.searchParams.set("hide_gdpr_banner", "1");
+  url.searchParams.set("hide_event_type_details", "1");
   url.searchParams.set("background_color", "0b1220");
   url.searchParams.set("text_color", "e2e8f0");
   url.searchParams.set("primary_color", "22c55e");
@@ -156,18 +157,17 @@ function CalendarEmbed({
   const trackedLoad = useRef(false);
 
   return (
-    <section className="mt-5">
-      <div className="mb-3 flex items-start gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
+    <section className="mt-4">
+      <div className="mb-2 flex items-center gap-2.5">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
           <CalendarDays className="h-4.5 w-4.5" />
         </span>
         <div>
           <h3 className="text-sm font-black text-white">
             Want help getting set up?
           </h3>
-          <p className="mt-1 text-xs leading-5 text-slate-400">
-            Pick a time below. We’ll work from the information you already
-            entered.
+          <p className="mt-0.5 text-[11px] leading-4 text-slate-400">
+            Pick a time below—we’ll use the information you already entered.
           </p>
         </div>
       </div>
@@ -175,7 +175,7 @@ function CalendarEmbed({
         <iframe
           src={calendlyEmbedUrl(name, email)}
           title="Book a PestFlow setup call"
-          className="h-[630px] w-full bg-white"
+          className="h-[520px] w-full bg-white"
           onLoad={() => {
             if (trackedLoad.current) return;
             trackedLoad.current = true;
@@ -203,17 +203,17 @@ function WorkflowChoices({
   variant: PlaybookVariant;
 }) {
   return (
-    <section className="mt-5">
+    <section className="mt-4">
       <div className="mb-3">
         <h3 className="text-base font-black text-white">
           What do you need to get done first?
         </h3>
-        <p className="mt-1 text-xs leading-5 text-slate-400">
+        <p className="mt-1 text-[11px] leading-4 text-slate-400">
           Choose one and we’ll take you directly into that PestFlow workflow.
           You can explore before creating the account.
         </p>
       </div>
-      <div className="grid gap-2.5">
+      <div className="grid grid-cols-2 gap-2">
         {(
           Object.entries(WORKFLOWS) as Array<
             [WorkflowId, (typeof WORKFLOWS)[WorkflowId]]
@@ -231,20 +231,20 @@ function WorkflowChoices({
                   destination: "pestflow_app",
                 })
               }
-              className="group flex min-h-[76px] items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.045] p-3.5 text-left transition active:scale-[.985]"
+              className="group relative flex min-h-[96px] flex-col items-start rounded-2xl border border-white/10 bg-white/[0.045] p-3 text-left transition active:scale-[.985]"
             >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">
-                <Icon className="h-4.5 w-4.5" />
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-400/15 text-emerald-300">
+                <Icon className="h-4 w-4" />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-black text-white">
+              <span className="mt-2 min-w-0 pr-4">
+                <span className="block text-xs font-black leading-4 text-white">
                   {workflow.label}
                 </span>
-                <span className="mt-0.5 block text-[11px] leading-4 text-slate-400">
+                <span className="mt-1 hidden text-[11px] leading-4 text-slate-400 sm:block">
                   {workflow.description}
                 </span>
               </span>
-              <ArrowRight className="h-4 w-4 shrink-0 text-emerald-300 transition group-active:translate-x-1" />
+              <ArrowRight className="absolute right-3 top-3 h-4 w-4 text-emerald-300 transition group-active:translate-x-1" />
             </a>
           );
         })}
@@ -520,15 +520,14 @@ export function PlaybookActivationPopup() {
                   Free download · $97 value
                 </div>
                 <h2 className="mt-3 text-[28px] font-black leading-[1.02] tracking-[-.04em] text-white">
-                  The $1–3M Pest Control Playbook
+                  The $3M Pest Control Playbook
                 </h2>
                 <p
                   id="playbook-popup-description"
                   className="mt-3 text-sm leading-6 text-slate-300"
                 >
-                  The practical blueprint for growing from $1 million to $3
-                  million without losing control of routes, billing, or the
-                  field.
+                  The practical blueprint for scaling to $3 million without
+                  losing control of routes, billing, or the field.
                 </p>
 
                 <ul className="mt-4 space-y-2">
@@ -651,22 +650,22 @@ export function PlaybookActivationPopup() {
                 initial={{ opacity: 0, x: 18 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -18 }}
-                className="relative p-5 sm:p-6"
+                className="relative p-4 sm:p-5"
               >
                 <div className="flex items-center gap-3 pr-14">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-400 text-emerald-950">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[.15em] text-emerald-300">
                       Request saved
                     </p>
-                    <h2 className="mt-1 text-xl font-black leading-tight text-white">
+                    <h2 className="mt-0.5 text-lg font-black leading-tight text-white">
                       Okay—the playbook will be sent in 10 minutes.
                     </h2>
                   </div>
                 </div>
-                <p className="mt-4 text-sm leading-6 text-slate-300">
+                <p className="mt-3 text-xs leading-5 text-slate-300">
                   While it’s on the way, choose whether you want to explore
                   PestFlow yourself or get help setting it up.
                 </p>
@@ -689,14 +688,14 @@ export function PlaybookActivationPopup() {
 
                 {variant === "playbook-pwa" && (
                   <>
-                    <section className="mt-5 rounded-2xl border border-emerald-300/35 bg-emerald-400/10 p-4">
-                      <span className="grid h-11 w-11 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
+                    <section className="mt-4 rounded-2xl border border-emerald-300/35 bg-emerald-400/10 p-3.5">
+                      <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-400 text-emerald-950">
                         <Rocket className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-3 text-lg font-black text-white">
+                      <h3 className="mt-2.5 text-base font-black text-white">
                         Start inside PestFlow
                       </h3>
-                      <p className="mt-1 text-xs leading-5 text-slate-300">
+                      <p className="mt-1 text-[11px] leading-4 text-slate-300">
                         Explore in your browser first. PestFlow will ask you to
                         finish account setup when you use or save a live
                         workflow.
@@ -728,7 +727,7 @@ export function PlaybookActivationPopup() {
                       email={email}
                       variant={variant}
                     />
-                    <div className="mt-6 flex items-center gap-3">
+                    <div className="mt-4 flex items-center gap-3">
                       <div className="h-px flex-1 bg-white/10" />
                       <span className="text-[10px] font-black uppercase tracking-[.15em] text-slate-500">
                         Or start yourself
