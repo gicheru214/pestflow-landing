@@ -10,6 +10,7 @@ import { Widgets } from "@/components/home/widgets";
 import { AutoPopup } from "@/components/home/auto-popup";
 import { IntentFirstPopup } from "@/components/home/intent-first-popup";
 import { JtbdPopup } from "@/components/home/jtbd-popup";
+import { PlaybookActivationPopup } from "@/components/home/playbook-activation-popup";
 import { MobileDownloadBanner } from "@/components/home/mobile-download-banner";
 import { analytics, EVENTS } from "@/lib/analytics";
 
@@ -67,7 +68,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
-      {selectedFunnel === "intent-first" ? (
+      {selectedFunnel?.startsWith("playbook-") ? (
+        <PlaybookActivationPopup />
+      ) : selectedFunnel === "intent-first" ? (
         <IntentFirstPopup />
       ) : selectedFunnel === "jtbd" ? (
         <JtbdPopup />
