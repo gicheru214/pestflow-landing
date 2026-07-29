@@ -1,95 +1,131 @@
 import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
   ArrowRight,
   CalendarDays,
-  ExternalLink,
-  MonitorPlay,
   Rocket,
-  Sparkles,
+  Smartphone,
   X,
 } from "lucide-react";
 import { analytics } from "@/lib/analytics";
-import { PESTFLOW_CALENDLY_URL } from "@/lib/intent-funnel";
+import {
+  PESTFLOW_APP_STORE_URL,
+  PESTFLOW_CALENDLY_URL,
+  PESTFLOW_PWA_APP_URL,
+} from "@/lib/intent-funnel";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
-type IntentStep = "choice" | "video";
-type IntentChoice = "start" | "watch" | "call";
+type Device = "ios" | "android" | "desktop";
 
-function initialStepFromUrl(): IntentStep {
-  if (typeof window === "undefined") return "choice";
-  const requested = new URLSearchParams(window.location.search).get("intent_step");
-  return requested === "video" ? requested : "choice";
+const FIRST_VISIT_KEY = "pestflow_first_visit_start_prompt_v1";
+
+function detectedDevice(): Device {
+  if (typeof window === "undefined") return "desktop";
+
+  const requested = new URLSearchParams(window.location.search).get("device");
+  if (requested === "ios" || requested === "android" || requested === "desktop") {
+    return requested;
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isTouchMac =
+    navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+
+  if (/iphone|ipad|ipod/.test(userAgent) || isTouchMac) return "ios";
+  if (/android/.test(userAgent)) return "android";
+  return "desktop";
+}
+
+function rememberFirstVisitPrompt() {
+  try {
+    window.localStorage.setItem(FIRST_VISIT_KEY, new Date().toISOString());
+  } catch {
+    // Storage can be unavailable in strict/private browser modes.
+  }
+}
+
+function hasSeenFirstVisitPrompt() {
+  try {
+    return Boolean(window.localStorage.getItem(FIRST_VISIT_KEY));
+  } catch {
+    return false;
+  }
 }
 
 export function IntentFirstPopup() {
   const forced =
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).has("popup-check");
-  const initialStep = useMemo(initialStepFromUrl, []);
+  const device = useMemo(detectedDevice, []);
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<IntentStep>(initialStep);
 
   useEffect(() => {
     if (forced) {
       setOpen(true);
-      analytics.track("Intent Prompt Viewed", {
-        trigger: "forced",
-        funnel: "intent_first",
-        step: initialStep,
+      analytics.track("First Visit Start Prompt Viewed", {
+        trigger: "forced_preview",
+        funnel: "first_visit_start",
+        detected_device: device,
       });
       return;
     }
 
-    const seenKey = "pestflow_intent_first_seen";
-    if (sessionStorage.getItem(seenKey)) return;
+    if (hasSeenFirstVisitPrompt()) return;
 
     const timer = window.setTimeout(() => {
+      rememberFirstVisitPrompt();
       setOpen(true);
-      sessionStorage.setItem(seenKey, "true");
-      analytics.track("Intent Prompt Viewed", {
-        trigger: "engaged_timer",
-        delay_ms: 8000,
-        funnel: "intent_first",
+      analytics.track("First Visit Start Prompt Viewed", {
+        trigger: "first_visit_timer",
+        delay_ms: 2500,
+        funnel: "first_visit_start",
+        detected_device: device,
       });
-    }, 8000);
+    }, 2500);
 
     return () => window.clearTimeout(timer);
-  }, [forced, initialStep]);
+  }, [device, forced]);
 
   const close = () => {
-    analytics.track("Intent Prompt Dismissed", {
-      funnel: "intent_first",
-      step,
+    rememberFirstVisitPrompt();
+    analytics.track("First Visit Start Prompt Dismissed", {
+      funnel: "first_visit_start",
+      detected_device: device,
     });
     setOpen(false);
   };
 
-  const choose = (intent: IntentChoice) => {
-    analytics.track("Intent Selected", { funnel: "intent_first", intent });
+  const startUsingPestFlow = () => {
+    const destination =
+      device === "ios" ? PESTFLOW_APP_STORE_URL : PESTFLOW_PWA_APP_URL;
 
-    if (intent === "call") {
-      analytics.track("Calendar Opened", {
-        funnel: "intent_first",
-        surface: "intent_prompt",
-      });
-      window.open(PESTFLOW_CALENDLY_URL, "_blank", "noopener,noreferrer");
-      return;
-    }
-
-    if (intent === "watch") {
-      setStep("video");
-      return;
-    }
-
-    analytics.track("Inside Signup Started", {
-      funnel: "intent_first",
-      surface: "intent_prompt",
+    analytics.track("First Visit Start Selected", {
+      funnel: "first_visit_start",
+      detected_device: device,
+      destination: device === "ios" ? "ios_app_store" : "web_app",
     });
-    window.location.href = "/experiments/intent-first/success?intent=start";
+    window.location.href = destination;
   };
+
+  const bookWalkthrough = () => {
+    analytics.track("First Visit Walkthrough Selected", {
+      funnel: "first_visit_start",
+      detected_device: device,
+    });
+    window.location.href = PESTFLOW_CALENDLY_URL;
+  };
+
+  const deviceLabel =
+    device === "ios"
+      ? "iPhone detected"
+      : device === "android"
+        ? "Android detected"
+        : "Works on phone or desktop";
+
+  const startDescription =
+    device === "ios"
+      ? "Open the iPhone app and start at your own pace. Setup help stays available if you want it."
+      : "Open PestFlow and start at your own pace. Setup help stays available if you want it.";
 
   return (
     <Dialog
@@ -100,162 +136,107 @@ export function IntentFirstPopup() {
       }}
     >
       <DialogContent
-        className="max-h-[min(92vh,calc(100dvh-1rem))] w-[calc(100vw-1.25rem)] max-w-[calc(100vw-1.25rem)] overflow-y-auto border-slate-700 bg-[#08111f] p-0 text-white shadow-2xl sm:max-w-[760px]"
-        aria-describedby="intent-first-description"
+        className="bottom-2 left-1/2 top-auto max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] max-w-[430px] -translate-x-1/2 translate-y-0 gap-0 overflow-y-auto rounded-[28px] border border-white/10 bg-[#08111f] p-0 text-white shadow-[0_28px_90px_rgba(0,0,0,.55)] sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
+        aria-describedby="first-visit-start-description"
         hideCloseButton
       >
-        <DialogTitle className="sr-only">Choose how to start with PestFlow</DialogTitle>
-        <button
-          type="button"
-          aria-label="Close intent prompt"
-          onClick={close}
-          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-slate-950/70 text-slate-300 transition hover:border-white/30 hover:bg-slate-800 hover:text-white"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <DialogTitle className="sr-only">
+          Choose how to get started with PestFlow
+        </DialogTitle>
 
-        <div className="relative overflow-hidden rounded-lg">
-          <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-emerald-500/15 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-36 -left-28 h-72 w-72 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[28px]">
+          <div className="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-emerald-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-28 -left-20 h-56 w-56 rounded-full bg-cyan-500/10 blur-3xl" />
 
-          <div className="relative border-b border-white/10 px-5 py-5 sm:px-8">
-            <div className="flex items-center gap-3 pr-12">
-              <div className="grid h-10 w-10 place-items-center overflow-hidden rounded-xl bg-white p-1.5">
-                <img src={logoImage} alt="PestFlow" className="h-full w-full object-contain" />
-              </div>
-              <div>
-                <p className="text-sm font-bold tracking-wide text-white">PestFlow</p>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-300">Choose how to start</p>
-              </div>
-            </div>
-          </div>
+          <button
+            type="button"
+            aria-label="Close and keep browsing"
+            onClick={close}
+            className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-slate-950/75 text-slate-200 shadow-lg transition active:scale-95"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
-          {step === "choice" && (
-            <div className="relative px-5 pb-6 pt-7 sm:px-8 sm:pb-8">
-              <div className="max-w-2xl">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-                  <Sparkles className="h-3.5 w-3.5" /> Choose your shortest path
-                </div>
-                <h2 className="text-2xl font-black tracking-tight text-white sm:text-4xl">
-                  What would you like to do first?
-                </h2>
-                <p id="intent-first-description" className="mt-3 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                  Start inside PestFlow, watch the two-minute walkthrough, or get help setting it up. You can switch paths at any time.
+          <div className="relative px-5 pb-5 pt-5">
+            <div className="flex items-center gap-3 pr-14">
+              <span className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-1.5 shadow-lg">
+                <img
+                  src={logoImage}
+                  alt="PestFlow"
+                  className="h-full w-full object-contain"
+                />
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-black tracking-wide text-white">
+                  PestFlow
+                </p>
+                <p className="mt-0.5 text-[10px] font-black uppercase tracking-[0.17em] text-emerald-300">
+                  First time here?
                 </p>
               </div>
-
-              <div className="mt-6 grid gap-3">
-                <button
-                  type="button"
-                  onClick={() => choose("start")}
-                  className="group flex w-full items-start gap-4 rounded-2xl border border-emerald-300/40 bg-emerald-400/10 p-4 text-left transition hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-emerald-400/15 sm:p-5"
-                >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20">
-                    <Rocket className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-base font-bold text-white sm:text-lg">Start setting up PestFlow</span>
-                      <span className="rounded-full bg-emerald-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-emerald-950">Recommended</span>
-                    </span>
-                    <span className="mt-1 block text-sm leading-5 text-slate-300">
-                      Enter PestFlow first, then save your contact information from inside your workspace.
-                    </span>
-                  </span>
-                  <ArrowRight className="mt-3 h-5 w-5 shrink-0 text-emerald-300 transition group-hover:translate-x-1" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => choose("watch")}
-                  className="group flex w-full items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition hover:-translate-y-0.5 hover:border-cyan-300/50 hover:bg-white/[0.07] sm:p-5"
-                >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-cyan-400/15 text-cyan-200">
-                    <MonitorPlay className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="text-base font-bold text-white sm:text-lg">Watch the product walkthrough</span>
-                    <span className="mt-1 block text-sm leading-5 text-slate-300">
-                      See scheduling, routing, invoicing, and field work before you start.
-                    </span>
-                  </span>
-                  <ArrowRight className="mt-3 h-5 w-5 shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-cyan-200" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => choose("call")}
-                  className="group flex w-full items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition hover:-translate-y-0.5 hover:border-violet-300/50 hover:bg-white/[0.07] sm:p-5"
-                >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
-                    <CalendarDays className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="text-base font-bold text-white sm:text-lg">Book a setup call</span>
-                    <span className="mt-1 block text-sm leading-5 text-slate-300">
-                      Pick a time and we’ll help configure your first workflow with you.
-                    </span>
-                  </span>
-                  <ExternalLink className="mt-3 h-5 w-5 shrink-0 text-slate-400 transition group-hover:text-violet-200" />
-                </button>
-              </div>
-
-              <p className="mt-5 text-center text-xs text-slate-500">
-                Close this window to keep browsing the landing page.
-              </p>
             </div>
-          )}
 
-          {step === "video" && (
-            <div className="relative px-5 pb-6 pt-6 sm:px-8 sm:pb-8">
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-bold text-emerald-200">
+              <Smartphone className="h-3.5 w-3.5" />
+              {deviceLabel}
+            </div>
+
+            <h2 className="mt-4 max-w-sm text-[29px] font-black leading-[1.05] tracking-[-0.035em] text-white">
+              Ready to start—or want us to show you around?
+            </h2>
+            <p
+              id="first-visit-start-description"
+              className="mt-3 text-sm leading-6 text-slate-300"
+            >
+              Choose the path that feels right. You can switch or ask for help
+              at any time.
+            </p>
+
+            <div className="mt-5 grid gap-3">
               <button
                 type="button"
-                onClick={() => setStep("choice")}
-                className="mb-4 inline-flex items-center gap-2 text-sm font-semibold text-slate-300 transition hover:text-white"
+                onClick={startUsingPestFlow}
+                className="group flex min-h-[108px] w-full items-center gap-4 rounded-[22px] border border-emerald-300/45 bg-emerald-400/12 p-4 text-left shadow-[0_16px_36px_rgba(16,185,129,.10)] transition active:scale-[.985]"
               >
-                <ArrowLeft className="h-4 w-4" /> Back to options
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-500/20">
+                  <Rocket className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[17px] font-black text-white">
+                    Start using PestFlow
+                  </span>
+                  <span className="mt-1 block text-xs leading-[1.55] text-slate-300">
+                    {startDescription}
+                  </span>
+                </span>
+                <ArrowRight className="h-5 w-5 shrink-0 text-emerald-300 transition group-active:translate-x-1" />
               </button>
-              <h2 className="text-2xl font-black tracking-tight text-white sm:text-3xl">See PestFlow in two minutes</h2>
-              <p id="intent-first-description" className="mt-2 text-sm text-slate-300">
-                The walkthrough starts muted. Nothing launches until someone chooses to watch it.
-              </p>
-              <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-xl">
-                <div className="relative aspect-video w-full">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src="https://www.youtube.com/embed/TB4__rmaNpE?autoplay=1&mute=1&rel=0"
-                    title="PestFlow product walkthrough"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="absolute inset-0 h-full w-full"
-                    onLoad={() => analytics.track("Intent Video Started", { funnel: "intent_first" })}
-                  />
-                </div>
-              </div>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <Button asChild className="h-12 flex-1 bg-emerald-400 font-bold text-emerald-950 hover:bg-emerald-300">
-                  <a
-                    href="/experiments/intent-first/success?intent=video"
-                    onClick={() => analytics.track("Inside Signup Started", { funnel: "intent_first", surface: "video_step" })}
-                  >
-                    Start setting up PestFlow <ArrowRight className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-                <Button asChild variant="outline" className="h-12 border-white/15 bg-white/[0.03] text-white hover:bg-white/10 hover:text-white">
-                  <a
-                    href={PESTFLOW_CALENDLY_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => analytics.track("Calendar Opened", { funnel: "intent_first", surface: "video_step" })}
-                  >
-                    <CalendarDays className="mr-2 h-4 w-4" /> Book setup call
-                  </a>
-                </Button>
-              </div>
-            </div>
-          )}
 
+              <button
+                type="button"
+                onClick={bookWalkthrough}
+                className="group flex min-h-[108px] w-full items-center gap-4 rounded-[22px] border border-white/12 bg-white/[0.055] p-4 text-left transition active:scale-[.985]"
+              >
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-400/15 text-violet-200">
+                  <CalendarDays className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[17px] font-black text-white">
+                    Book a live walkthrough
+                  </span>
+                  <span className="mt-1 block text-xs leading-[1.55] text-slate-300">
+                    Pick a time now. We’ll walk through your setup and help get
+                    your account activated.
+                  </span>
+                </span>
+                <ArrowRight className="h-5 w-5 shrink-0 text-violet-200 transition group-active:translate-x-1" />
+              </button>
+            </div>
+
+            <p className="mt-4 text-center text-[11px] leading-5 text-slate-500">
+              Not ready? Tap × and keep looking around.
+            </p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
