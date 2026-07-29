@@ -8,6 +8,7 @@ import {
   normalizeAppStoreHandoffEventId,
 } from "../client/src/lib/appStoreHandoff";
 import { buildMobileFieldSuccessPath } from "../client/src/lib/mobileFieldHandoff";
+import { capturedWorkflowLeadEventId } from "../client/src/lib/workflowLeadHandoff";
 
 test("builds the shared success path for an App Store handoff with paid attribution", () => {
   const path = buildAppStoreSuccessPath(
@@ -61,7 +62,7 @@ test("uses the controllable mobile banner instead of Safari's direct App Store b
   assert.match(bannerSource, /signup-success\?handoff=app_store/);
 });
 
-test("uses a separate Meta event rather than a Lead or Signup", () => {
+test("keeps the App Store milestone separate from Lead and Signup", () => {
   const calls: unknown[][] = [];
   const stored = new Map<string, string>();
   Object.defineProperty(globalThis, "window", {
@@ -88,4 +89,48 @@ test("uses a separate Meta event rather than a Lead or Signup", () => {
 
   delete (globalThis as { window?: unknown }).window;
   delete (globalThis as { sessionStorage?: unknown }).sessionStorage;
+});
+
+test("fires a deduplicated Lead on success only for captured workflow leads", () => {
+  const successSource = readFileSync(
+    "client/src/pages/signup-success.tsx",
+    "utf8",
+  );
+  const popupSource = readFileSync(
+    "client/src/components/home/playbook-activation-popup.tsx",
+    "utf8",
+  );
+  const appStoreBranch = successSource.slice(
+    successSource.indexOf("if (isAppStoreHandoff)"),
+    successSource.indexOf("if (completedAccountSignup)"),
+  );
+
+  assert.match(popupSource, /beginMetaLeadEvent\(\)/);
+  assert.match(popupSource, /next\.set\("meta_event_id", metaEventId\)/);
+  assert.equal(
+    capturedWorkflowLeadEventId(
+      "playbook_workflow_recurring",
+      "pestflow-lead-event-123",
+    ),
+    "pestflow-lead-event-123",
+  );
+  assert.equal(
+    capturedWorkflowLeadEventId(
+      "mobile_banner",
+      "pestflow-lead-event-123",
+    ),
+    null,
+  );
+  assert.equal(
+    capturedWorkflowLeadEventId("playbook_workflow_invoice", "bad id"),
+    null,
+  );
+  assert.match(successSource, /capturedWorkflowLeadEventId\(/);
+  assert.match(successSource, /fireMetaLeadOnce\(leadEventId\)/);
+  assert.match(successSource, /const APP_STORE_OPEN_DELAY_MS = 1400/);
+  assert.doesNotMatch(successSource, /Open the App Store/);
+  assert.doesNotMatch(
+    appStoreBranch,
+    /SIGNUP\.COMPLETE|CHECKOUT\.SUCCESS|ACCOUNT\.SIGNUP_COMPLETE/,
+  );
 });

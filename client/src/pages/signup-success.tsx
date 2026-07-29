@@ -6,6 +6,7 @@ import {
   fireMetaLeadOnce,
   getOrCreateMetaLeadEventId,
 } from "@/lib/metaLeadEvent";
+import { capturedWorkflowLeadEventId } from "@/lib/workflowLeadHandoff";
 import {
   captureMarketingAttribution,
   MARKETING_ATTRIBUTION_KEYS,
@@ -19,7 +20,7 @@ import {
 
 const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
-const APP_STORE_OPEN_DELAY_MS = 1200;
+const APP_STORE_OPEN_DELAY_MS = 1400;
 
 export function resolveAppHandoffUrl(returnTo?: string | null): URL {
   if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
@@ -72,12 +73,17 @@ export default function SignupSuccess() {
     const returnTo = urlParams.get('return_to') || hashParams.get('return_to');
     const source = urlParams.get('source') || hashParams.get('source');
     const completedAccountSignup = source === 'app_signup';
+    const isInternalPreview = urlParams.get('internal') === '1';
 
     if (isAppStoreHandoff) {
       const appStoreSource = source || "mobile_banner";
-      const eventId = normalizeAppStoreHandoffEventId(
+      const appStoreEventId = normalizeAppStoreHandoffEventId(
         urlParams.get("app_store_event_id") || hashParams.get("app_store_event_id"),
       ) ?? createAppStoreHandoffEventId();
+      const leadEventId = capturedWorkflowLeadEventId(
+        source,
+        urlParams.get("meta_event_id") || hashParams.get("meta_event_id"),
+      );
       const eventProperties = {
         ...attribution,
         source: appStoreSource,
@@ -88,26 +94,61 @@ export default function SignupSuccess() {
       analytics.pageView("Signup Success", eventProperties);
       analytics.track(EVENTS.LANDING.APP_STORE_HANDOFF, eventProperties);
 
-      void fetch("/api/meta/app-store-handoff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventId,
-          source: appStoreSource,
-        }),
-        keepalive: true,
-      }).catch(() => {
-        // The browser event still records the handoff when CAPI is unavailable.
-      });
+      if (!isInternalPreview) {
+        void fetch("/api/meta/app-store-handoff", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventId: appStoreEventId,
+            source: appStoreSource,
+          }),
+          keepalive: true,
+        }).catch(() => {
+          // The browser event still records the handoff when CAPI is unavailable.
+        });
+      }
 
-      let metaRetryTimer: number | undefined;
-      let metaRetryAttempts = 0;
-      if (!fireMetaAppStoreHandoffOnce(eventId)) {
-        metaRetryTimer = window.setInterval(() => {
-          metaRetryAttempts += 1;
-          if (fireMetaAppStoreHandoffOnce(eventId) || metaRetryAttempts >= 8) {
-            if (metaRetryTimer !== undefined) window.clearInterval(metaRetryTimer);
-            metaRetryTimer = undefined;
+      let appStoreRetryTimer: number | undefined;
+      let appStoreRetryAttempts = 0;
+      if (
+        !isInternalPreview
+        && !fireMetaAppStoreHandoffOnce(appStoreEventId)
+      ) {
+        appStoreRetryTimer = window.setInterval(() => {
+          appStoreRetryAttempts += 1;
+          if (
+            fireMetaAppStoreHandoffOnce(appStoreEventId)
+            || appStoreRetryAttempts >= 12
+          ) {
+            if (appStoreRetryTimer !== undefined) {
+              window.clearInterval(appStoreRetryTimer);
+            }
+            appStoreRetryTimer = undefined;
+          }
+        }, 100);
+      }
+
+      // Only leads that already completed the playbook contact form receive a
+      // Lead browser event here. The matching CAPI event uses the same ID, so
+      // Meta deduplicates the browser and server copies. Bare App Store clicks
+      // from banners remain AppStoreHandoff events, not false Leads.
+      let leadRetryTimer: number | undefined;
+      let leadRetryAttempts = 0;
+      if (
+        !isInternalPreview
+        && leadEventId
+        && !fireMetaLeadOnce(leadEventId)
+      ) {
+        leadRetryTimer = window.setInterval(() => {
+          leadRetryAttempts += 1;
+          if (
+            fireMetaLeadOnce(leadEventId)
+            || leadRetryAttempts >= 12
+          ) {
+            if (leadRetryTimer !== undefined) {
+              window.clearInterval(leadRetryTimer);
+            }
+            leadRetryTimer = undefined;
           }
         }, 100);
       }
@@ -122,7 +163,12 @@ export default function SignupSuccess() {
 
       return () => {
         window.clearTimeout(openTimer);
-        if (metaRetryTimer !== undefined) window.clearInterval(metaRetryTimer);
+        if (appStoreRetryTimer !== undefined) {
+          window.clearInterval(appStoreRetryTimer);
+        }
+        if (leadRetryTimer !== undefined) {
+          window.clearInterval(leadRetryTimer);
+        }
       };
     }
 
@@ -193,15 +239,6 @@ export default function SignupSuccess() {
     window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
   };
 
-  const handleManualAppStoreOpen = () => {
-    analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
-      source: new URLSearchParams(window.location.search).get("source") || "mobile_banner",
-      surface: "signup_success",
-      destination: "apple_app_store",
-      method: "manual",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -262,25 +299,9 @@ export default function SignupSuccess() {
               <CheckCircle2 className="w-12 h-12 text-emerald-600" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">
-                {isAppStoreHandoff ? "Success!" : "You're In!"}
-              </h1>
-              <p className="text-lg text-slate-500 max-w-sm mx-auto">
-                {isAppStoreHandoff
-                  ? "Taking you to PestFlow in the Apple App Store…"
-                  : "Taking you into PestFlow…"}
-              </p>
+              <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
+              <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
             </div>
-            {isAppStoreHandoff && (
-              <a
-                href={APP_STORE_URL}
-                onClick={handleManualAppStoreOpen}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0a84ff] px-5 py-3 font-bold text-white shadow-lg shadow-blue-500/20"
-              >
-                Open the App Store
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
