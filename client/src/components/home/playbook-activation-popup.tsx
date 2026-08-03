@@ -6,6 +6,7 @@ import {
   CalendarClock,
   CheckCircle2,
   FileText,
+  LoaderCircle,
   RefreshCw,
   X,
 } from "lucide-react";
@@ -73,6 +74,47 @@ function initialStep(): PopupStep {
     : "playbook";
 }
 
+type CalendarDate = {
+  value: string;
+  weekday: string;
+  day: string;
+  fullLabel: string;
+};
+
+function localDateValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function upcomingWeekdays(): CalendarDate[] {
+  const dates: CalendarDate[] = [];
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+
+  // Start with the next business day so the default date is less likely to be
+  // blocked by Calendly's minimum-notice rules.
+  cursor.setDate(cursor.getDate() + 1);
+  while (dates.length < 5) {
+    const weekday = cursor.getDay();
+    if (weekday !== 0 && weekday !== 6) {
+      dates.push({
+        value: localDateValue(cursor),
+        weekday: cursor.toLocaleDateString(undefined, { weekday: "short" }),
+        day: String(cursor.getDate()),
+        fullLabel: cursor.toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        }),
+      });
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}
+
 function campaignFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return {
@@ -133,13 +175,21 @@ function workflowHandoffUrl(
   return `/signup-success?${next.toString()}`;
 }
 
-function calendlyEmbedUrl(name: string, email: string) {
+function calendlyEmbedUrl(
+  name: string,
+  email: string,
+  selectedDate?: string,
+) {
   const url = new URL(PESTFLOW_CALENDLY_URL);
   url.searchParams.set("hide_gdpr_banner", "1");
   url.searchParams.set("hide_event_type_details", "1");
   url.searchParams.set("background_color", "ffffff");
   url.searchParams.set("text_color", "0f172a");
   url.searchParams.set("primary_color", "42a824");
+  if (selectedDate) {
+    url.searchParams.set("month", selectedDate.slice(0, 7));
+    url.searchParams.set("date", selectedDate);
+  }
   if (name.trim()) url.searchParams.set("name", name.trim());
   if (email.trim()) url.searchParams.set("email", email.trim());
   return url.toString();
@@ -160,7 +210,17 @@ export function PlaybookActivationPopup() {
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarFrameLoaded, setCalendarFrameLoaded] = useState(false);
+  const [calendarReady, setCalendarReady] = useState(false);
+  const [calendarDates] = useState(upcomingWeekdays);
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState(
+    calendarDates[0].value,
+  );
   const snapshotRef = useRef<Record<string, unknown>>({});
+  const calendlyLoadStartedAtRef = useRef<number | null>(null);
+  const calendlyLoadTrackedRef = useRef(false);
+  const calendlyReadyTrackedRef = useRef(false);
 
   useEffect(() => {
     if (resetPreview) {
@@ -241,13 +301,15 @@ export function PlaybookActivationPopup() {
     };
   }, []);
 
+  const selectedCalendarDateDetails =
+    calendarDates.find((date) => date.value === selectedCalendarDate) ||
+    calendarDates[0];
+
   useEffect(() => {
-    if (step !== "workflow") return;
-    analytics.track("Playbook Workflow Choice Viewed", {
-      funnel: FUNNEL_ID,
-      delivery_window_minutes: 10,
-      choices: WORKFLOWS.map((workflow) => workflow.id),
-    });
+    if (!open) return;
+    if (calendlyLoadStartedAtRef.current === null) {
+      calendlyLoadStartedAtRef.current = performance.now();
+    }
 
     const handleCalendlyMessage = (event: MessageEvent) => {
       if (
@@ -260,13 +322,95 @@ export function PlaybookActivationPopup() {
       analytics.track("Calendly Embed Event", {
         funnel: FUNNEL_ID,
         calendly_event: event.data.event,
-        placement: "above_workflow_options",
+        placement: "preloaded_weekly_calendar",
       });
+      if (
+        !calendlyReadyTrackedRef.current &&
+        (event.data.event === "calendly.profile_page_viewed" ||
+          event.data.event === "calendly.event_type_viewed")
+      ) {
+        calendlyReadyTrackedRef.current = true;
+        setCalendarReady(true);
+        analytics.track("Calendly Ready", {
+          funnel: FUNNEL_ID,
+          placement: "preloaded_weekly_calendar",
+          ready_duration_ms:
+            calendlyLoadStartedAtRef.current === null
+              ? undefined
+              : Math.round(
+                  performance.now() - calendlyLoadStartedAtRef.current,
+                ),
+        });
+      }
+      if (event.data.event === "calendly.event_scheduled") {
+        analytics.track("Calendar Booking Completed", {
+          funnel: FUNNEL_ID,
+          placement: "preloaded_weekly_calendar",
+          selected_date: selectedCalendarDate,
+        });
+      }
     };
 
     window.addEventListener("message", handleCalendlyMessage);
     return () => window.removeEventListener("message", handleCalendlyMessage);
-  }, [step]);
+  }, [open, selectedCalendarDate]);
+
+  useEffect(() => {
+    if (step !== "workflow") return;
+    analytics.track("Calendly Week Strip Viewed", {
+      funnel: FUNNEL_ID,
+      placement: "above_workflow_options",
+      dates: calendarDates.map((date) => date.value),
+      selected_date: selectedCalendarDate,
+    });
+    analytics.track("Playbook Workflow Choice Viewed", {
+      funnel: FUNNEL_ID,
+      delivery_window_minutes: 10,
+      choices: WORKFLOWS.map((workflow) => workflow.id),
+    });
+  }, [calendarDates, selectedCalendarDate, step]);
+
+  const openCalendly = () => {
+    analytics.track("Calendly Booking Panel Opened", {
+      funnel: FUNNEL_ID,
+      placement: "compact_booking_card",
+      calendar_frame_loaded: calendarFrameLoaded,
+      calendar_ready: calendarReady,
+      selected_date: selectedCalendarDate,
+    });
+    setCalendarOpen(true);
+  };
+
+  const selectCalendarDate = (date: CalendarDate) => {
+    setSelectedCalendarDate(date.value);
+    setCalendarFrameLoaded(false);
+    setCalendarReady(false);
+    calendlyLoadTrackedRef.current = false;
+    calendlyReadyTrackedRef.current = false;
+    calendlyLoadStartedAtRef.current = performance.now();
+    analytics.track("Calendly Week Date Selected", {
+      funnel: FUNNEL_ID,
+      placement: "weekly_calendar_strip",
+      selected_date: date.value,
+      selected_day: date.weekday,
+    });
+  };
+
+  const handleCalendlyLoad = () => {
+    setCalendarFrameLoaded(true);
+    if (calendlyLoadTrackedRef.current) return;
+    calendlyLoadTrackedRef.current = true;
+    analytics.track("Calendly Embed Loaded", {
+      funnel: FUNNEL_ID,
+      placement: "preloaded_weekly_calendar",
+      calendly_url: PESTFLOW_CALENDLY_URL,
+      selected_date: selectedCalendarDate,
+      load_duration_ms:
+        calendlyLoadStartedAtRef.current === null
+          ? undefined
+          : Math.round(performance.now() - calendlyLoadStartedAtRef.current),
+    });
+  };
 
   const closePopup = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED, {
@@ -404,6 +548,11 @@ export function PlaybookActivationPopup() {
         className="top-[calc(50%+2.25rem)] max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[400px] xl:top-[50%]"
         hideCloseButton
         aria-describedby="playbook-popup-description"
+        onEscapeKeyDown={(event) => {
+          if (!calendarOpen) return;
+          event.preventDefault();
+          setCalendarOpen(false);
+        }}
       >
         <DialogTitle className="sr-only">
           Get the $3 million Pest Control Playbook
@@ -573,35 +722,65 @@ export function PlaybookActivationPopup() {
                   </div>
                 </div>
 
-                <section className="mt-4">
-                  <div className="mb-2.5 flex items-center gap-2.5">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-400/15 text-violet-200">
-                      <CalendarDays className="h-4 w-4" />
+                <section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_16px_50px_rgba(15,23,42,0.22)]">
+                  <div className="flex items-center gap-3">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200">
+                      <CalendarDays className="h-5 w-5" />
                     </span>
-                    <div>
-                      <h3 className="text-sm font-black text-white">
-                        Book your PestFlow setup call
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-black text-slate-950">
+                        Choose a setup day
                       </h3>
-                      <p className="mt-0.5 text-[10px] leading-4 text-slate-400">
-                        Pick a time now, or choose a workflow underneath.
+                      <p className="mt-0.5 text-[11px] leading-4 text-slate-500">
+                        Pick a date, then see the live Calendly times.
                       </p>
                     </div>
                   </div>
-                  <div className="h-[320px] overflow-hidden rounded-xl border border-white/10 bg-white sm:h-[360px]">
-                    <iframe
-                      src={calendlyEmbedUrl(name, email)}
-                      title="Book a PestFlow setup call"
-                      className="h-full w-full bg-white"
-                      loading="eager"
-                      onLoad={() =>
-                        analytics.track("Calendly Embed Loaded", {
-                          funnel: FUNNEL_ID,
-                          placement: "above_workflow_options",
-                          calendly_url: PESTFLOW_CALENDLY_URL,
-                        })
-                      }
-                    />
+
+                  <div className="mt-3 grid grid-cols-5 gap-1.5">
+                    {calendarDates.map((date) => {
+                      const selected = date.value === selectedCalendarDate;
+                      return (
+                        <button
+                          key={date.value}
+                          type="button"
+                          onClick={() => selectCalendarDate(date)}
+                          aria-pressed={selected}
+                          className={`rounded-xl border px-1 py-2 text-center transition active:scale-[.98] ${
+                            selected
+                              ? "border-emerald-600 bg-emerald-50 text-emerald-900 shadow-sm ring-1 ring-emerald-500"
+                              : "border-slate-200 bg-white text-slate-500 hover:border-emerald-300 hover:bg-emerald-50/60"
+                          }`}
+                        >
+                          <span className="block text-[10px] font-bold uppercase tracking-wide">
+                            {date.weekday}
+                          </span>
+                          <span className="mt-0.5 block text-lg font-black leading-5">
+                            {date.day}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  <Button
+                    type="button"
+                    onClick={openCalendly}
+                    className="mt-3 h-11 w-full rounded-xl bg-emerald-600 text-sm font-black text-white shadow-lg shadow-emerald-950/15 hover:bg-emerald-500"
+                  >
+                    See {selectedCalendarDateDetails.weekday} {selectedCalendarDateDetails.day} times
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[10px] leading-4 text-slate-500">
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        calendarFrameLoaded ? "bg-emerald-500" : "bg-slate-300"
+                      }`}
+                    />
+                    {calendarFrameLoaded
+                      ? "Calendly is ready"
+                      : "Calendly is preloading while you choose"}
+                  </p>
                 </section>
 
                 <div className="my-4 h-px bg-white/10" />
@@ -642,9 +821,76 @@ export function PlaybookActivationPopup() {
                 <p className="mt-4 text-center text-[10px] leading-4 text-slate-500">
                   No login yet. Your contact information is already saved.
                 </p>
+
               </motion.div>
             )}
           </AnimatePresence>
+        </div>
+
+        <div
+          aria-hidden={!calendarOpen}
+          className={`absolute inset-0 z-40 flex flex-col bg-[#0d1117] transition-opacity duration-150 ${
+            calendarOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
+          <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3 pr-12">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">
+              <CalendarDays className="h-4 w-4" />
+            </span>
+            <div>
+              <h3 className="text-sm font-black text-white">
+                {selectedCalendarDateDetails.fullLabel} times
+              </h3>
+              <p className="mt-0.5 text-[10px] text-slate-400">
+                Choose a live time, then confirm your details.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCalendarOpen(false)}
+            className="absolute right-3 top-3 z-20 grid h-8 w-8 place-items-center rounded-full bg-white/5 text-slate-400 transition hover:bg-white/15 hover:text-white"
+            aria-label="Return to date choices"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="relative min-h-[420px] flex-1 overflow-hidden bg-white">
+            {!calendarFrameLoaded && (
+              <div className="absolute inset-0 z-10 grid place-items-center bg-white text-slate-600">
+                <div className="text-center">
+                  <LoaderCircle className="mx-auto h-6 w-6 animate-spin text-emerald-600" />
+                  <p className="mt-2 text-xs font-semibold">
+                    Loading {selectedCalendarDateDetails.weekday} times…
+                  </p>
+                </div>
+              </div>
+            )}
+            <iframe
+              src={calendlyEmbedUrl("", "", selectedCalendarDate)}
+              title="Book a PestFlow setup call"
+              className={`h-full min-h-[420px] w-full bg-white transition-opacity duration-150 ${
+                calendarFrameLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              loading="eager"
+              tabIndex={calendarOpen ? 0 : -1}
+              onLoad={handleCalendlyLoad}
+            />
+          </div>
+          <a
+            href={calendlyEmbedUrl(name, email, selectedCalendarDate)}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() =>
+              analytics.track("Calendly Direct Link Opened", {
+                funnel: FUNNEL_ID,
+                placement: "booking_panel_fallback",
+                selected_date: selectedCalendarDate,
+              })
+            }
+            className="border-t border-white/10 px-4 py-2.5 text-center text-[11px] font-semibold text-slate-300 hover:text-white"
+          >
+            Calendar not showing? Open {selectedCalendarDateDetails.weekday} in a new tab.
+          </a>
         </div>
       </DialogContent>
     </Dialog>
