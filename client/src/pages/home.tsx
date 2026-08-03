@@ -44,7 +44,7 @@ export default function Home() {
       {!isMobileDevice && <MobileDownloadBanner />}
       <Navbar />
       <main className="flex-grow">
-        <Hero />
+        <Hero disableBackgroundVideo={isMobileDevice} />
         <LeadGen />
         <Widgets />
         <Features />
