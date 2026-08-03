@@ -47,6 +47,7 @@ export function Pricing() {
         >
           <iframe
             src="https://pestflow-smart-pricing.lovable.app/embed/pricing"
+            loading="lazy"
             scrolling="no"
             style={{
               width: "100%",
