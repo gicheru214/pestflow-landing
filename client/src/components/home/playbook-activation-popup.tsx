@@ -31,13 +31,13 @@ type SubmissionResponse = {
   };
 };
 
-const FUNNEL_ID = "playbook-workflow-v2";
+const FUNNEL_ID = "playbook-workflow-v3";
 const PESTFLOW_CALENDLY_URL =
   "https://calendly.com/tgicheru21/pestflow-set-up-call";
-const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v2";
+const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v3";
+// Keep the prior submitted key so completed leads are not prompted again.
 const POPUP_SUBMITTED_KEY = "pestflow_popup_submitted_workflow_v2";
 const POPUP_DATA_KEY = "pestflow_popup_data";
-const LEGACY_POPUP_SEEN_KEY = "pestflow_popup_seen";
 const LEGACY_POPUP_SUBMITTED_KEY = "pestflow_popup_submitted";
 
 const WORKFLOWS: Array<{
@@ -258,17 +258,14 @@ export function PlaybookActivationPopup() {
     ) {
       return;
     }
-    if (
-      localStorage.getItem(POPUP_SEEN_KEY)
-      || localStorage.getItem(LEGACY_POPUP_SEEN_KEY)
-    ) {
+    if (localStorage.getItem(POPUP_SEEN_KEY)) {
       return;
     }
 
     const timer = window.setTimeout(() => {
       localStorage.setItem(POPUP_SEEN_KEY, "true");
       openPopup("first_visit_timer");
-    }, 1000);
+    }, 350);
     return () => window.clearTimeout(timer);
   }, [forced, resetPreview]);
 
