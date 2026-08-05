@@ -8,7 +8,7 @@ import { CTA } from "@/components/home/cta";
 import { LeadGen } from "@/components/home/lead-gen";
 import { Widgets } from "@/components/home/widgets";
 import { AutoPopup } from "@/components/home/auto-popup";
-import { PlaybookActivationPopup } from "@/components/home/playbook-activation-popup";
+import { LandingFunnelExperiment } from "@/components/home/landing-funnel-experiment";
 import { MobileDownloadBanner } from "@/components/home/mobile-download-banner";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { captureMarketingAttribution } from "@/lib/marketingAttribution";
@@ -37,7 +37,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
       {isMobileDevice ? (
-        <PlaybookActivationPopup key={window.location.search} />
+        <LandingFunnelExperiment />
       ) : (
         <AutoPopup />
       )}

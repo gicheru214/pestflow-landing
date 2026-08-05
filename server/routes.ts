@@ -26,6 +26,7 @@ import {
   registerSubmissionProspect,
   type ProspectRequestContext,
 } from "./meta-prospect-registration";
+import { isStagingExperimentPreviewRequest } from "./staging-preview";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 
@@ -645,6 +646,19 @@ export async function registerRoutes(
 
   app.post("/api/submissions", async (req, res) => {
     try {
+      const requestHost = firstHeaderValue(req.headers["x-forwarded-host"])
+        || req.get("host");
+      const previewMarker = firstHeaderValue(
+        req.headers["x-pestflow-internal-preview"],
+      );
+      if (isStagingExperimentPreviewRequest(requestHost, previewMarker)) {
+        return res.status(201).json({
+          id: "staging-preview",
+          metaRegistration: { tracked: false },
+          playbookDelivery: { requested: true, accepted: true },
+        });
+      }
+
       // Tech popup posts {name, email, phone, employer, ownerName} but the
       // submissions schema requires firstName/lastName. Split the name here
       // so the existing client code keeps working without a redeploy. We

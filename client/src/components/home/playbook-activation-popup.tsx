@@ -14,6 +14,10 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
+import {
+  isLandingExperimentStagingHost,
+  stagingPreviewHeaders,
+} from "@/lib/landingExperiment";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
@@ -125,6 +129,7 @@ function campaignFromUrl() {
 }
 
 function pushPartial(payload: Record<string, unknown>) {
+  if (isLandingExperimentStagingHost()) return;
   try {
     const body = JSON.stringify({ type: "popup_partial", ...payload });
     if (navigator.sendBeacon) {
@@ -341,6 +346,10 @@ export function PlaybookActivationPopup() {
           placement: "preloaded_weekly_calendar",
           selected_date: selectedCalendarDate,
         });
+        analytics.track("Qualified Funnel Action", {
+          funnel: FUNNEL_ID,
+          action: "calendar_booked",
+        });
 
         // The contact form already sends the server-side CAPI Lead. Fire the
         // browser copy only after Calendly confirms a real booking, using the
@@ -482,7 +491,10 @@ export function PlaybookActivationPopup() {
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...stagingPreviewHeaders(),
+        },
         body: JSON.stringify({
           type: "newsletter",
           firstName,
@@ -517,11 +529,13 @@ export function PlaybookActivationPopup() {
       localStorage.setItem(POPUP_SUBMITTED_KEY, "true");
       setPhone(normalizedPhone);
       setMetaEventId(canonicalMetaEventId);
-      analytics.identify(normalizedEmail, {
-        $email: normalizedEmail,
-        $name: name.trim(),
-        $phone: normalizedPhone,
-      });
+      if (!isLandingExperimentStagingHost()) {
+        analytics.identify(normalizedEmail, {
+          $email: normalizedEmail,
+          $name: name.trim(),
+          $phone: normalizedPhone,
+        });
+      }
       analytics.track(EVENTS.LANDING.POPUP_SUBMIT, {
         funnel: FUNNEL_ID,
         fields: ["full_name", "phone", "email"],
@@ -550,6 +564,11 @@ export function PlaybookActivationPopup() {
       funnel: FUNNEL_ID,
       workflow,
       destination: "facebook_success_then_apple_app_store",
+    });
+    analytics.track("Qualified Funnel Action", {
+      funnel: FUNNEL_ID,
+      action: "workflow_selected",
+      workflow,
     });
     pushPartial({
       ...snapshotRef.current,
@@ -602,7 +621,7 @@ export function PlaybookActivationPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="mb-2 h-12 w-auto object-contain sm:h-14"
+                  className="mb-2 h-16 w-auto object-contain"
                 />
                 <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">

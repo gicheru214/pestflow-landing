@@ -3,6 +3,8 @@ export const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
 const EVENT_ID_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 48;
 const FIRED_KEY_PREFIX = "pestflow_meta_lead_fired:";
+const STAGING_HOST =
+  "pestflow-landing-conversion-staging.up.railway.app";
 
 declare global {
   interface Window {
@@ -14,6 +16,12 @@ export function normalizeMetaLeadEventId(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const normalized = value.trim();
   return EVENT_ID_PATTERN.test(normalized) ? normalized : null;
+}
+
+export function shouldSuppressMetaLead(hostname: string): boolean {
+  return hostname === STAGING_HOST
+    || hostname === "localhost"
+    || hostname === "127.0.0.1";
 }
 
 function readMetaLeadEventId(): string | null {
@@ -63,6 +71,7 @@ export function getOrCreateMetaLeadEventId(preferred?: string | null): string {
 export function fireMetaLeadOnce(eventId: string): boolean {
   const normalized = normalizeMetaLeadEventId(eventId);
   if (!normalized) return false;
+  if (shouldSuppressMetaLead(window.location?.hostname || "")) return true;
 
   const firedKey = `${FIRED_KEY_PREFIX}${normalized}`;
   try {
