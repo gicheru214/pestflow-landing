@@ -5,6 +5,7 @@ import {
   isLandingExperimentStagingHost,
   isLandingExperimentVariant,
   LANDING_EXPERIMENT_KEY,
+  normalizeLandingExperimentVariant,
 } from "../client/src/lib/landingExperiment";
 import { shouldSuppressMetaLead } from "../client/src/lib/metaLeadEvent";
 import { isStagingExperimentPreviewRequest } from "./staging-preview";
@@ -20,6 +21,10 @@ test("the landing experiment is impossible to evaluate on production", () => {
   assert.equal(isLandingExperimentVariant("control"), true);
   assert.equal(isLandingExperimentVariant("no_playbook"), true);
   assert.equal(isLandingExperimentVariant("test"), false);
+  assert.equal(normalizeLandingExperimentVariant("control"), "control");
+  assert.equal(normalizeLandingExperimentVariant("test"), "no_playbook");
+  assert.equal(normalizeLandingExperimentVariant("no_playbook"), "no_playbook");
+  assert.equal(normalizeLandingExperimentVariant(false), null);
 });
 
 test("staging lead bypass requires both the exact host and private marker", () => {

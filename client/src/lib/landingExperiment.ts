@@ -20,6 +20,13 @@ export function isLandingExperimentVariant(
   return value === "control" || value === "no_playbook";
 }
 
+export function normalizeLandingExperimentVariant(
+  value: unknown,
+): LandingExperimentVariant | null {
+  if (value === "test") return "no_playbook";
+  return isLandingExperimentVariant(value) ? value : null;
+}
+
 export function stagingPreviewHeaders(): Record<string, string> {
   return isLandingExperimentStagingHost()
     ? { "X-PestFlow-Internal-Preview": "staging-experiment" }

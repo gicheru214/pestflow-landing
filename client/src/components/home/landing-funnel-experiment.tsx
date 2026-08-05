@@ -4,6 +4,7 @@ import {
   isLandingExperimentStagingHost,
   isLandingExperimentVariant,
   LANDING_EXPERIMENT_KEY,
+  normalizeLandingExperimentVariant,
   type LandingExperimentVariant,
 } from "@/lib/landingExperiment";
 import { DirectIntentPopup } from "./direct-intent-popup";
@@ -63,8 +64,9 @@ function useLandingExperimentAssignment(): Assignment {
 
     const resolveFlag = () => {
       const value = window.posthog?.getFeatureFlag?.(LANDING_EXPERIMENT_KEY);
-      if (isLandingExperimentVariant(value)) {
-        finish(value, "posthog");
+      const variant = normalizeLandingExperimentVariant(value);
+      if (variant) {
+        finish(variant, "posthog");
       } else if (value === false) {
         finish("control", "flag_off");
       }
