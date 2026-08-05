@@ -12,7 +12,10 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { analytics, EVENTS } from "@/lib/analytics";
-import type { LandingExperimentVariant } from "@/lib/landingExperiment";
+import {
+  isLandingExperimentStagingHost,
+  type LandingExperimentVariant,
+} from "@/lib/landingExperiment";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 
 type WorkflowId = "recurring" | "invoice" | "schedule";
@@ -27,7 +30,8 @@ type CalendarDate = {
 const FUNNEL_ID = "direct-intent-staging-v1";
 const PESTFLOW_CALENDLY_URL =
   "https://calendly.com/tgicheru21/pestflow-set-up-call";
-const POPUP_SEEN_KEY = "pestflow_direct_intent_seen_staging_v1";
+const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v3";
+const POPUP_SUBMITTED_KEY = "pestflow_popup_submitted_workflow_v3";
 
 const WORKFLOWS: Array<{
   id: WorkflowId;
@@ -103,9 +107,9 @@ function workflowHandoffUrl(workflow: WorkflowId) {
     source: `direct_intent_workflow_${workflow}`,
     intent: workflow,
     handoff: "app_store",
-    internal: "1",
     ab_variant: "no_playbook",
   });
+  if (isLandingExperimentStagingHost()) next.set("internal", "1");
   [
     "device",
     "utm_source",
@@ -149,7 +153,10 @@ export function DirectIntentPopup({
 
   useEffect(() => {
     try {
-      if (resetPreview) localStorage.removeItem(POPUP_SEEN_KEY);
+      if (resetPreview) {
+        localStorage.removeItem(POPUP_SEEN_KEY);
+        localStorage.removeItem(POPUP_SUBMITTED_KEY);
+      }
     } catch {
       // Storage restrictions should not block the staging preview.
     }
@@ -165,6 +172,7 @@ export function DirectIntentPopup({
       return;
     }
     try {
+      if (localStorage.getItem(POPUP_SUBMITTED_KEY)) return;
       if (localStorage.getItem(POPUP_SEEN_KEY)) return;
     } catch {
       // Continue with the normal timer when storage is unavailable.

@@ -63,6 +63,9 @@ test("both variants emit the same qualified-action metric", () => {
   assert.match(treatment, /action: "calendar_booked"/);
   assert.match(treatment, /action: "workflow_selected"/);
   assert.equal((treatment.match(/fireMetaLeadOnce\(beginMetaLeadEvent\(\)\)/g) || []).length, 2);
+  assert.match(treatment, /pestflow_popup_seen_workflow_v3/);
+  assert.match(treatment, /pestflow_popup_submitted_workflow_v3/);
+  assert.match(treatment, /isLandingExperimentStagingHost\(\).*next\.set\("internal", "1"\)/);
   assert.match(wrapper, /source: "production_failsafe"/);
   assert.match(wrapper, /finish\("control", "timeout"\)/);
 });
