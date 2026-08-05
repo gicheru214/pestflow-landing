@@ -134,3 +134,25 @@ test("fires a deduplicated Lead on success only for captured workflow leads", ()
     /SIGNUP\.COMPLETE|CHECKOUT\.SUCCESS|ACCOUNT\.SIGNUP_COMPLETE/,
   );
 });
+
+test("fires the same deduplicated Lead when Calendly confirms a booking", () => {
+  const popupSource = readFileSync(
+    "client/src/components/home/playbook-activation-popup.tsx",
+    "utf8",
+  );
+  const scheduledStart = popupSource.indexOf(
+    'event.data.event === "calendly.event_scheduled"',
+  );
+  const scheduledBranch = popupSource.slice(
+    scheduledStart,
+    popupSource.indexOf("window.addEventListener", scheduledStart),
+  );
+
+  assert.notEqual(scheduledStart, -1);
+  assert.match(scheduledBranch, /fireMetaLeadOnce\(metaEventId\)/);
+  assert.match(scheduledBranch, /retryAttempts >= 12/);
+  assert.match(
+    scheduledBranch,
+    /same event ID so Meta deduplicates both copies into one conversion/,
+  );
+});

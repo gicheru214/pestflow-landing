@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { beginMetaLeadEvent } from "@/lib/metaLeadEvent";
+import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
@@ -219,6 +219,7 @@ export function PlaybookActivationPopup() {
   const calendlyLoadStartedAtRef = useRef<number | null>(null);
   const calendlyLoadTrackedRef = useRef(false);
   const calendlyReadyTrackedRef = useRef(false);
+  const metaLeadRetryTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (resetPreview) {
@@ -340,12 +341,42 @@ export function PlaybookActivationPopup() {
           placement: "preloaded_weekly_calendar",
           selected_date: selectedCalendarDate,
         });
+
+        // The contact form already sends the server-side CAPI Lead. Fire the
+        // browser copy only after Calendly confirms a real booking, using the
+        // same event ID so Meta deduplicates both copies into one conversion.
+        if (metaEventId && !fireMetaLeadOnce(metaEventId)) {
+          if (metaLeadRetryTimerRef.current !== null) {
+            window.clearInterval(metaLeadRetryTimerRef.current);
+          }
+          let retryAttempts = 0;
+          metaLeadRetryTimerRef.current = window.setInterval(() => {
+            retryAttempts += 1;
+            if (
+              fireMetaLeadOnce(metaEventId)
+              || retryAttempts >= 12
+            ) {
+              if (metaLeadRetryTimerRef.current !== null) {
+                window.clearInterval(metaLeadRetryTimerRef.current);
+                metaLeadRetryTimerRef.current = null;
+              }
+            }
+          }, 100);
+        }
       }
     };
 
     window.addEventListener("message", handleCalendlyMessage);
     return () => window.removeEventListener("message", handleCalendlyMessage);
-  }, [open, selectedCalendarDate]);
+  }, [metaEventId, open, selectedCalendarDate]);
+
+  useEffect(() => {
+    return () => {
+      if (metaLeadRetryTimerRef.current !== null) {
+        window.clearInterval(metaLeadRetryTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (step !== "workflow") return;
