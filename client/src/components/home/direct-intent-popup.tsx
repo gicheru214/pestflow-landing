@@ -247,7 +247,7 @@ export function DirectIntentPopup({
       }}
     >
       <DialogContent
-        className="top-[calc(50%+2.25rem)] max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[400px] xl:top-[50%]"
+        className="top-[50%] max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[400px]"
         hideCloseButton
         aria-describedby="direct-intent-description"
       >
