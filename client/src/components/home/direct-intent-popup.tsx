@@ -269,7 +269,7 @@ export function DirectIntentPopup({
             <img
               src={logoImage}
               alt="PestFlow"
-              className="mb-1 h-16 w-auto object-contain"
+              className="mb-1 h-24 w-auto object-contain"
             />
             <p className="text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
               Pick your next step

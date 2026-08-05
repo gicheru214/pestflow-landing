@@ -621,7 +621,7 @@ export function PlaybookActivationPopup() {
                 <img
                   src={logoImage}
                   alt="PestFlow"
-                  className="mb-2 h-16 w-auto object-contain"
+                  className="mb-2 h-24 w-auto object-contain"
                 />
                 <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
