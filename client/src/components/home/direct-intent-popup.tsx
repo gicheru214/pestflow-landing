@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { analytics, EVENTS } from "@/lib/analytics";
 import type { LandingExperimentVariant } from "@/lib/landingExperiment";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 type WorkflowId = "recurring" | "invoice" | "schedule";
 
@@ -267,9 +266,9 @@ export function DirectIntentPopup({
         <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto p-4 sm:p-5">
           <div className="flex flex-col items-center pr-8 text-center">
             <img
-              src={logoImage}
+              src="/assets/pestflow-app-store-icon.jpg"
               alt="PestFlow"
-              className="mb-1 h-24 w-auto object-contain"
+              className="mb-1 h-20 w-20 rounded-2xl border border-white/10 object-cover shadow-lg"
             />
             <p className="text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
               Pick your next step

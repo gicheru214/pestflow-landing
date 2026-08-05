@@ -20,7 +20,6 @@ import {
 } from "@/lib/landingExperiment";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 export type WorkflowId = "recurring" | "invoice" | "schedule";
 
@@ -619,9 +618,9 @@ export function PlaybookActivationPopup() {
                 className="flex flex-col items-center p-4 sm:p-6"
               >
                 <img
-                  src={logoImage}
+                  src="/assets/pestflow-app-store-icon.jpg"
                   alt="PestFlow"
-                  className="mb-2 h-24 w-auto object-contain"
+                  className="mb-2 h-20 w-20 rounded-2xl border border-white/10 object-cover shadow-lg"
                 />
                 <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
