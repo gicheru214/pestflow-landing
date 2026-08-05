@@ -5,6 +5,7 @@ export type LandingExperimentVariant = "control" | "no_playbook";
 
 const STAGING_HOST =
   "pestflow-landing-conversion-staging.up.railway.app";
+const PRODUCTION_HOSTS = new Set(["pestflow.org", "www.pestflow.org"]);
 
 export function isLandingExperimentStagingHost(
   hostname = window.location.hostname,
@@ -12,6 +13,13 @@ export function isLandingExperimentStagingHost(
   return hostname === STAGING_HOST
     || hostname === "localhost"
     || hostname === "127.0.0.1";
+}
+
+export function isLandingExperimentEligibleHost(
+  hostname = window.location.hostname,
+): boolean {
+  return PRODUCTION_HOSTS.has(hostname)
+    || isLandingExperimentStagingHost(hostname);
 }
 
 export function isLandingExperimentVariant(

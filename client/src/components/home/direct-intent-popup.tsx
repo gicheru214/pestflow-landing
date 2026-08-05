@@ -27,7 +27,7 @@ type CalendarDate = {
   fullLabel: string;
 };
 
-const FUNNEL_ID = "direct-intent-staging-v1";
+const FUNNEL_ID = "direct-intent-v1";
 const PESTFLOW_CALENDLY_URL =
   "https://calendly.com/tgicheru21/pestflow-set-up-call";
 const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v3";
@@ -101,7 +101,7 @@ function calendlyEmbedUrl(selectedDate: string) {
   return url.toString();
 }
 
-function workflowHandoffUrl(workflow: WorkflowId) {
+function workflowHandoffUrl(workflow: WorkflowId, metaEventId: string) {
   const current = new URLSearchParams(window.location.search);
   const next = new URLSearchParams({
     source: `direct_intent_workflow_${workflow}`,
@@ -109,6 +109,7 @@ function workflowHandoffUrl(workflow: WorkflowId) {
     handoff: "app_store",
     ab_variant: "no_playbook",
   });
+  if (metaEventId) next.set("meta_event_id", metaEventId);
   if (isLandingExperimentStagingHost()) next.set("internal", "1");
   [
     "device",
@@ -143,12 +144,15 @@ export function DirectIntentPopup({
     calendarDates[0].value,
   );
   const scheduledTrackedRef = useRef(false);
+  const metaLeadRetryTimerRef = useRef<number | null>(null);
+  const isStaging = isLandingExperimentStagingHost();
 
   const experimentProperties = {
     experiment: experimentKey,
     variant,
     funnel: FUNNEL_ID,
-    staging_only: true,
+    environment: isStaging ? "staging" : "production",
+    staging_only: isStaging,
   };
 
   useEffect(() => {
@@ -216,7 +220,19 @@ export function DirectIntentPopup({
           ...experimentProperties,
           action: "calendar_booked",
         });
-        fireMetaLeadOnce(beginMetaLeadEvent());
+        const eventId = beginMetaLeadEvent();
+        if (!fireMetaLeadOnce(eventId)) {
+          let retryAttempts = 0;
+          metaLeadRetryTimerRef.current = window.setInterval(() => {
+            retryAttempts += 1;
+            if (fireMetaLeadOnce(eventId) || retryAttempts >= 12) {
+              if (metaLeadRetryTimerRef.current !== null) {
+                window.clearInterval(metaLeadRetryTimerRef.current);
+                metaLeadRetryTimerRef.current = null;
+              }
+            }
+          }, 100);
+        }
       }
     };
     window.addEventListener("message", handleCalendlyMessage);
@@ -231,15 +247,25 @@ export function DirectIntentPopup({
     analytics.track("Playbook Workflow Selected", {
       ...experimentProperties,
       workflow,
-      destination: "staging_app_store_handoff",
+      destination: "app_store_handoff",
     });
     analytics.track("Qualified Funnel Action", {
       ...experimentProperties,
       action: "workflow_selected",
       workflow,
     });
-    fireMetaLeadOnce(beginMetaLeadEvent());
+    const eventId = beginMetaLeadEvent();
+    fireMetaLeadOnce(eventId);
+    window.location.assign(workflowHandoffUrl(workflow, eventId));
   };
+
+  useEffect(() => {
+    return () => {
+      if (metaLeadRetryTimerRef.current !== null) {
+        window.clearInterval(metaLeadRetryTimerRef.current);
+      }
+    };
+  }, []);
 
   const closePopup = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED, experimentProperties);
@@ -379,8 +405,11 @@ export function DirectIntentPopup({
               return (
                 <a
                   key={workflow.id}
-                  href={workflowHandoffUrl(workflow.id)}
-                  onClick={() => chooseWorkflow(workflow.id)}
+                  href={workflowHandoffUrl(workflow.id, "")}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    chooseWorkflow(workflow.id);
+                  }}
                   className="group relative flex min-h-[72px] items-center gap-3 rounded-xl border border-white/10 bg-white/[.045] p-3 pr-10 text-left transition hover:border-emerald-400/30 hover:bg-emerald-400/[.07] active:scale-[.99]"
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-400/15 text-emerald-300">

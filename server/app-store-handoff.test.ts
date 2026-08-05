@@ -116,6 +116,13 @@ test("fires a deduplicated Lead on success only for captured workflow leads", ()
   );
   assert.equal(
     capturedWorkflowLeadEventId(
+      "direct_intent_workflow_schedule",
+      "pestflow-lead-event-123",
+    ),
+    "pestflow-lead-event-123",
+  );
+  assert.equal(
+    capturedWorkflowLeadEventId(
       "mobile_banner",
       "pestflow-lead-event-123",
     ),

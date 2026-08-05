@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
+  isLandingExperimentEligibleHost,
   isLandingExperimentStagingHost,
   isLandingExperimentVariant,
   LANDING_EXPERIMENT_KEY,
@@ -13,10 +14,15 @@ import { isStagingExperimentPreviewRequest } from "./staging-preview";
 const STAGING_HOST =
   "pestflow-landing-conversion-staging.up.railway.app";
 
-test("the landing experiment is impossible to evaluate on production", () => {
+test("the landing experiment evaluates only on exact landing-page hosts", () => {
   assert.equal(isLandingExperimentStagingHost("pestflow.org"), false);
   assert.equal(isLandingExperimentStagingHost("www.pestflow.org"), false);
   assert.equal(isLandingExperimentStagingHost(STAGING_HOST), true);
+  assert.equal(isLandingExperimentEligibleHost("pestflow.org"), true);
+  assert.equal(isLandingExperimentEligibleHost("www.pestflow.org"), true);
+  assert.equal(isLandingExperimentEligibleHost(STAGING_HOST), true);
+  assert.equal(isLandingExperimentEligibleHost("app.pestflow.org"), false);
+  assert.equal(isLandingExperimentEligibleHost("new.pestflow.org"), false);
   assert.equal(LANDING_EXPERIMENT_KEY, "pestflow-landing-playbook-gate-staging-v1");
   assert.equal(isLandingExperimentVariant("control"), true);
   assert.equal(isLandingExperimentVariant("no_playbook"), true);
@@ -67,10 +73,13 @@ test("both variants emit the same qualified-action metric", () => {
   assert.match(treatment, /Qualified Funnel Action/);
   assert.match(treatment, /action: "calendar_booked"/);
   assert.match(treatment, /action: "workflow_selected"/);
-  assert.equal((treatment.match(/fireMetaLeadOnce\(beginMetaLeadEvent\(\)\)/g) || []).length, 2);
+  assert.match(treatment, /event\.data\.event === "calendly\.event_scheduled"/);
+  assert.match(treatment, /fireMetaLeadOnce\(eventId\)/);
+  assert.match(treatment, /window\.location\.assign\(workflowHandoffUrl\(workflow, eventId\)\)/);
   assert.match(treatment, /pestflow_popup_seen_workflow_v3/);
   assert.match(treatment, /pestflow_popup_submitted_workflow_v3/);
   assert.match(treatment, /isLandingExperimentStagingHost\(\).*next\.set\("internal", "1"\)/);
-  assert.match(wrapper, /source: "production_failsafe"/);
+  assert.match(wrapper, /source: "host_failsafe"/);
+  assert.match(wrapper, /isLandingExperimentEligibleHost\(\)/);
   assert.match(wrapper, /finish\("control", "timeout"\)/);
 });

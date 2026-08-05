@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { analytics } from "@/lib/analytics";
 import {
+  isLandingExperimentEligibleHost,
   isLandingExperimentStagingHost,
   isLandingExperimentVariant,
   LANDING_EXPERIMENT_KEY,
@@ -13,7 +14,7 @@ import { PlaybookActivationPopup } from "./playbook-activation-popup";
 type Assignment = {
   ready: boolean;
   source:
-    | "production_failsafe"
+    | "host_failsafe"
     | "query_override"
     | "posthog"
     | "flag_off"
@@ -22,10 +23,10 @@ type Assignment = {
 };
 
 function initialAssignment(): Assignment {
-  if (!isLandingExperimentStagingHost()) {
+  if (!isLandingExperimentEligibleHost()) {
     return {
       ready: true,
-      source: "production_failsafe",
+      source: "host_failsafe",
       variant: "control",
     };
   }
@@ -36,10 +37,11 @@ function useLandingExperimentAssignment(): Assignment {
   const [assignment, setAssignment] = useState<Assignment>(initialAssignment);
 
   useEffect(() => {
-    if (!isLandingExperimentStagingHost()) return;
+    if (!isLandingExperimentEligibleHost()) return;
 
     const params = new URLSearchParams(window.location.search);
     const override = params.get("ab_variant");
+    const isStaging = isLandingExperimentStagingHost();
     let settled = false;
 
     const finish = (
@@ -53,11 +55,12 @@ function useLandingExperimentAssignment(): Assignment {
         experiment: LANDING_EXPERIMENT_KEY,
         variant,
         assignment_source: source,
-        staging_only: true,
+        environment: isStaging ? "staging" : "production",
+        staging_only: isStaging,
       });
     };
 
-    if (isLandingExperimentVariant(override)) {
+    if (isStaging && isLandingExperimentVariant(override)) {
       finish(override, "query_override");
       return;
     }
