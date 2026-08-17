@@ -560,10 +560,6 @@ export function PlaybookActivationPopup() {
         className="top-[calc(50%+2.25rem)] max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] gap-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0d1117] p-0 shadow-2xl sm:max-w-[400px] xl:top-[50%]"
         hideCloseButton
         aria-describedby="playbook-popup-description"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          document.getElementById("main-content")?.focus();
-        }}
         onEscapeKeyDown={(event) => {
           if (!calendarOpen) return;
           event.preventDefault();
@@ -582,11 +578,7 @@ export function PlaybookActivationPopup() {
           <X className="h-4 w-4" />
         </button>
 
-        <div
-          className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto"
-          aria-hidden={calendarOpen}
-          inert={calendarOpen}
-        >
+        <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
           <AnimatePresence mode="wait">
             {step === "playbook" ? (
               <motion.div
@@ -634,11 +626,10 @@ export function PlaybookActivationPopup() {
 
                 <div className="w-full space-y-2">
                   <div>
-                    <label htmlFor="mobile-popup-full-name" className="mb-1 block text-xs font-medium text-slate-300">
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
                       Full Name <span className="text-red-400">*</span>
                     </label>
                     <Input
-                      id="mobile-popup-full-name"
                       value={name}
                       onChange={(event) => {
                         setName(event.target.value);
@@ -647,22 +638,19 @@ export function PlaybookActivationPopup() {
                       }}
                       placeholder="John Smith"
                       autoComplete="name"
-                      aria-invalid={Boolean(nameError)}
-                      aria-describedby={nameError ? "mobile-popup-name-error" : undefined}
-                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         nameError ? "border-red-500" : ""
                       }`}
                     />
                     {nameError && (
-                      <p id="mobile-popup-name-error" role="alert" className="mt-0.5 text-xs text-red-300">{nameError}</p>
+                      <p className="mt-0.5 text-xs text-red-400">{nameError}</p>
                     )}
                   </div>
                   <div>
-                    <label htmlFor="mobile-popup-phone" className="mb-1 block text-xs font-medium text-slate-300">
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
                       Phone <span className="text-red-400">*</span>
                     </label>
                     <Input
-                      id="mobile-popup-phone"
                       value={phone}
                       onChange={(event) => {
                         setPhone(limitPhoneInput(event.target.value));
@@ -673,22 +661,19 @@ export function PlaybookActivationPopup() {
                       type="tel"
                       inputMode="tel"
                       autoComplete="tel"
-                      aria-invalid={Boolean(phoneError)}
-                      aria-describedby={phoneError ? "mobile-popup-phone-error" : undefined}
-                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         phoneError ? "border-red-500" : ""
                       }`}
                     />
                     {phoneError && (
-                      <p id="mobile-popup-phone-error" role="alert" className="mt-0.5 text-xs text-red-300">{phoneError}</p>
+                      <p className="mt-0.5 text-xs text-red-400">{phoneError}</p>
                     )}
                   </div>
                   <div>
-                    <label htmlFor="mobile-popup-email" className="mb-1 block text-xs font-medium text-slate-300">
+                    <label className="mb-1 block text-xs font-medium text-slate-400">
                       Email <span className="text-red-400">*</span>
                     </label>
                     <Input
-                      id="mobile-popup-email"
                       value={email}
                       onChange={(event) => {
                         setEmail(event.target.value);
@@ -698,18 +683,16 @@ export function PlaybookActivationPopup() {
                       placeholder="john@example.com"
                       type="email"
                       autoComplete="email"
-                      aria-invalid={Boolean(emailError)}
-                      aria-describedby={emailError ? "mobile-popup-email-error" : undefined}
-                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 ${
+                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
                         emailError ? "border-red-500" : ""
                       }`}
                     />
                     {emailError && (
-                      <p id="mobile-popup-email-error" role="alert" className="mt-0.5 text-xs text-red-300">{emailError}</p>
+                      <p className="mt-0.5 text-xs text-red-400">{emailError}</p>
                     )}
                   </div>
                   {submitError && (
-                    <p role="alert" className="text-center text-xs font-semibold text-red-300">
+                    <p className="text-center text-xs font-semibold text-red-400">
                       {submitError}
                     </p>
                   )}
@@ -717,14 +700,14 @@ export function PlaybookActivationPopup() {
                     type="button"
                     disabled={submitting}
                     onClick={submitPlaybook}
-                    className="mt-1 h-11 w-full rounded-lg bg-emerald-700 text-sm font-bold text-white hover:bg-emerald-800"
+                    className="mt-1 h-11 w-full rounded-lg bg-emerald-600 text-sm font-bold text-white hover:bg-emerald-500"
                   >
                     {submitting
                       ? "Sending the playbook…"
                       : "Send Me the Free Playbook"}
                     {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
                   </Button>
-                  <p className="pt-0.5 text-center text-xs text-slate-400">
+                  <p className="pt-0.5 text-center text-xs text-slate-500">
                     No spam—we don’t do that.
                   </p>
                 </div>
@@ -795,7 +778,7 @@ export function PlaybookActivationPopup() {
                   <Button
                     type="button"
                     onClick={openCalendly}
-                    className="mt-3 h-11 w-full rounded-xl bg-emerald-700 text-sm font-black text-white shadow-lg shadow-emerald-950/15 hover:bg-emerald-800"
+                    className="mt-3 h-11 w-full rounded-xl bg-emerald-600 text-sm font-black text-white shadow-lg shadow-emerald-950/15 hover:bg-emerald-500"
                   >
                     See {selectedCalendarDateDetails.weekday} {selectedCalendarDateDetails.day} times
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -847,7 +830,7 @@ export function PlaybookActivationPopup() {
                     );
                   })}
                 </div>
-                <p className="mt-4 text-center text-[10px] leading-4 text-slate-400">
+                <p className="mt-4 text-center text-[10px] leading-4 text-slate-500">
                   No login yet. Your contact information is already saved.
                 </p>
 
@@ -858,7 +841,6 @@ export function PlaybookActivationPopup() {
 
         <div
           aria-hidden={!calendarOpen}
-          inert={!calendarOpen}
           className={`absolute inset-0 z-40 flex flex-col bg-[#0d1117] transition-opacity duration-150 ${
             calendarOpen ? "opacity-100" : "pointer-events-none opacity-0"
           }`}

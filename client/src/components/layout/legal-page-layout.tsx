@@ -18,11 +18,8 @@ export function LegalPageLayout({
 }: LegalPageLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <a href="#main-content" className="skip-link">
-        Skip to main content
-      </a>
       <Navbar />
-      <main id="main-content" tabIndex={-1} className="flex-1">
+      <main className="flex-1">
         <section className="border-b bg-gradient-to-br from-emerald-50 via-white to-amber-50">
           <div className="container mx-auto px-4 py-16 md:px-6 md:py-24">
             <div className="max-w-3xl">

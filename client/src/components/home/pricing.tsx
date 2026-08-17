@@ -28,7 +28,7 @@ const PLANS = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative scroll-mt-24 overflow-hidden bg-[#f3faed] py-24">
+    <section id="pricing" className="relative overflow-hidden bg-[#f3faed] py-24">
       <div className="container relative z-10 mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -43,14 +43,14 @@ export function Features() {
   const categories = Object.values(FEATURES);
 
   return (
-    <section id="features" className="scroll-mt-24 py-20 bg-slate-50">
+    <section id="features" className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-6"
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-6"
           >
             Powerful Features
           </motion.div>

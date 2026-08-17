@@ -25,26 +25,6 @@ const STATIC_PAGES: SeoPage[] = [
     description: "Owner-focused pest control software guides covering scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.",
   },
   {
-    path: "/support",
-    title: "PestFlow Support",
-    description: "Contact PestFlow support and find help with your account, billing, privacy, or accessibility needs.",
-  },
-  {
-    path: "/privacy",
-    title: "PestFlow Privacy Policy",
-    description: "Learn how Reflectly AI, Inc. collects, uses, retains, and protects information for PestFlow.",
-  },
-  {
-    path: "/data-deletion",
-    title: "PestFlow Data Deletion Policy",
-    description: "Learn how to request deletion of a PestFlow profile, account, or personal information.",
-  },
-  {
-    path: "/terms",
-    title: "PestFlow Terms and Conditions",
-    description: "Read the terms and conditions that apply to the PestFlow website and services.",
-  },
-  {
     path: "/accessibility",
     title: "PestFlow Accessibility Statement",
     description: "Read PestFlow's accessibility goals, supported measures, and how to request assistance or report a barrier.",
