@@ -558,14 +558,14 @@ export function AutoPopup() {
                   Your Free Trial Is Ready
                 </h2>
                 <p className="text-slate-400 text-sm text-center mb-6">
-                  Plus 98% off your first month — you save $48.
+                  Start today for $1 before monthly billing begins.
                 </p>
 
                 <div className="w-full bg-emerald-900/40 border border-emerald-700/50 rounded-xl p-5 mb-6 space-y-2">
                   {[
                     "Free Growth Guide (unlocks now)",
                     "7-day full access trial",
-                    "98% off first month — only $1",
+                    "$1 today, then your selected monthly plan",
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2 text-sm text-emerald-300">
                       <CheckCircle2 className="h-4 w-4 shrink-0" />

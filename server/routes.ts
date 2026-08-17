@@ -26,8 +26,25 @@ import {
   registerSubmissionProspect,
   type ProspectRequestContext,
 } from "./meta-prospect-registration";
+import {
+  calendlyBookingSubmission,
+  findMatchingCalendlyProspect,
+  isPestFlowSetupEvent,
+  resolveCalendlyBooking,
+} from "./calendly";
+import crypto from "crypto";
 
 const META_LEAD_EVENT_COOKIE = "pestflow_meta_lead_event_id";
+
+function matchesWebhookSecret(
+  provided: string,
+  expected: string,
+): boolean {
+  const candidate = Buffer.from(provided);
+  const configured = Buffer.from(expected);
+  return candidate.length === configured.length
+    && crypto.timingSafeEqual(candidate, configured);
+}
 
 function parseCookies(value: string | undefined): Record<string, string> {
   if (!value) return {};
@@ -511,6 +528,83 @@ export async function registerRoutes(
     }
   });
 
+  // Calendly can be reached directly from ads, old links, or the hosted
+  // scheduling page. Persist those bookings independently of the browser
+  // funnel so app.pestflow.org/admin remains the complete prospect ledger.
+  // This path deliberately does not send email, text, or MTA enrollment.
+  app.post("/api/calendly/webhook", async (req, res) => {
+    const expectedSecret = process.env.CALENDLY_WEBHOOK_SECRET?.trim() || "";
+    const providedSecret = String(
+      req.headers["x-pestflow-calendly-secret"]
+      || req.query.token
+      || "",
+    );
+    if (
+      !expectedSecret
+      || !matchesWebhookSecret(providedSecret, expectedSecret)
+    ) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (req.body?.event !== "invitee.created") {
+      return res.status(204).send();
+    }
+
+    const accessToken = process.env.CALENDLY_API_TOKEN?.trim() || "";
+    if (!accessToken) {
+      return res.status(503).json({ error: "Calendly integration is not configured" });
+    }
+
+    try {
+      const booking = await resolveCalendlyBooking(req.body, accessToken);
+      if (!isPestFlowSetupEvent(
+        booking.scheduledEvent,
+        process.env.CALENDLY_PESTFLOW_EVENT_TYPE_URI,
+      )) {
+        return res.json({ ignored: true });
+      }
+
+      const submissions = await storage.getSubmissions();
+      const existing = submissions.find(
+        (submission) => submission.type === "calendly_booking"
+          && submission.website === booking.inviteeUri,
+      );
+      if (existing) {
+        return res.json({ duplicate: true, submissionId: existing.id });
+      }
+
+      // Reuse the landing-page identity when Calendly recognizes the same
+      // email or phone. This keeps the booking grouped with the existing CRM
+      // prospect instead of creating a second spelling-based person.
+      const existingProspect = findMatchingCalendlyProspect(
+        booking.invitee,
+        booking.scheduledEvent,
+        submissions,
+      );
+      const data = calendlyBookingSubmission(
+        booking.inviteeUri,
+        booking.invitee,
+        booking.scheduledEvent,
+        existingProspect,
+      );
+      if (!data) {
+        return res.status(400).json({ error: "Calendly invitee email is required" });
+      }
+
+      const submission = await storage.createSubmission(data);
+      return res.status(201).json({
+        created: true,
+        submissionId: submission.id,
+      });
+    } catch (error) {
+      console.warn(
+        "[calendly] booking capture failed:",
+        error instanceof Error ? error.message : error,
+      );
+      return res.status(502).json({ error: "Calendly booking capture failed" });
+    }
+  });
+
   // Secure cross-project endpoint — returns all quiz/audit data for admin dashboard
   app.options("/api/audit-leads", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -586,7 +680,6 @@ export async function registerRoutes(
   // CORS is locked to app.pestflow.org variants.
   const AUDIT_BY_EMAIL_ALLOWED_ORIGINS = new Set([
     "https://app.pestflow.org",
-    "https://pestflow-smart-pricing.lovable.app",
     "http://localhost:5052",
   ]);
   app.options("/api/audit-by-email", (req, res) => {

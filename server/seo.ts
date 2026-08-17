@@ -25,21 +25,6 @@ const STATIC_PAGES: SeoPage[] = [
     description: "Owner-focused pest control software guides covering scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.",
   },
   {
-    path: "/competitors",
-    title: "Compare Pest Control Software | PestFlow",
-    description: "Compare PestFlow with other pest control software based on routing, field work, recurring billing, customer experience, and owner visibility.",
-  },
-  {
-    path: "/competitors/fieldroutes",
-    title: "PestFlow vs FieldRoutes | Pest Control Software Comparison",
-    description: "Compare PestFlow and FieldRoutes across scheduling, routing, billing, field execution, implementation, and fit for different pest control teams.",
-  },
-  {
-    path: "/competitors/gorilladesk",
-    title: "PestFlow vs GorillaDesk | Pest Control Software Comparison",
-    description: "Compare PestFlow and GorillaDesk across scheduling, technician workflows, invoicing, routing, customer portals, and growth needs.",
-  },
-  {
     path: "/blog/pest-control-pricing-chart",
     title: "Pest Control Pricing Chart by Service Type | Owner Edition",
     description: "A practical pricing reference for pest control owners quoting general pest, roaches, termites, mosquitoes, rodents, and specialty work.",

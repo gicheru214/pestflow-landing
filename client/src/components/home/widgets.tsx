@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, Check, X, TrendingUp, Zap, BarChart2 } from "lucide-react";
+import { ArrowRight, TrendingUp, Zap } from "lucide-react";
 
 // ─── 1. Revenue Leak Calculator ──────────────────────────────────────────────
 
@@ -99,86 +99,7 @@ function RevenueCalculator() {
   );
 }
 
-// ─── 2. Competitor Comparison ─────────────────────────────────────────────────
-
-const COMPARISON_ROWS = [
-  { feature: "Easy setup (< 1 day)", pestflow: true, pestpac: false, gorilla: true },
-  { feature: "Drag-and-drop route board", pestflow: true, pestpac: false, gorilla: false },
-  { feature: "Recurring billing built-in", pestflow: true, pestpac: true, gorilla: true },
-  { feature: "AI Agents / automation", pestflow: true, pestpac: false, gorilla: false },
-  { feature: "Branded customer portal", pestflow: true, pestpac: false, gorilla: false },
-  { feature: "Technician GPS tracking", pestflow: true, pestpac: true, gorilla: true },
-  { feature: "Integrated VoIP & SMS", pestflow: true, pestpac: false, gorilla: false },
-  { feature: "No per-user seat fees", pestflow: true, pestpac: false, gorilla: false },
-];
-
-function Cell({ val }: { val: boolean }) {
-  return val ? (
-    <div className="flex justify-center">
-      <div className="h-7 w-7 rounded-full bg-emerald-100 flex items-center justify-center">
-        <Check className="h-4 w-4 text-emerald-600" />
-      </div>
-    </div>
-  ) : (
-    <div className="flex justify-center">
-      <X className="h-4 w-4 text-slate-300" />
-    </div>
-  );
-}
-
-function ComparisonTable() {
-  return (
-    <div>
-      <div className="flex items-center gap-3 mb-8">
-        <div className="h-11 w-11 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
-          <BarChart2 className="h-5 w-5 text-white" />
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-slate-900">How We Stack Up</h3>
-          <p className="text-sm text-slate-500">PestFlow vs PestPac vs GorillaDesk</p>
-        </div>
-      </div>
-
-      <div className="overflow-x-auto -mx-2 px-2">
-        <table className="w-full min-w-[320px]">
-          <thead>
-            <tr className="border-b-2 border-slate-100">
-              <th className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider pb-3 w-1/2">Feature</th>
-              <th className="text-center pb-3 px-3">
-                <span className="text-sm font-extrabold text-emerald-700">PestFlow</span>
-              </th>
-              <th className="text-center text-xs font-bold text-slate-400 uppercase tracking-wider pb-3 px-3">PestPac</th>
-              <th className="text-center text-xs font-bold text-slate-400 uppercase tracking-wider pb-3 px-3">Gorilla</th>
-            </tr>
-          </thead>
-          <tbody>
-            {COMPARISON_ROWS.map((row, i) => (
-              <tr
-                key={row.feature}
-                className={`${i % 2 === 0 ? "bg-slate-50/60" : "bg-white"} hover:bg-emerald-50/50 transition-colors`}
-              >
-                <td className="py-3 pl-2 text-slate-800 text-sm font-medium leading-snug">{row.feature}</td>
-                <td className="py-3 px-3"><Cell val={row.pestflow} /></td>
-                <td className="py-3 px-3"><Cell val={row.pestpac} /></td>
-                <td className="py-3 px-3"><Cell val={row.gorilla} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-7">
-        <Link href="/onboarding" className="block">
-          <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
-            Switch in under 24 hours <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// ─── 3. Route IQ Grader ───────────────────────────────────────────────────────
+// ─── 2. Route IQ Grader ───────────────────────────────────────────────────────
 
 const QUESTIONS = [
   { id: "manual_scheduling", text: "Do you manually schedule and re-arrange routes each day?" },
@@ -291,14 +212,13 @@ export function Widgets() {
             See what PestFlow can do <span className="text-emerald-600">for your operation</span>
           </h2>
           <p className="text-base text-slate-500 max-w-md mx-auto">
-            Three tools. Two minutes. A clear picture of where your money's going — and how to get it back.
+            Two tools. Two minutes. A clear picture of where your money's going — and how to get it back.
           </p>
         </div>
 
         <div className="flex flex-col gap-5">
           {[
             <RevenueCalculator />,
-            <ComparisonTable />,
             <RouteIQGrader />,
           ].map((widget, i) => (
             <div

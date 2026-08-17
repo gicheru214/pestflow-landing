@@ -471,7 +471,7 @@ const specs = [
   {
     slug: "pest-control-software-data-migration-checklist",
     keyword: "pest control software data migration checklist",
-    secondaryKeywords: ["migrate from GorillaDesk to another pest control CRM", "migrate from FieldRoutes to another pest control CRM", "migrate from PestPac to another pest control CRM", "migrate from Jobber to pest control software"],
+    secondaryKeywords: ["migrate from FieldRoutes to another pest control CRM", "migrate from PestPac to another pest control CRM", "migrate from Jobber to pest control software"],
     title: "Pest Control Software Data Migration Checklist",
     category: "Software Migration",
     purpose: "protect recurring revenue and field context by mapping, cleaning, importing, validating, and reconciling the records that actually run the business",
@@ -526,7 +526,7 @@ const comparisonHubs = [
   {
     slug: "pest-control-software-head-to-head-comparison",
     keyword: "pest control software comparison",
-    secondaryKeywords: ["GorillaDesk vs FieldRoutes", "GorillaDesk vs PestPac", "FieldRoutes vs PestPac", "Jobber vs GorillaDesk for pest control", "Housecall Pro vs GorillaDesk for pest control", "Jobber vs FieldRoutes for pest control", "PestPac vs Briostack", "QuoteIQ vs GorillaDesk", "PestFlow vs GorillaDesk", "PestFlow vs FieldRoutes"],
+    secondaryKeywords: ["FieldRoutes vs PestPac", "Jobber vs FieldRoutes for pest control", "PestPac vs Briostack", "PestFlow vs FieldRoutes"],
     title: "Pest Control Software Head-to-Head Comparison Scorecard",
     category: "Software Comparison",
     purpose: "compare any two pest-control platforms against the same documented operating scenario while verifying current features, plan levels, implementation, support, contract terms, and data access directly",
@@ -549,14 +549,13 @@ function publishAt(index) {
 function sourceLinks(spec) {
   if (spec.category === "Software Comparison") {
     return [
-      { title: "Pest control software buying framework", url: "https://gorilladesk.com/industries/pest-control-software/", source: "GorillaDesk" },
       { title: "Pest control CRM feature overview", url: "https://www.pestpac.com/features/pest-control-crm-software", source: "PestPac" },
     ];
   }
   if (spec.category === "Compliance Software") {
     return [{ title: "Pesticide worker safety resources", url: "https://www.epa.gov/pesticide-worker-safety", source: "U.S. Environmental Protection Agency" }];
   }
-  return [{ title: "Pest control software operations overview", url: "https://gorilladesk.com/industries/pest-control-software/", source: "GorillaDesk" }];
+  return [{ title: "Pest control CRM feature overview", url: "https://www.pestpac.com/features/pest-control-crm-software", source: "PestPac" }];
 }
 
 function internalLinks(spec) {

@@ -19,9 +19,6 @@ import TechLanding from "@/pages/tech";
 import AiTutorPage from "@/pages/ai-tutor";
 import Playbook from "@/pages/playbook";
 import GrowthKit from "@/pages/growth-kit";
-import CompetitorsPage from "@/pages/competitors";
-import CompetitorsFieldRoutes from "@/pages/competitors-fieldroutes";
-import CompetitorsGorillaDesk from "@/pages/competitors-gorilladesk";
 import BlogIndex from "@/pages/blog/index";
 import PricingChartPost from "@/pages/blog/pricing-chart";
 import StartBusinessPost from "@/pages/blog/start-business";
@@ -63,9 +60,6 @@ function AppRouter() {
         <Route path="/login">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
         <Route path="/create-account">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
         <Route path="/dashboard">{() => <ExternalRedirect to="https://app.pestflow.org/dashboard" />}</Route>
-        <Route path="/competitors" component={CompetitorsPage} />
-        <Route path="/competitors/fieldroutes" component={CompetitorsFieldRoutes} />
-        <Route path="/competitors/gorilladesk" component={CompetitorsGorillaDesk} />
         <Route path="/blog" component={BlogIndex} />
         <Route path="/blog/pest-control-pricing-chart" component={PricingChartPost} />
         <Route path="/blog/how-to-start-a-pest-control-business" component={StartBusinessPost} />

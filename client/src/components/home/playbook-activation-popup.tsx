@@ -15,6 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { beginMetaLeadEvent } from "@/lib/metaLeadEvent";
+import {
+  buildPestFlowCalendlyUrl,
+  PESTFLOW_CALENDLY_URL,
+} from "@shared/calendly-url";
 import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
@@ -32,8 +36,6 @@ type SubmissionResponse = {
 };
 
 const FUNNEL_ID = "playbook-workflow-v2";
-const PESTFLOW_CALENDLY_URL =
-  "https://calendly.com/tgicheru21/pestflow-set-up-call";
 const POPUP_SEEN_KEY = "pestflow_popup_seen_workflow_v2";
 const POPUP_SUBMITTED_KEY = "pestflow_popup_submitted_workflow_v2";
 const POPUP_DATA_KEY = "pestflow_popup_data";
@@ -119,6 +121,7 @@ function campaignFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return {
     utm_source: params.get("utm_source") || sessionStorage.getItem("utm_source"),
+    utm_medium: params.get("utm_medium") || sessionStorage.getItem("utm_medium"),
     utm_campaign:
       params.get("utm_campaign") || sessionStorage.getItem("utm_campaign"),
     utm_content:
@@ -178,21 +181,20 @@ function workflowHandoffUrl(
 function calendlyEmbedUrl(
   name: string,
   email: string,
+  phone: string,
   selectedDate?: string,
 ) {
-  const url = new URL(PESTFLOW_CALENDLY_URL);
-  url.searchParams.set("hide_gdpr_banner", "1");
-  url.searchParams.set("hide_event_type_details", "1");
-  url.searchParams.set("background_color", "ffffff");
-  url.searchParams.set("text_color", "0f172a");
-  url.searchParams.set("primary_color", "42a824");
-  if (selectedDate) {
-    url.searchParams.set("month", selectedDate.slice(0, 7));
-    url.searchParams.set("date", selectedDate);
-  }
-  if (name.trim()) url.searchParams.set("name", name.trim());
-  if (email.trim()) url.searchParams.set("email", email.trim());
-  return url.toString();
+  const campaign = campaignFromUrl();
+  return buildPestFlowCalendlyUrl({
+    name,
+    email,
+    phone,
+    selectedDate,
+    utmSource: campaign.utm_source,
+    utmMedium: campaign.utm_medium,
+    utmCampaign: campaign.utm_campaign,
+    utmContent: campaign.utm_content || FUNNEL_ID,
+  });
 }
 
 export function PlaybookActivationPopup() {
@@ -348,6 +350,16 @@ export function PlaybookActivationPopup() {
           placement: "preloaded_weekly_calendar",
           selected_date: selectedCalendarDate,
         });
+        const latestContact = snapshotRef.current;
+        if (latestContact.email || latestContact.phone || latestContact.name) {
+          pushPartial({
+            ...latestContact,
+            reason: "calendly_event_scheduled",
+            selectedDate: selectedCalendarDate,
+            calendlyEventUri: event.data?.payload?.event?.uri,
+            calendlyInviteeUri: event.data?.payload?.invitee?.uri,
+          });
+        }
       }
     };
 
@@ -866,7 +878,12 @@ export function PlaybookActivationPopup() {
               </div>
             )}
             <iframe
-              src={calendlyEmbedUrl("", "", selectedCalendarDate)}
+              src={calendlyEmbedUrl(
+                step === "workflow" ? name : "",
+                step === "workflow" ? email : "",
+                step === "workflow" ? phone : "",
+                selectedCalendarDate,
+              )}
               title="Book a PestFlow setup call"
               className={`h-full min-h-[420px] w-full bg-white transition-opacity duration-150 ${
                 calendarFrameLoaded ? "opacity-100" : "opacity-0"
@@ -877,7 +894,7 @@ export function PlaybookActivationPopup() {
             />
           </div>
           <a
-            href={calendlyEmbedUrl(name, email, selectedCalendarDate)}
+            href={calendlyEmbedUrl(name, email, phone, selectedCalendarDate)}
             target="_blank"
             rel="noreferrer"
             onClick={() =>

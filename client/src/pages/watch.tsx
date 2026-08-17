@@ -15,17 +15,6 @@ function isMobileDevice(): boolean {
   return window.matchMedia("(max-width: 767px)").matches;
 }
 
-// Map popup's routeCount bucket → numeric routes for pricing slider pre-fill.
-function routeCountToNumber(bucket?: string | null): number | null {
-  if (!bucket) return null;
-  if (bucket.startsWith("1") && bucket.includes("2")) return 2;
-  if (bucket.startsWith("3")) return 4;
-  if (bucket.startsWith("6")) return 8;
-  if (bucket.startsWith("11")) return 15;
-  if (bucket.startsWith("20")) return 25;
-  return null;
-}
-
 export default function Watch() {
   const [showCta, setShowCta] = useState(false);
 
@@ -48,9 +37,6 @@ export default function Watch() {
       const v = incoming.get(k) || cached[k];
       if (v) out.set(k, v);
     });
-
-    const routes = routeCountToNumber(incoming.get("routeCount") || cached.routeCount);
-    if (routes != null) out.set("routes", String(routes));
 
     // Forward the user's 15Q audit answers + their computed leak number so the
     // smart-pricing /tour can render a personalized Revenue Leak Report
@@ -121,7 +107,7 @@ export default function Watch() {
             </Button>
             <p className="text-xs text-slate-500 mt-3">
               {showCta
-                ? "We'll pre-load your route count on the next screen."
+                ? "Choose the $150/month or $250/month plan on the next screen."
                 : "Watching the demo? The trial button stays right here when you're ready."}
             </p>
           </div>

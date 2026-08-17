@@ -11,27 +11,113 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:00:00.000Z",
     "sourceLinks": [
-      { "title": "Best Pest Control Software 2026", "url": "https://www.capterra.com/pest-control-software/", "source": "Capterra" },
-      { "title": "Pest Control Software", "url": "https://www.getjobber.com/industries/pest-control-software/", "source": "Jobber" },
-      { "title": "Pest Control Software", "url": "https://gorilladesk.com/industries/pest-control-software/", "source": "GorillaDesk" }
+      {
+        "title": "Best Pest Control Software 2026",
+        "url": "https://www.capterra.com/pest-control-software/",
+        "source": "Capterra"
+      },
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.getjobber.com/industries/pest-control-software/",
+        "source": "Jobber"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Compare pest control software", "href": "/competitors" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Small pest control companies usually outgrow a patchwork before they outgrow their team. The owner has customers in one system, jobs on a calendar, invoices in accounting software, route notes in text messages, and chemical records on paper. The right software should connect that work without forcing a two-person company to operate like a national brand." },
-      { "type": "callout", "title": "The short version", "items": ["Prioritize recurring service, routing, invoicing, and technician usability.", "Test the complete job flow, not the sales demo.", "Count setup time and add-on costs, not only the monthly subscription.", "Choose a system that can export your customer and financial data."] },
-      { "type": "heading", "text": "What small pest control companies actually need" },
-      { "type": "paragraph", "text": "A general field-service app can schedule a one-time job. Pest control adds recurring cycles, reservice guarantees, products applied, technician licenses, seasonal routes, cards on file, and customer history at the service address. Your shortlist should handle those daily realities without a separate workaround for each one." },
-      { "type": "list", "items": ["Customer records tied to every service location", "Monthly, bimonthly, quarterly, and custom recurring schedules", "A visual dispatch board with map context", "Mobile service notes, photos, signatures, and product records", "Estimates, invoices, recurring billing, and failed-payment follow-up", "A customer portal or secure payment and document links", "Reports for revenue, unpaid balances, callbacks, and technician production"] },
-      { "type": "heading", "text": "Match the system to your operating stage" },
-      { "type": "table", "headers": ["Company stage", "Most important capability", "Common mistake"], "rows": [["Owner plus one technician", "Fast setup and one clean daily workflow", "Buying enterprise complexity too early"], ["Three to seven technicians", "Dispatch, route visibility, recurring billing, permissions", "Keeping critical work in spreadsheets"], ["Eight or more technicians", "Controls, reporting, integrations, migration support", "Choosing only on price per user"]] },
-      { "type": "heading", "text": "Run a real-world software test" },
-      { "type": "paragraph", "text": "Put the same ten accounts into every serious contender. Include a quarterly residential plan, a one-time rodent job, a commercial account, a callback, an overdue invoice, and a route change after the technician leaves. Create the estimate, schedule the visit, complete it on a phone, record materials, send the invoice, collect payment, and find the complete history the next day." },
-      { "type": "list", "items": ["Can the office see what changed and who changed it?", "Can the technician finish without calling the office?", "Does completed work create the correct billing action?", "Can a customer pay or find documents without another phone call?", "Can the owner understand tomorrow's workload and today's cash position?"] },
-      { "type": "heading", "text": "Where PestFlow fits" },
-      { "type": "paragraph", "text": "PestFlow is designed around the connected owner workflow: customers, recurring work, route boards, technician GPS, invoices, payments, customer communication, and a field app. Use the same evaluation standard on PestFlow that you use on every competitor. If your team can complete the full service-to-cash loop with fewer handoffs, the software is doing its job." }
+      {
+        "type": "paragraph",
+        "text": "Small pest control companies usually outgrow a patchwork before they outgrow their team. The owner has customers in one system, jobs on a calendar, invoices in accounting software, route notes in text messages, and chemical records on paper. The right software should connect that work without forcing a two-person company to operate like a national brand."
+      },
+      {
+        "type": "callout",
+        "title": "The short version",
+        "items": [
+          "Prioritize recurring service, routing, invoicing, and technician usability.",
+          "Test the complete job flow, not the sales demo.",
+          "Count setup time and add-on costs, not only the monthly subscription.",
+          "Choose a system that can export your customer and financial data."
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "What small pest control companies actually need"
+      },
+      {
+        "type": "paragraph",
+        "text": "A general field-service app can schedule a one-time job. Pest control adds recurring cycles, reservice guarantees, products applied, technician licenses, seasonal routes, cards on file, and customer history at the service address. Your shortlist should handle those daily realities without a separate workaround for each one."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Customer records tied to every service location",
+          "Monthly, bimonthly, quarterly, and custom recurring schedules",
+          "A visual dispatch board with map context",
+          "Mobile service notes, photos, signatures, and product records",
+          "Estimates, invoices, recurring billing, and failed-payment follow-up",
+          "A customer portal or secure payment and document links",
+          "Reports for revenue, unpaid balances, callbacks, and technician production"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Match the system to your operating stage"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Company stage",
+          "Most important capability",
+          "Common mistake"
+        ],
+        "rows": [
+          [
+            "Owner plus one technician",
+            "Fast setup and one clean daily workflow",
+            "Buying enterprise complexity too early"
+          ],
+          [
+            "Three to seven technicians",
+            "Dispatch, route visibility, recurring billing, permissions",
+            "Keeping critical work in spreadsheets"
+          ],
+          [
+            "Eight or more technicians",
+            "Controls, reporting, integrations, migration support",
+            "Choosing only on price per user"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Run a real-world software test"
+      },
+      {
+        "type": "paragraph",
+        "text": "Put the same ten accounts into every serious contender. Include a quarterly residential plan, a one-time rodent job, a commercial account, a callback, an overdue invoice, and a route change after the technician leaves. Create the estimate, schedule the visit, complete it on a phone, record materials, send the invoice, collect payment, and find the complete history the next day."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Can the office see what changed and who changed it?",
+          "Can the technician finish without calling the office?",
+          "Does completed work create the correct billing action?",
+          "Can a customer pay or find documents without another phone call?",
+          "Can the owner understand tomorrow's workload and today's cash position?"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Where PestFlow fits"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow is designed around the connected owner workflow: customers, recurring work, route boards, technician GPS, invoices, payments, customer communication, and a field app. Use the same evaluation standard on PestFlow that you use on every competitor. If your team can complete the full service-to-cash loop with fewer handoffs, the software is doing its job."
+      }
     ]
   },
   {
@@ -46,27 +132,125 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:01:00.000Z",
     "sourceLinks": [
-      { "title": "Best CRM Software for Pest Control Companies", "url": "https://blog.hubspot.com/marketing/best-crm-for-pest-control", "source": "HubSpot" },
-      { "title": "Pest Control Software", "url": "https://www.fieldroutes.com/solutions/pest-control-software/", "source": "FieldRoutes" }
+      {
+        "title": "Best CRM Software for Pest Control Companies",
+        "url": "https://blog.hubspot.com/marketing/best-crm-for-pest-control",
+        "source": "HubSpot"
+      },
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.fieldroutes.com/solutions/pest-control-software/",
+        "source": "FieldRoutes"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Read the small-business software guide", "href": "/blog/best-pest-control-software-for-small-business" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      },
+      {
+        "label": "Read the small-business software guide",
+        "href": "/blog/best-pest-control-software-for-small-business"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "The best pest control CRM is an operating record, not a digital address book. When a customer calls, the office should see the service address, pest history, access notes, pets, products used, open estimates, future visits, payment status, and the last conversation without opening five tabs." },
-      { "type": "callout", "title": "A useful CRM answers four questions", "items": ["Who is the customer and where are the service locations?", "What happened on every previous visit?", "What work and money are still outstanding?", "What should happen next, and who owns it?"] },
-      { "type": "heading", "text": "Contact CRM versus pest control CRM" },
-      { "type": "paragraph", "text": "A general sales CRM is built to move a lead through a pipeline. A pest control company must keep that sales context after the deal closes and connect it to recurring service. The service location matters as much as the billing contact. A property manager may control twenty locations, while one homeowner may have multiple structures and different treatment programs." },
-      { "type": "table", "headers": ["Capability", "Basic contact CRM", "Pest control operating CRM"], "rows": [["Customer record", "Name, email, deal stage", "Contacts, properties, access, service history"], ["Scheduling", "Tasks and meetings", "Recurring visits, routes, technician assignment"], ["Field work", "Notes after a call", "Products, photos, signatures, completion"], ["Money", "Deal value", "Estimates, invoices, payments, balances"], ["Retention", "Marketing follow-up", "Renewals, callbacks, cancellations, reviews"]] },
-      { "type": "heading", "text": "Fields your team will search every day" },
-      { "type": "list", "items": ["Gate code, pets, preferred contact method, and service window", "Target pests and treatment program", "Technician notes and customer-visible summary", "Products and quantities applied", "Warranty or reservice terms", "Card-on-file status and unpaid balance", "Lead source, referral source, and lost-sale reason"] },
-      { "type": "heading", "text": "Automation should follow the customer record" },
-      { "type": "paragraph", "text": "Automations become useful when they are triggered by real service events. A completed initial can create the next recurring visit. A failed payment can start a reminder sequence. A completed service can send the customer report and review request. A cancellation can open a save task with the customer's history visible." },
-      { "type": "heading", "text": "How to compare CRMs" },
-      { "type": "paragraph", "text": "Ask each vendor to show one customer moving from new lead to estimate, scheduled initial, completed service, invoice, payment, and recurring plan. Then change the service address, add a second contact, create a callback, and export the record. If the workflow breaks when reality gets messy, the CRM is not ready for your company." },
-      { "type": "heading", "text": "PestFlow as the system of record" },
-      { "type": "paragraph", "text": "PestFlow keeps customer, job, field, route, communication, and billing activity connected. That matters because the value of a CRM is not how much data it stores. The value is whether the next employee can act correctly without asking the customer to repeat the story." }
+      {
+        "type": "paragraph",
+        "text": "The best pest control CRM is an operating record, not a digital address book. When a customer calls, the office should see the service address, pest history, access notes, pets, products used, open estimates, future visits, payment status, and the last conversation without opening five tabs."
+      },
+      {
+        "type": "callout",
+        "title": "A useful CRM answers four questions",
+        "items": [
+          "Who is the customer and where are the service locations?",
+          "What happened on every previous visit?",
+          "What work and money are still outstanding?",
+          "What should happen next, and who owns it?"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Contact CRM versus pest control CRM"
+      },
+      {
+        "type": "paragraph",
+        "text": "A general sales CRM is built to move a lead through a pipeline. A pest control company must keep that sales context after the deal closes and connect it to recurring service. The service location matters as much as the billing contact. A property manager may control twenty locations, while one homeowner may have multiple structures and different treatment programs."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Capability",
+          "Basic contact CRM",
+          "Pest control operating CRM"
+        ],
+        "rows": [
+          [
+            "Customer record",
+            "Name, email, deal stage",
+            "Contacts, properties, access, service history"
+          ],
+          [
+            "Scheduling",
+            "Tasks and meetings",
+            "Recurring visits, routes, technician assignment"
+          ],
+          [
+            "Field work",
+            "Notes after a call",
+            "Products, photos, signatures, completion"
+          ],
+          [
+            "Money",
+            "Deal value",
+            "Estimates, invoices, payments, balances"
+          ],
+          [
+            "Retention",
+            "Marketing follow-up",
+            "Renewals, callbacks, cancellations, reviews"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Fields your team will search every day"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Gate code, pets, preferred contact method, and service window",
+          "Target pests and treatment program",
+          "Technician notes and customer-visible summary",
+          "Products and quantities applied",
+          "Warranty or reservice terms",
+          "Card-on-file status and unpaid balance",
+          "Lead source, referral source, and lost-sale reason"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Automation should follow the customer record"
+      },
+      {
+        "type": "paragraph",
+        "text": "Automations become useful when they are triggered by real service events. A completed initial can create the next recurring visit. A failed payment can start a reminder sequence. A completed service can send the customer report and review request. A cancellation can open a save task with the customer's history visible."
+      },
+      {
+        "type": "heading",
+        "text": "How to compare CRMs"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ask each vendor to show one customer moving from new lead to estimate, scheduled initial, completed service, invoice, payment, and recurring plan. Then change the service address, add a second contact, create a callback, and export the record. If the workflow breaks when reality gets messy, the CRM is not ready for your company."
+      },
+      {
+        "type": "heading",
+        "text": "PestFlow as the system of record"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow keeps customer, job, field, route, communication, and billing activity connected. That matters because the value of a CRM is not how much data it stores. The value is whether the next employee can act correctly without asking the customer to repeat the story."
+      }
     ]
   },
   {
@@ -81,27 +265,121 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:02:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Software", "url": "https://www.fieldroutes.com/solutions/pest-control-software/", "source": "FieldRoutes" },
-      { "title": "Pest Control Software", "url": "https://gorilladesk.com/industries/pest-control-software/", "source": "GorillaDesk" }
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.fieldroutes.com/solutions/pest-control-software/",
+        "source": "FieldRoutes"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Compare routing software", "href": "/blog/pest-control-routing-software" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      },
+      {
+        "label": "Compare routing software",
+        "href": "/blog/pest-control-routing-software"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Pest control scheduling is not just picking an open box on a calendar. The office is balancing recurring due dates, route zones, technician licenses, customer windows, weather, callbacks, and new sales. Good scheduling software makes those constraints visible before the dispatcher creates a bad day." },
-      { "type": "callout", "title": "The scheduling test", "items": ["Can it generate the correct recurring work automatically?", "Can dispatch see route capacity before booking?", "Can the office move work without losing notes or billing rules?", "Can technicians see the latest schedule immediately?"] },
-      { "type": "heading", "text": "Recurring service is the first requirement" },
-      { "type": "paragraph", "text": "Monthly, bimonthly, quarterly, seasonal, and annual programs behave differently. The system should separate service frequency from billing frequency, keep due windows visible, and prevent a skipped visit from silently breaking the remainder of the plan. A calendar reminder is not enough when hundreds of future visits depend on the rule." },
-      { "type": "list", "items": ["Flexible service cycles and due windows", "Pause, skip, and reschedule rules", "Seasonal start and end dates", "Technician skill or license requirements", "Automatic customer confirmations and reminders", "Capacity controls by day, route, or technician"] },
-      { "type": "heading", "text": "Scheduling should protect route quality" },
-      { "type": "table", "headers": ["Booking decision", "Weak calendar behavior", "Strong scheduling behavior"], "rows": [["New lead", "Books the first open time", "Shows nearby capacity and service fit"], ["Recurring visit", "Creates a generic reminder", "Creates work inside the correct due window"], ["Cancellation", "Leaves a hole", "Surfaces nearby work or a waitlist"], ["Callback", "Adds another appointment", "Links the reservice to the original job"]] },
-      { "type": "heading", "text": "The morning dispatch view matters" },
-      { "type": "paragraph", "text": "A dispatcher needs a fast view of unassigned work, overdue recurring services, overloaded technicians, route gaps, and customers waiting for confirmation. Color is helpful only when the meaning is consistent. The board should make the next best action obvious, not turn the office into a wall of labels." },
-      { "type": "heading", "text": "Test schedule changes before buying" },
-      { "type": "list", "items": ["Move a technician's afternoon to another day", "Insert an urgent service with a two-hour window", "Reassign a job requiring a specific license", "Cancel a recurring visit without canceling the plan", "Notify the customer and technician", "Confirm the invoice and next visit still behave correctly"] },
-      { "type": "heading", "text": "Scheduling inside PestFlow" },
-      { "type": "paragraph", "text": "PestFlow connects the route board, recurring work, customer details, technician location, field completion, and billing. That lets the office schedule with operational context instead of creating appointments that another employee must repair later." }
+      {
+        "type": "paragraph",
+        "text": "Pest control scheduling is not just picking an open box on a calendar. The office is balancing recurring due dates, route zones, technician licenses, customer windows, weather, callbacks, and new sales. Good scheduling software makes those constraints visible before the dispatcher creates a bad day."
+      },
+      {
+        "type": "callout",
+        "title": "The scheduling test",
+        "items": [
+          "Can it generate the correct recurring work automatically?",
+          "Can dispatch see route capacity before booking?",
+          "Can the office move work without losing notes or billing rules?",
+          "Can technicians see the latest schedule immediately?"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Recurring service is the first requirement"
+      },
+      {
+        "type": "paragraph",
+        "text": "Monthly, bimonthly, quarterly, seasonal, and annual programs behave differently. The system should separate service frequency from billing frequency, keep due windows visible, and prevent a skipped visit from silently breaking the remainder of the plan. A calendar reminder is not enough when hundreds of future visits depend on the rule."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Flexible service cycles and due windows",
+          "Pause, skip, and reschedule rules",
+          "Seasonal start and end dates",
+          "Technician skill or license requirements",
+          "Automatic customer confirmations and reminders",
+          "Capacity controls by day, route, or technician"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Scheduling should protect route quality"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Booking decision",
+          "Weak calendar behavior",
+          "Strong scheduling behavior"
+        ],
+        "rows": [
+          [
+            "New lead",
+            "Books the first open time",
+            "Shows nearby capacity and service fit"
+          ],
+          [
+            "Recurring visit",
+            "Creates a generic reminder",
+            "Creates work inside the correct due window"
+          ],
+          [
+            "Cancellation",
+            "Leaves a hole",
+            "Surfaces nearby work or a waitlist"
+          ],
+          [
+            "Callback",
+            "Adds another appointment",
+            "Links the reservice to the original job"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "The morning dispatch view matters"
+      },
+      {
+        "type": "paragraph",
+        "text": "A dispatcher needs a fast view of unassigned work, overdue recurring services, overloaded technicians, route gaps, and customers waiting for confirmation. Color is helpful only when the meaning is consistent. The board should make the next best action obvious, not turn the office into a wall of labels."
+      },
+      {
+        "type": "heading",
+        "text": "Test schedule changes before buying"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Move a technician's afternoon to another day",
+          "Insert an urgent service with a two-hour window",
+          "Reassign a job requiring a specific license",
+          "Cancel a recurring visit without canceling the plan",
+          "Notify the customer and technician",
+          "Confirm the invoice and next visit still behave correctly"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Scheduling inside PestFlow"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow connects the route board, recurring work, customer details, technician location, field completion, and billing. That lets the office schedule with operational context instead of creating appointments that another employee must repair later."
+      }
     ]
   },
   {
@@ -116,27 +394,125 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:03:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Software", "url": "https://www.fieldroutes.com/solutions/pest-control-software/", "source": "FieldRoutes" },
-      { "title": "Best Pest Control Routing Software in 2026", "url": "https://locus.sh/blogs/best-pest-control-routing-software/", "source": "Locus" }
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.fieldroutes.com/solutions/pest-control-software/",
+        "source": "FieldRoutes"
+      },
+      {
+        "title": "Best Pest Control Routing Software in 2026",
+        "url": "https://locus.sh/blogs/best-pest-control-routing-software/",
+        "source": "Locus"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Read the scheduling guide", "href": "/blog/pest-control-scheduling-software" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      },
+      {
+        "label": "Read the scheduling guide",
+        "href": "/blog/pest-control-scheduling-software"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Pest control routing software should do more than sort addresses. A route may contain recurring stops due this week, timed commercial service, a termite inspection requiring a licensed technician, and a callback that should stay with the original tech. The best route balances miles with the promises already made." },
-      { "type": "callout", "title": "Judge routing by the whole day", "items": ["Miles and drive time", "Stops completed per technician", "On-time arrival inside customer windows", "Revenue and production per route", "Overtime, callbacks, and manual changes"] },
-      { "type": "heading", "text": "Route density comes before optimization" },
-      { "type": "paragraph", "text": "No algorithm can create density if the company sells work across an unlimited service area. Start by defining zones, preferred service days, and minimum economics for distant stops. Routing software should expose scattered accounts so the owner can change sales, renewal, or scheduling decisions that caused the problem." },
-      { "type": "list", "items": ["Map all recurring customers by frequency", "Measure average drive time between stops", "Track revenue per mile or service hour", "Flag isolated accounts before renewal", "Offer zone-based service days to new customers", "Use cancellations to pull nearby work forward"] },
-      { "type": "heading", "text": "Compare constraints, not map colors" },
-      { "type": "table", "headers": ["Constraint", "Why it matters", "What to test"], "rows": [["Time windows", "A short route can still be late", "Mix timed and flexible stops"], ["Technician skills", "Not every tech can perform every service", "Add termite or commercial work"], ["Recurring due dates", "Efficiency cannot erase service obligations", "Route a full due week"], ["Workload", "Balanced miles can hide unequal production", "Compare service minutes and value"], ["Live changes", "The route changes after dispatch", "Insert a callback and cancellation"]] },
-      { "type": "heading", "text": "Use a twenty-five-stop test" },
-      { "type": "paragraph", "text": "Export one real day with twenty-five stops. Include addresses, service durations, windows, technician start locations, and skill requirements. Build the route in each system, then change three conditions. Compare the final drive time, manual effort, technician clarity, and customer notifications. A polished demo route is less useful than your messy Tuesday." },
-      { "type": "heading", "text": "Routing is also a management signal" },
-      { "type": "paragraph", "text": "Consistent route data shows which territories are profitable, where hiring should happen, which customers should be moved, and whether sales is creating future windshield time. That information belongs beside scheduling and customer history, not in an isolated navigation app." },
-      { "type": "heading", "text": "PestFlow routing workflow" },
-      { "type": "paragraph", "text": "PestFlow gives the office a route board connected to customer records, recurring work, technician GPS, service completion, and billing. The goal is not a perfect-looking map. The goal is a day the technician can complete and the owner can measure." }
+      {
+        "type": "paragraph",
+        "text": "Pest control routing software should do more than sort addresses. A route may contain recurring stops due this week, timed commercial service, a termite inspection requiring a licensed technician, and a callback that should stay with the original tech. The best route balances miles with the promises already made."
+      },
+      {
+        "type": "callout",
+        "title": "Judge routing by the whole day",
+        "items": [
+          "Miles and drive time",
+          "Stops completed per technician",
+          "On-time arrival inside customer windows",
+          "Revenue and production per route",
+          "Overtime, callbacks, and manual changes"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Route density comes before optimization"
+      },
+      {
+        "type": "paragraph",
+        "text": "No algorithm can create density if the company sells work across an unlimited service area. Start by defining zones, preferred service days, and minimum economics for distant stops. Routing software should expose scattered accounts so the owner can change sales, renewal, or scheduling decisions that caused the problem."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Map all recurring customers by frequency",
+          "Measure average drive time between stops",
+          "Track revenue per mile or service hour",
+          "Flag isolated accounts before renewal",
+          "Offer zone-based service days to new customers",
+          "Use cancellations to pull nearby work forward"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Compare constraints, not map colors"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Constraint",
+          "Why it matters",
+          "What to test"
+        ],
+        "rows": [
+          [
+            "Time windows",
+            "A short route can still be late",
+            "Mix timed and flexible stops"
+          ],
+          [
+            "Technician skills",
+            "Not every tech can perform every service",
+            "Add termite or commercial work"
+          ],
+          [
+            "Recurring due dates",
+            "Efficiency cannot erase service obligations",
+            "Route a full due week"
+          ],
+          [
+            "Workload",
+            "Balanced miles can hide unequal production",
+            "Compare service minutes and value"
+          ],
+          [
+            "Live changes",
+            "The route changes after dispatch",
+            "Insert a callback and cancellation"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Use a twenty-five-stop test"
+      },
+      {
+        "type": "paragraph",
+        "text": "Export one real day with twenty-five stops. Include addresses, service durations, windows, technician start locations, and skill requirements. Build the route in each system, then change three conditions. Compare the final drive time, manual effort, technician clarity, and customer notifications. A polished demo route is less useful than your messy Tuesday."
+      },
+      {
+        "type": "heading",
+        "text": "Routing is also a management signal"
+      },
+      {
+        "type": "paragraph",
+        "text": "Consistent route data shows which territories are profitable, where hiring should happen, which customers should be moved, and whether sales is creating future windshield time. That information belongs beside scheduling and customer history, not in an isolated navigation app."
+      },
+      {
+        "type": "heading",
+        "text": "PestFlow routing workflow"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow gives the office a route board connected to customer records, recurring work, technician GPS, service completion, and billing. The goal is not a perfect-looking map. The goal is a day the technician can complete and the owner can measure."
+      }
     ]
   },
   {
@@ -151,27 +527,134 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:04:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Invoice Software", "url": "https://www.pestpac.com/features/accounting-software", "source": "PestPac" },
-      { "title": "Pest Control Software", "url": "https://www.getjobber.com/industries/pest-control-software/", "source": "Jobber" }
+      {
+        "title": "Pest Control Invoice Software",
+        "url": "https://www.pestpac.com/features/accounting-software",
+        "source": "PestPac"
+      },
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.getjobber.com/industries/pest-control-software/",
+        "source": "Jobber"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Use the pest control invoice template", "href": "/blog/pest-control-invoice-template" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      },
+      {
+        "label": "Use the pest control invoice template",
+        "href": "/blog/pest-control-invoice-template"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Pest control invoicing software should remove the gap between completed work and collected cash. When the technician finishes, the system already knows the customer, service, price, products, tax treatment, payment method, and whether billing happens per visit or on a separate recurring cycle." },
-      { "type": "callout", "title": "The complete billing loop", "items": ["Agreement defines price and billing rules", "Completed work creates the correct invoice or charge", "Customer receives a clear report and payment option", "Failed payments create visible follow-up", "Deposits reconcile to invoices and reports"] },
-      { "type": "heading", "text": "Service frequency and billing frequency are different" },
-      { "type": "paragraph", "text": "A customer might receive quarterly service but pay monthly. Another might prepay annually. Commercial work may be invoiced after each visit or consolidated at month end. Software should support these arrangements without fake appointments, duplicate invoices, or manual calendar reminders." },
-      { "type": "list", "items": ["One-time invoices and deposits", "Recurring card or ACH billing", "Monthly billing for quarterly service", "Batch invoices for commercial accounts", "Automatic receipts and customer statements", "Credits, discounts, taxes, and refunds", "Failed-payment reminders and owner follow-up queues"] },
-      { "type": "heading", "text": "Test the events that usually break billing" },
-      { "type": "table", "headers": ["Event", "Expected system behavior", "Risk if manual"], "rows": [["Service price changes", "Future billing updates with an audit trail", "Wrong amount charged"], ["Visit is skipped", "Billing follows the agreement rule", "Accidental credit or duplicate"], ["Card fails", "Balance stays visible and reminders begin", "Account disappears in email"], ["Callback", "Links to original work without rebilling", "Customer dispute"], ["Commercial month end", "Approved work batches correctly", "Missing tickets and slow cash"]] },
-      { "type": "heading", "text": "The invoice must make sense to the customer" },
-      { "type": "paragraph", "text": "A customer-ready invoice names the service location, date, service performed, price, taxes, payments, remaining balance, and how to get help. The service report can carry detailed product and application information while the invoice stays easy to understand. Both records should be linked." },
-      { "type": "heading", "text": "Owner reporting matters after payment" },
-      { "type": "list", "items": ["Open invoices by age", "Failed recurring payments", "Revenue by service and route", "Collected versus invoiced revenue", "Refunds, credits, and write-offs", "Payment processing fees", "Deposits tied to bank payouts"] },
-      { "type": "heading", "text": "PestFlow from service to cash" },
-      { "type": "paragraph", "text": "PestFlow connects estimates, service work, invoices, payments, customer communication, and owner reporting. That keeps the field record and financial record aligned, which is the real requirement for pest control invoicing software." }
+      {
+        "type": "paragraph",
+        "text": "Pest control invoicing software should remove the gap between completed work and collected cash. When the technician finishes, the system already knows the customer, service, price, products, tax treatment, payment method, and whether billing happens per visit or on a separate recurring cycle."
+      },
+      {
+        "type": "callout",
+        "title": "The complete billing loop",
+        "items": [
+          "Agreement defines price and billing rules",
+          "Completed work creates the correct invoice or charge",
+          "Customer receives a clear report and payment option",
+          "Failed payments create visible follow-up",
+          "Deposits reconcile to invoices and reports"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Service frequency and billing frequency are different"
+      },
+      {
+        "type": "paragraph",
+        "text": "A customer might receive quarterly service but pay monthly. Another might prepay annually. Commercial work may be invoiced after each visit or consolidated at month end. Software should support these arrangements without fake appointments, duplicate invoices, or manual calendar reminders."
+      },
+      {
+        "type": "list",
+        "items": [
+          "One-time invoices and deposits",
+          "Recurring card or ACH billing",
+          "Monthly billing for quarterly service",
+          "Batch invoices for commercial accounts",
+          "Automatic receipts and customer statements",
+          "Credits, discounts, taxes, and refunds",
+          "Failed-payment reminders and owner follow-up queues"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Test the events that usually break billing"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Event",
+          "Expected system behavior",
+          "Risk if manual"
+        ],
+        "rows": [
+          [
+            "Service price changes",
+            "Future billing updates with an audit trail",
+            "Wrong amount charged"
+          ],
+          [
+            "Visit is skipped",
+            "Billing follows the agreement rule",
+            "Accidental credit or duplicate"
+          ],
+          [
+            "Card fails",
+            "Balance stays visible and reminders begin",
+            "Account disappears in email"
+          ],
+          [
+            "Callback",
+            "Links to original work without rebilling",
+            "Customer dispute"
+          ],
+          [
+            "Commercial month end",
+            "Approved work batches correctly",
+            "Missing tickets and slow cash"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "The invoice must make sense to the customer"
+      },
+      {
+        "type": "paragraph",
+        "text": "A customer-ready invoice names the service location, date, service performed, price, taxes, payments, remaining balance, and how to get help. The service report can carry detailed product and application information while the invoice stays easy to understand. Both records should be linked."
+      },
+      {
+        "type": "heading",
+        "text": "Owner reporting matters after payment"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Open invoices by age",
+          "Failed recurring payments",
+          "Revenue by service and route",
+          "Collected versus invoiced revenue",
+          "Refunds, credits, and write-offs",
+          "Payment processing fees",
+          "Deposits tied to bank payouts"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "PestFlow from service to cash"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow connects estimates, service work, invoices, payments, customer communication, and owner reporting. That keeps the field record and financial record aligned, which is the real requirement for pest control invoicing software."
+      }
     ]
   },
   {
@@ -186,26 +669,116 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:05:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Software", "url": "https://www.fieldroutes.com/solutions/pest-control-software/", "source": "FieldRoutes" },
-      { "title": "FieldRoutes Alternatives", "url": "https://www.g2.com/products/fieldroutes-a-servicetitan-company/competitors/alternatives", "source": "G2" }
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.fieldroutes.com/solutions/pest-control-software/",
+        "source": "FieldRoutes"
+      },
+      {
+        "title": "FieldRoutes Alternatives",
+        "url": "https://www.g2.com/products/fieldroutes-a-servicetitan-company/competitors/alternatives",
+        "source": "G2"
+      }
     ],
     "internalLinks": [
-      { "label": "Compare PestFlow with FieldRoutes", "href": "/competitors/fieldroutes" },
-      { "label": "Start a PestFlow trial", "href": "/onboarding" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Searching for a FieldRoutes alternative does not mean FieldRoutes is a bad product. Its public product information emphasizes individual and bulk scheduling, routing constraints, collections, reporting, and broader operational depth. The question for an owner-operator is whether the implementation, workflow, and ongoing administration fit a small team." },
-      { "type": "callout", "title": "Start with fit, not a winner", "items": ["List the workflows your team performs every day.", "Separate required capabilities from future nice-to-haves.", "Test implementation effort and data migration.", "Compare the complete cost after required modules and services."] },
-      { "type": "heading", "text": "Where a deeper platform can make sense" },
-      { "type": "paragraph", "text": "A growing company with several dispatchers, complex route rules, significant sales operations, and formal reporting requirements may value a broad system. If your team needs bulk operations across many routes and departments, depth can justify more setup and training." },
-      { "type": "heading", "text": "Where owner-operators feel friction" },
-      { "type": "list", "items": ["The owner is also dispatcher, salesperson, and billing manager", "Most work is residential recurring service", "The company needs to launch quickly", "Technicians require a simple phone workflow", "Reporting must be understandable without an analyst", "The team cannot pause operations for a long migration"] },
-      { "type": "heading", "text": "Use a side-by-side scorecard" },
-      { "type": "table", "headers": ["Area", "Questions to ask", "Proof to request"], "rows": [["Setup", "Who configures services, routes, forms, and billing?", "A written implementation plan"], ["Routing", "Can it handle your real zones and windows?", "A route built from your accounts"], ["Field app", "How many taps to complete a service?", "A technician-led test"], ["Billing", "Does it support your service and billing cycles?", "A full invoice and payment run"], ["Exit", "Can you export customers and financial records?", "Sample export files"]] },
-      { "type": "heading", "text": "Migration is part of the buying decision" },
-      { "type": "paragraph", "text": "Before choosing an alternative, export customers, service locations, recurring schedules, balances, cards-on-file migration options, documents, products, and historical notes. Decide what must move, what can be archived, and who validates the totals. A cheaper subscription is not cheaper if the migration damages billing or customer service." },
-      { "type": "heading", "text": "When PestFlow belongs on the shortlist" },
-      { "type": "paragraph", "text": "PestFlow is worth evaluating when you want connected routing, recurring work, technician visibility, billing, customer communication, and owner reporting with an owner-friendly workflow. Compare it against FieldRoutes using your accounts and your team, not a generic feature checklist." }
+      {
+        "type": "paragraph",
+        "text": "Searching for a FieldRoutes alternative does not mean FieldRoutes is a bad product. Its public product information emphasizes individual and bulk scheduling, routing constraints, collections, reporting, and broader operational depth. The question for an owner-operator is whether the implementation, workflow, and ongoing administration fit a small team."
+      },
+      {
+        "type": "callout",
+        "title": "Start with fit, not a winner",
+        "items": [
+          "List the workflows your team performs every day.",
+          "Separate required capabilities from future nice-to-haves.",
+          "Test implementation effort and data migration.",
+          "Compare the complete cost after required modules and services."
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Where a deeper platform can make sense"
+      },
+      {
+        "type": "paragraph",
+        "text": "A growing company with several dispatchers, complex route rules, significant sales operations, and formal reporting requirements may value a broad system. If your team needs bulk operations across many routes and departments, depth can justify more setup and training."
+      },
+      {
+        "type": "heading",
+        "text": "Where owner-operators feel friction"
+      },
+      {
+        "type": "list",
+        "items": [
+          "The owner is also dispatcher, salesperson, and billing manager",
+          "Most work is residential recurring service",
+          "The company needs to launch quickly",
+          "Technicians require a simple phone workflow",
+          "Reporting must be understandable without an analyst",
+          "The team cannot pause operations for a long migration"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Use a side-by-side scorecard"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Area",
+          "Questions to ask",
+          "Proof to request"
+        ],
+        "rows": [
+          [
+            "Setup",
+            "Who configures services, routes, forms, and billing?",
+            "A written implementation plan"
+          ],
+          [
+            "Routing",
+            "Can it handle your real zones and windows?",
+            "A route built from your accounts"
+          ],
+          [
+            "Field app",
+            "How many taps to complete a service?",
+            "A technician-led test"
+          ],
+          [
+            "Billing",
+            "Does it support your service and billing cycles?",
+            "A full invoice and payment run"
+          ],
+          [
+            "Exit",
+            "Can you export customers and financial records?",
+            "Sample export files"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Migration is part of the buying decision"
+      },
+      {
+        "type": "paragraph",
+        "text": "Before choosing an alternative, export customers, service locations, recurring schedules, balances, cards-on-file migration options, documents, products, and historical notes. Decide what must move, what can be archived, and who validates the totals. A cheaper subscription is not cheaper if the migration damages billing or customer service."
+      },
+      {
+        "type": "heading",
+        "text": "When PestFlow belongs on the shortlist"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow is worth evaluating when you want connected routing, recurring work, technician visibility, billing, customer communication, and owner reporting with an owner-friendly workflow. Compare it against FieldRoutes using your accounts and your team, not a generic feature checklist."
+      }
     ]
   },
   {
@@ -220,62 +793,122 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:06:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Invoice Software", "url": "https://www.pestpac.com/features/accounting-software", "source": "PestPac" },
-      { "title": "Pest Control Customer Portal", "url": "https://www.pestpac.com/features/customer-portal", "source": "PestPac" }
+      {
+        "title": "Pest Control Invoice Software",
+        "url": "https://www.pestpac.com/features/accounting-software",
+        "source": "PestPac"
+      },
+      {
+        "title": "Pest Control Customer Portal",
+        "url": "https://www.pestpac.com/features/customer-portal",
+        "source": "PestPac"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Compare pest control software", "href": "/competitors" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "Small pest control companies looking for a PestPac alternative are often solving a fit problem. PestPac publicly describes workflows for invoicing, recurring payment requests, past-due balances, residential portals, and commercial reporting. Those capabilities can be valuable, but a small team should verify that the setup and daily operation match its staffing and service mix." },
-      { "type": "callout", "title": "Define the reason for switching", "items": ["Daily workflow is too complicated", "Implementation or support needs have changed", "Required capabilities are spread across add-ons", "Technicians struggle with field execution", "The company needs a cleaner migration and reporting path"] },
-      { "type": "heading", "text": "Do not replace depth with a basic calendar" },
-      { "type": "paragraph", "text": "A small company still needs pest-specific operations. The alternative should manage recurring customers, service locations, route work, product records, invoices, payments, and customer history. Simplicity should remove unnecessary steps, not remove the controls that keep the business compliant and paid." },
-      { "type": "list", "items": ["Recurring scheduling and route management", "Technician mobile workflow", "Materials or products applied", "Residential and commercial customer records", "Invoices, autopay, ACH or card payments", "Customer documents and self-service", "Exports for accounting and ownership of data"] },
-      { "type": "heading", "text": "Small-team evaluation matrix" },
-      { "type": "table", "headers": ["Area", "Small-team priority", "Test"], "rows": [["Administration", "One person can manage the system", "Build a full week without vendor help"], ["Field app", "Fast and clear for technicians", "Complete three different service types"], ["Billing", "Few manual handoffs", "Run recurring and one-time billing"], ["Portal", "Reduces routine calls", "Pay, request service, find documents"], ["Reporting", "Owner can act on the numbers", "Find unpaid, overdue, and uncompleted work"]] },
-      { "type": "heading", "text": "Plan the data move before signing" },
-      { "type": "paragraph", "text": "Ask for sample exports from the current system and sample imports from the replacement. Match customer counts, open balances, recurring schedules, service locations, and historical documents. Decide how payment methods will be handled because stored cards usually require a separate secure migration process." },
-      { "type": "heading", "text": "Give both systems the same test" },
-      { "type": "paragraph", "text": "Run ten representative accounts through both products. Include residential recurring work, a commercial property, a callback, a past-due balance, and a customer portal request. Measure time, errors, support required, and what the owner can see at the end." },
-      { "type": "heading", "text": "PestFlow for a smaller operation" },
-      { "type": "paragraph", "text": "PestFlow focuses on the connected path from customer and route to technician, invoice, payment, and follow-up. It should earn a place on the shortlist only if that workflow is simpler for your actual staff while preserving the records your business needs." }
-    ]
-  },
-  {
-    "slug": "gorilladesk-alternatives",
-    "title": "GorillaDesk Alternatives for Pest Control Companies",
-    "description": "Compare GorillaDesk alternatives by company size, recurring routes, field execution, billing, customer portals, and reporting.",
-    "keyword": "GorillaDesk alternatives",
-    "readTime": "7 min read",
-    "category": "Operations",
-    "updated": "July 2026",
-    "excerpt": "GorillaDesk covers scheduling, routing, invoicing, chemical tracking, customer communication, and more. The right alternative depends on what your team needs to simplify or deepen.",
-    "author": "PestFlow Field Notes",
-    "publishedAt": "2026-07-10T19:07:00.000Z",
-    "sourceLinks": [
-      { "title": "Pest Control Software", "url": "https://gorilladesk.com/industries/pest-control-software/", "source": "GorillaDesk" },
-      { "title": "Customer Portal Software", "url": "https://gorilladesk.com/features/customer-portal-software/", "source": "GorillaDesk" }
-    ],
-    "internalLinks": [
-      { "label": "Compare PestFlow with GorillaDesk", "href": "/competitors/gorilladesk" },
-      { "label": "Start a PestFlow trial", "href": "/onboarding" }
-    ],
-    "sections": [
-      { "type": "paragraph", "text": "A useful GorillaDesk alternatives guide should begin with what GorillaDesk already does. Its public pest-control pages describe scheduling, dispatch, invoicing, automatic payments, chemical tracking, customer communication, routing, technician tracking, a mobile app, and a customer portal. An alternative should solve a specific gap or fit a different operating model, not merely offer a different logo." },
-      { "type": "callout", "title": "Reasons to evaluate alternatives", "items": ["Your company has outgrown the current workflow", "You need different reporting or automation", "Your technicians need a simpler field experience", "Your billing, phone, or customer portal requirements changed", "You are standardizing multiple tools into one system"] },
-      { "type": "heading", "text": "Build a shortlist by operating model" },
-      { "type": "paragraph", "text": "A solo owner, a five-route residential company, and a thirty-technician commercial operator should not share the same shortlist. Start with route count, service mix, office staffing, compliance requirements, billing model, and the amount of implementation support your team can absorb." },
-      { "type": "table", "headers": ["Operating model", "Priority", "Watch for"], "rows": [["Solo or one route", "Fast setup and low administration", "Paying for unused complexity"], ["Two to seven routes", "Dispatch, recurring billing, technician consistency", "Disconnected add-ons and weak reporting"], ["Commercial or multi-branch", "Controls, device records, reporting, permissions", "A small-business tool stretched too far"], ["Sales-led growth", "Lead tracking, estimates, follow-up, onboarding", "Strong operations with a weak sales handoff"]] },
-      { "type": "heading", "text": "Compare workflows instead of feature boxes" },
-      { "type": "list", "items": ["Create a new lead and estimate", "Convert it to recurring service", "Build and change the route", "Complete the work on a technician's phone", "Record products, photos, notes, and signature", "Invoice and collect payment", "Let the customer find documents or request service", "Review route, revenue, and unpaid-work reports"] },
-      { "type": "heading", "text": "Check the cost of switching" },
-      { "type": "paragraph", "text": "Include data cleanup, import work, payment migration, technician training, customer communication, parallel billing, and temporary productivity loss. A move makes sense when the future workflow improvement is larger than the transition cost and the team has a clear cutover owner." },
-      { "type": "heading", "text": "Ask vendors to be precise" },
-      { "type": "paragraph", "text": "Request a written list of included capabilities, optional modules, usage charges, onboarding services, support levels, contract terms, and export options. Product packages change, so current vendor documentation and a written proposal are more reliable than an old comparison article." },
-      { "type": "heading", "text": "Where PestFlow differs" },
-      { "type": "paragraph", "text": "PestFlow brings customer records, routes, technician GPS, field work, recurring billing, invoices, communication, and owner visibility into one operating flow. The best comparison is a live test using your accounts, followed by a direct review of what each system includes today." }
+      {
+        "type": "paragraph",
+        "text": "Small pest control companies looking for a PestPac alternative are often solving a fit problem. PestPac publicly describes workflows for invoicing, recurring payment requests, past-due balances, residential portals, and commercial reporting. Those capabilities can be valuable, but a small team should verify that the setup and daily operation match its staffing and service mix."
+      },
+      {
+        "type": "callout",
+        "title": "Define the reason for switching",
+        "items": [
+          "Daily workflow is too complicated",
+          "Implementation or support needs have changed",
+          "Required capabilities are spread across add-ons",
+          "Technicians struggle with field execution",
+          "The company needs a cleaner migration and reporting path"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Do not replace depth with a basic calendar"
+      },
+      {
+        "type": "paragraph",
+        "text": "A small company still needs pest-specific operations. The alternative should manage recurring customers, service locations, route work, product records, invoices, payments, and customer history. Simplicity should remove unnecessary steps, not remove the controls that keep the business compliant and paid."
+      },
+      {
+        "type": "list",
+        "items": [
+          "Recurring scheduling and route management",
+          "Technician mobile workflow",
+          "Materials or products applied",
+          "Residential and commercial customer records",
+          "Invoices, autopay, ACH or card payments",
+          "Customer documents and self-service",
+          "Exports for accounting and ownership of data"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Small-team evaluation matrix"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Area",
+          "Small-team priority",
+          "Test"
+        ],
+        "rows": [
+          [
+            "Administration",
+            "One person can manage the system",
+            "Build a full week without vendor help"
+          ],
+          [
+            "Field app",
+            "Fast and clear for technicians",
+            "Complete three different service types"
+          ],
+          [
+            "Billing",
+            "Few manual handoffs",
+            "Run recurring and one-time billing"
+          ],
+          [
+            "Portal",
+            "Reduces routine calls",
+            "Pay, request service, find documents"
+          ],
+          [
+            "Reporting",
+            "Owner can act on the numbers",
+            "Find unpaid, overdue, and uncompleted work"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Plan the data move before signing"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ask for sample exports from the current system and sample imports from the replacement. Match customer counts, open balances, recurring schedules, service locations, and historical documents. Decide how payment methods will be handled because stored cards usually require a separate secure migration process."
+      },
+      {
+        "type": "heading",
+        "text": "Give both systems the same test"
+      },
+      {
+        "type": "paragraph",
+        "text": "Run ten representative accounts through both products. Include residential recurring work, a commercial property, a callback, a past-due balance, and a customer portal request. Measure time, errors, support required, and what the owner can see at the end."
+      },
+      {
+        "type": "heading",
+        "text": "PestFlow for a smaller operation"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow focuses on the connected path from customer and route to technician, invoice, payment, and follow-up. It should earn a place on the shortlist only if that workflow is simpler for your actual staff while preserving the records your business needs."
+      }
     ]
   },
   {
@@ -290,28 +923,118 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:08:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Customer Portal", "url": "https://www.pestpac.com/features/customer-portal", "source": "PestPac" },
-      { "title": "Customer Portal Software", "url": "https://gorilladesk.com/features/customer-portal-software/", "source": "GorillaDesk" }
+      {
+        "title": "Pest Control Customer Portal",
+        "url": "https://www.pestpac.com/features/customer-portal",
+        "source": "PestPac"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Read the pest control CRM guide", "href": "/blog/best-pest-control-crm" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      },
+      {
+        "label": "Read the pest control CRM guide",
+        "href": "/blog/best-pest-control-crm"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "A pest control CRM with a customer portal creates one shared record between the office, technician, and customer. The portal should show only the information a customer needs, while every request, approval, payment, and document remains attached to the correct CRM account and service location." },
-      { "type": "callout", "title": "High-value portal jobs", "items": ["View upcoming and past service", "Approve estimates and sign documents", "Pay invoices and update payment methods", "Download service reports and receipts", "Request service without waiting on hold"] },
-      { "type": "heading", "text": "The CRM must be accurate first" },
-      { "type": "paragraph", "text": "A portal exposes weak data quickly. Duplicate contacts create confusing logins. Incorrect balances create payment calls. Missing service reports reduce trust. Before launch, clean account ownership, property relationships, contact permissions, open invoices, and document history." },
-      { "type": "heading", "text": "Residential and commercial users need different views" },
-      { "type": "table", "headers": ["User", "Most useful portal functions", "Important control"], "rows": [["Homeowner", "Appointments, invoices, payments, reports, requests", "Simple access and clear service address"], ["Property manager", "Multiple locations, balances, documents, requests", "Contact permissions by property"], ["Commercial contact", "Inspection history, documents, device or condition reporting", "Role-based access and exports"], ["Accounting contact", "Invoices, statements, payment methods, receipts", "Financial access without service editing"]] },
-      { "type": "heading", "text": "Portal adoption is an operating project" },
-      { "type": "list", "items": ["Invite customers at estimate approval and after service", "Put the portal link in receipts and appointment messages", "Train office staff to guide customers without taking the task back", "Track invitations, first logins, payments, and service requests", "Keep phone and text options for customers who need help"] },
-      { "type": "heading", "text": "Security and permissions deserve a demo" },
-      { "type": "paragraph", "text": "Ask how customers authenticate, how staff revoke access, how multiple contacts share an account, and which actions create notifications. Test a tenant, homeowner, property manager, and accounting contact. Confirm that one user cannot see another property's documents or payment information." },
-      { "type": "heading", "text": "Measure office work removed" },
-      { "type": "paragraph", "text": "Track calls and messages about balances, receipts, appointment dates, service reports, and basic service requests before and after launch. Portal value comes from completed self-service tasks, not the number of accounts invited." },
-      { "type": "heading", "text": "Customer self-service in PestFlow" },
-      { "type": "paragraph", "text": "PestFlow connects customer records, appointments, estimates, invoices, payments, service documents, and communication. That lets the portal present current information and return customer actions to the same operational record the office uses." }
+      {
+        "type": "paragraph",
+        "text": "A pest control CRM with a customer portal creates one shared record between the office, technician, and customer. The portal should show only the information a customer needs, while every request, approval, payment, and document remains attached to the correct CRM account and service location."
+      },
+      {
+        "type": "callout",
+        "title": "High-value portal jobs",
+        "items": [
+          "View upcoming and past service",
+          "Approve estimates and sign documents",
+          "Pay invoices and update payment methods",
+          "Download service reports and receipts",
+          "Request service without waiting on hold"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "The CRM must be accurate first"
+      },
+      {
+        "type": "paragraph",
+        "text": "A portal exposes weak data quickly. Duplicate contacts create confusing logins. Incorrect balances create payment calls. Missing service reports reduce trust. Before launch, clean account ownership, property relationships, contact permissions, open invoices, and document history."
+      },
+      {
+        "type": "heading",
+        "text": "Residential and commercial users need different views"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "User",
+          "Most useful portal functions",
+          "Important control"
+        ],
+        "rows": [
+          [
+            "Homeowner",
+            "Appointments, invoices, payments, reports, requests",
+            "Simple access and clear service address"
+          ],
+          [
+            "Property manager",
+            "Multiple locations, balances, documents, requests",
+            "Contact permissions by property"
+          ],
+          [
+            "Commercial contact",
+            "Inspection history, documents, device or condition reporting",
+            "Role-based access and exports"
+          ],
+          [
+            "Accounting contact",
+            "Invoices, statements, payment methods, receipts",
+            "Financial access without service editing"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Portal adoption is an operating project"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Invite customers at estimate approval and after service",
+          "Put the portal link in receipts and appointment messages",
+          "Train office staff to guide customers without taking the task back",
+          "Track invitations, first logins, payments, and service requests",
+          "Keep phone and text options for customers who need help"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Security and permissions deserve a demo"
+      },
+      {
+        "type": "paragraph",
+        "text": "Ask how customers authenticate, how staff revoke access, how multiple contacts share an account, and which actions create notifications. Test a tenant, homeowner, property manager, and accounting contact. Confirm that one user cannot see another property's documents or payment information."
+      },
+      {
+        "type": "heading",
+        "text": "Measure office work removed"
+      },
+      {
+        "type": "paragraph",
+        "text": "Track calls and messages about balances, receipts, appointment dates, service reports, and basic service requests before and after launch. Portal value comes from completed self-service tasks, not the number of accounts invited."
+      },
+      {
+        "type": "heading",
+        "text": "Customer self-service in PestFlow"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow connects customer records, appointments, estimates, invoices, payments, service documents, and communication. That lets the portal present current information and return customer actions to the same operational record the office uses."
+      }
     ]
   },
   {
@@ -326,28 +1049,122 @@
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:09:00.000Z",
     "sourceLinks": [
-      { "title": "Pest Control Software", "url": "https://www.getjobber.com/industries/pest-control-software/", "source": "Jobber" },
-      { "title": "Pest Control Software", "url": "https://gorilladesk.com/industries/pest-control-software/", "source": "GorillaDesk" }
+      {
+        "title": "Pest Control Software",
+        "url": "https://www.getjobber.com/industries/pest-control-software/",
+        "source": "Jobber"
+      }
     ],
     "internalLinks": [
-      { "label": "Start a PestFlow trial", "href": "/onboarding" },
-      { "label": "Compare pest control software", "href": "/competitors" }
+      {
+        "label": "Start a PestFlow trial",
+        "href": "/onboarding"
+      }
     ],
     "sections": [
-      { "type": "paragraph", "text": "A pest control technician app succeeds or fails in the field. The technician may be wearing gloves, working in bright sun, moving between units, taking photos in a crawlspace, or finishing service where the connection is weak. Every extra screen becomes a skipped note, a phone call, or office rework." },
-      { "type": "callout", "title": "The technician should finish without calling the office", "items": ["See the current route and latest customer instructions", "Record service, products, quantities, notes, photos, and signatures", "Create or update approved work", "Collect payment or trigger the correct invoice", "Complete the stop and move to the next address"] },
-      { "type": "heading", "text": "Start with today's route" },
-      { "type": "paragraph", "text": "The home screen should answer where to go, when to arrive, what service is due, and what changed. Customer phone numbers, gate codes, pets, target pests, previous notes, balances, and navigation should be close enough to use without backing through several menus." },
-      { "type": "heading", "text": "Field data must be structured" },
-      { "type": "list", "items": ["Service status and arrival or completion time", "Target pest and treatment area", "Product, EPA registration details when required, quantity, and method", "Customer-visible service summary", "Internal technician note", "Photos and documents", "Customer signature or refusal reason", "Recommended follow-up or additional work"] },
-      { "type": "heading", "text": "Use a driveway test" },
-      { "type": "table", "headers": ["Scenario", "What to test", "Failure signal"], "rows": [["Normal recurring stop", "Open, document, complete, invoice", "Technician needs office help"], ["No signal", "Access data and save work", "Lost notes or duplicate entry"], ["Callback", "See original service and warranty", "No context for the visit"], ["Commercial property", "Move between units or devices", "Repeated customer setup"], ["Change order", "Document and approve extra work", "Unapproved verbal promise"]] },
-      { "type": "heading", "text": "GPS should support operations, not surprise employees" },
-      { "type": "paragraph", "text": "If the app uses location, define when tracking starts, when it stops, who can see it, how long data is retained, and how it helps dispatch and safety. Communicate the policy before rollout and test battery use on a full workday." },
-      { "type": "heading", "text": "Let technicians score the app" },
-      { "type": "paragraph", "text": "Give two technicians the same five jobs in each finalist. Measure completion time, missing fields, calls to the office, synchronization errors, battery use, and the quality of the customer report. The office should review the resulting invoices and records, not only the technician screens." },
-      { "type": "heading", "text": "PestFlow in the truck" },
-      { "type": "paragraph", "text": "PestFlow's field experience connects the technician's route, customer context, service completion, location, documentation, and billing with the office system. The result should be fewer handoffs and a complete record before the truck leaves." }
+      {
+        "type": "paragraph",
+        "text": "A pest control technician app succeeds or fails in the field. The technician may be wearing gloves, working in bright sun, moving between units, taking photos in a crawlspace, or finishing service where the connection is weak. Every extra screen becomes a skipped note, a phone call, or office rework."
+      },
+      {
+        "type": "callout",
+        "title": "The technician should finish without calling the office",
+        "items": [
+          "See the current route and latest customer instructions",
+          "Record service, products, quantities, notes, photos, and signatures",
+          "Create or update approved work",
+          "Collect payment or trigger the correct invoice",
+          "Complete the stop and move to the next address"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Start with today's route"
+      },
+      {
+        "type": "paragraph",
+        "text": "The home screen should answer where to go, when to arrive, what service is due, and what changed. Customer phone numbers, gate codes, pets, target pests, previous notes, balances, and navigation should be close enough to use without backing through several menus."
+      },
+      {
+        "type": "heading",
+        "text": "Field data must be structured"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Service status and arrival or completion time",
+          "Target pest and treatment area",
+          "Product, EPA registration details when required, quantity, and method",
+          "Customer-visible service summary",
+          "Internal technician note",
+          "Photos and documents",
+          "Customer signature or refusal reason",
+          "Recommended follow-up or additional work"
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "Use a driveway test"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Scenario",
+          "What to test",
+          "Failure signal"
+        ],
+        "rows": [
+          [
+            "Normal recurring stop",
+            "Open, document, complete, invoice",
+            "Technician needs office help"
+          ],
+          [
+            "No signal",
+            "Access data and save work",
+            "Lost notes or duplicate entry"
+          ],
+          [
+            "Callback",
+            "See original service and warranty",
+            "No context for the visit"
+          ],
+          [
+            "Commercial property",
+            "Move between units or devices",
+            "Repeated customer setup"
+          ],
+          [
+            "Change order",
+            "Document and approve extra work",
+            "Unapproved verbal promise"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "text": "GPS should support operations, not surprise employees"
+      },
+      {
+        "type": "paragraph",
+        "text": "If the app uses location, define when tracking starts, when it stops, who can see it, how long data is retained, and how it helps dispatch and safety. Communicate the policy before rollout and test battery use on a full workday."
+      },
+      {
+        "type": "heading",
+        "text": "Let technicians score the app"
+      },
+      {
+        "type": "paragraph",
+        "text": "Give two technicians the same five jobs in each finalist. Measure completion time, missing fields, calls to the office, synchronization errors, battery use, and the quality of the customer report. The office should review the resulting invoices and records, not only the technician screens."
+      },
+      {
+        "type": "heading",
+        "text": "PestFlow in the truck"
+      },
+      {
+        "type": "paragraph",
+        "text": "PestFlow's field experience connects the technician's route, customer context, service completion, location, documentation, and billing with the office system. The result should be fewer handoffs and a complete record before the truck leaves."
+      }
     ]
   }
 ]
