@@ -7,7 +7,7 @@ export default function Terms() {
       title="PestFlow Terms & Conditions"
       description="These terms govern access to the PestFlow website and software product provided by Reflectly AI, Inc."
     >
-      <p>Effective date: May 30, 2026</p>
+      <p>Effective date: August 17, 2026</p>
 
       <p>
         These Terms &amp; Conditions apply to the PestFlow website and software services made
@@ -59,9 +59,25 @@ export default function Terms() {
 
       <h2>Limitation of liability</h2>
       <p>
-        To the maximum extent permitted by law, Reflectly AI, Inc. will not be liable for indirect,
-        incidental, special, consequential, or punitive damages, or for loss of profits, revenue,
-        data, or goodwill arising from or related to PestFlow.
+        To the maximum extent permitted by law, neither Reflectly AI, Inc. nor its affiliates,
+        officers, employees, agents, or licensors will be liable for indirect, incidental, special,
+        consequential, exemplary, or punitive damages, or for loss of profits, revenue, data,
+        goodwill, or business opportunities, arising out of or relating to PestFlow or these terms,
+        regardless of the theory of liability and even if advised of the possibility of those
+        damages.
+      </p>
+      <p>
+        To the maximum extent permitted by law, the total aggregate liability of Reflectly AI, Inc.
+        and the parties listed above for all claims arising out of or relating to PestFlow or these
+        terms will not exceed the greater of (a) $100 or (b) the total fees you paid to Reflectly AI,
+        Inc. for PestFlow during the 12 months immediately before the first event giving rise to
+        liability. This cap applies collectively to all claims, whether in contract, tort (including
+        negligence), strict liability, statute, or any other legal theory.
+      </p>
+      <p>
+        Nothing in these terms excludes or limits liability to the extent it cannot be excluded or
+        limited under applicable law. Some jurisdictions do not allow certain exclusions or
+        limitations, so some of the limitations above may not apply to you.
       </p>
 
       <h2>Contact</h2>
