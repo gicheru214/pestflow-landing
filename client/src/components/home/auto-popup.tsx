@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
@@ -71,6 +71,10 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-black border-slate-800">
+        <DialogTitle className="sr-only">PestFlow product demonstration</DialogTitle>
+        <DialogDescription className="sr-only">
+          Watch a short PestFlow demonstration, then continue to the free trial.
+        </DialogDescription>
         <div className="relative aspect-video w-full bg-black">
           <iframe
             width="100%"
@@ -120,8 +124,6 @@ export function AutoPopup() {
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); }
     catch { return {} as any; }
   })();
-  const [showClose, setShowClose] = useState(false);
-
   const seedName = (() => {
     const f = urlParams.get("firstName");
     const l = urlParams.get("lastName");
@@ -169,7 +171,6 @@ export function AutoPopup() {
   useEffect(() => {
     if (urlParams.has("popup-check")) {
       setStep("guide");
-      setShowClose(true);
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       return;
@@ -178,15 +179,12 @@ export function AutoPopup() {
     // immediately so those links keep working without reviving the long quiz.
     const forcedStep = new URLSearchParams(window.location.search).get("popup_step");
     if (forcedStep === "offer") {
-      setShowClose(true);
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       return;
     }
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
-    const seenBefore = localStorage.getItem("pestflow_popup_seen");
-    if (seenBefore) setShowClose(true);
     const timer = setTimeout(() => {
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
@@ -202,7 +200,6 @@ export function AutoPopup() {
       const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
       if (nearBottom) {
         setStep("guide");
-        setShowClose(true);
         setOpen(true);
         analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       }
@@ -361,22 +358,25 @@ export function AutoPopup() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={showClose ? handleClose : () => {}}>
+    <Dialog open={open} onOpenChange={(nextOpen) => nextOpen ? setOpen(true) : handleClose()}>
       <DialogContent
         className="w-[calc(100vw-1.5rem)] sm:max-w-[400px] p-0 overflow-hidden bg-[#0d1117] border border-white/10 rounded-2xl shadow-2xl top-[calc(50%+2.25rem)] xl:top-[50%]"
         hideCloseButton
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={showClose ? handleClose : (e) => e.preventDefault()}
+        aria-describedby="desktop-playbook-description"
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          document.getElementById("main-content")?.focus();
+        }}
       >
-        {showClose && (
-          <button
-            onClick={handleClose}
-            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors"
-            aria-label="Close"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
+        <DialogTitle className="sr-only">Get the $1M Pest Control Playbook</DialogTitle>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="absolute top-3 right-3 z-10 grid min-h-10 min-w-10 place-items-center rounded-full bg-white/5 text-slate-300 transition-colors hover:bg-white/15 hover:text-white"
+          aria-label="Close and keep browsing"
+        >
+          <X aria-hidden="true" className="h-4 w-4" />
+        </button>
         <div className="overflow-y-auto" style={popupScrollStyle}>
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Guide offer + contact info ── */}
@@ -402,7 +402,7 @@ export function AutoPopup() {
                 <h2 className="text-base sm:text-lg font-bold text-white text-center mb-1 leading-tight">
                   The $1M Pest Control Playbook
                 </h2>
-                <p className="text-slate-400 text-xs text-center mb-3">
+                <p id="desktop-playbook-description" className="text-slate-400 text-xs text-center mb-3">
                   The exact blueprint top operators use to scale past 7 figures — and finally get off the truck for good.
                 </p>
 
@@ -421,23 +421,28 @@ export function AutoPopup() {
 
                 <div className="w-full space-y-2">
                   <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1 block">
+                    <label htmlFor="popup-full-name" className="text-xs font-medium text-slate-300 mb-1 block">
                       Full Name <span className="text-red-400">*</span>
                     </label>
                     <Input
+                      id="popup-full-name"
                       value={name}
                       onChange={(e) => { setName(e.target.value); setNameError(""); }}
                       placeholder="John Smith"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${nameError ? "border-red-500" : ""}`}
+                      autoComplete="name"
+                      aria-invalid={Boolean(nameError)}
+                      aria-describedby={nameError ? "popup-name-error" : undefined}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 h-9 text-sm ${nameError ? "border-red-500" : ""}`}
                     />
-                    {nameError && <p className="text-red-400 text-xs mt-0.5">{nameError}</p>}
+                    {nameError && <p id="popup-name-error" role="alert" className="text-red-300 text-xs mt-0.5">{nameError}</p>}
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1 block">
+                    <label htmlFor="popup-phone" className="text-xs font-medium text-slate-300 mb-1 block">
                       Phone <span className="text-red-400">*</span>
                     </label>
                     <Input
+                      id="popup-phone"
                       value={phone}
                       onChange={(e) => {
                         setPhone(limitPhoneInput(e.target.value));
@@ -449,39 +454,45 @@ export function AutoPopup() {
                       autoComplete="tel-national"
                       maxLength={10}
                       pattern="[0-9]{10}"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${phoneError ? "border-red-500" : ""}`}
+                      aria-invalid={Boolean(phoneError)}
+                      aria-describedby={phoneError ? "popup-phone-error" : undefined}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 h-9 text-sm ${phoneError ? "border-red-500" : ""}`}
                     />
-                    {phoneError && <p className="text-red-400 text-xs mt-0.5">{phoneError}</p>}
+                    {phoneError && <p id="popup-phone-error" role="alert" className="text-red-300 text-xs mt-0.5">{phoneError}</p>}
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium text-slate-400 mb-1 block">
+                    <label htmlFor="popup-email" className="text-xs font-medium text-slate-300 mb-1 block">
                       Email <span className="text-red-400">*</span>
                     </label>
                     <Input
+                      id="popup-email"
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
                       placeholder="john@example.com"
                       type="email"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${emailError ? "border-red-500" : ""}`}
+                      autoComplete="email"
+                      aria-invalid={Boolean(emailError)}
+                      aria-describedby={emailError ? "popup-email-error" : undefined}
+                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-400 focus-visible:ring-emerald-500 h-9 text-sm ${emailError ? "border-red-500" : ""}`}
                     />
-                    {emailError && <p className="text-red-400 text-xs mt-0.5">{emailError}</p>}
+                    {emailError && <p id="popup-email-error" role="alert" className="text-red-300 text-xs mt-0.5">{emailError}</p>}
                   </div>
 
                   <Button
                     onClick={handleGuideSubmit}
-                    className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
+                    className="w-full h-11 text-sm font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg mt-1"
                   >
                     Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                  <p className="text-center text-xs text-slate-500 pt-0.5">
+                  <p className="text-center text-xs text-slate-400 pt-0.5">
                     No spam — we don't do that.
                   </p>
                 </div>
 
                 {/* ── Returning user sign-in ── */}
                 <div className="w-full mt-4 pt-4 border-t border-white/8">
-                  <p className="text-center text-[11px] text-slate-500 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
+                  <p className="text-center text-[11px] text-slate-400 mb-2 font-medium uppercase tracking-wide">Returning user?</p>
                   <button
                     disabled={googleLoading}
                     onClick={() => {
@@ -527,10 +538,10 @@ export function AutoPopup() {
                     {googleLoading ? <span className="h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
                     Sign in with Google
                   </button>
-                  {googleErr && <p className="text-[11px] text-red-400 text-center mb-1">{googleErr}</p>}
+                  {googleErr && <p role="alert" className="text-[11px] text-red-300 text-center mb-1">{googleErr}</p>}
                   <a
                     href="https://app.pestflow.org/login"
-                    className="block text-center text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
+                    className="block text-center text-[11px] text-slate-400 hover:text-slate-200 transition-colors"
                   >
                     Or sign in with email →
                   </a>
@@ -576,11 +587,11 @@ export function AutoPopup() {
 
                 <Button
                   onClick={handleAcceptOffer}
-                  className="w-full h-12 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg"
+                  className="w-full h-12 text-base font-bold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg"
                 >
                   Claim My Free Trial <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <p className="text-xs text-slate-500 text-center mt-3">
+                <p className="text-xs text-slate-400 text-center mt-3">
                   No credit card required to start.
                 </p>
               </motion.div>

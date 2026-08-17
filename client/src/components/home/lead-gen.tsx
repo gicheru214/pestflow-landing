@@ -153,7 +153,7 @@ export function LeadGen() {
                   <Button
                     onClick={acceptGate}
                     size="lg"
-                    className="w-full min-h-[56px] h-auto py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-normal text-left leading-snug rounded-xl"
+                    className="w-full min-h-[56px] h-auto py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold whitespace-normal text-left leading-snug rounded-xl"
                   >
                     Yes — I'm a pest control owner and I want to make more money
                   </Button>
@@ -187,7 +187,7 @@ export function LeadGen() {
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         placeholder="John"
                         required
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-300"
                       />
                     </div>
                     <div className="space-y-2">
@@ -198,7 +198,7 @@ export function LeadGen() {
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         placeholder="Doe"
                         required
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-300"
                       />
                     </div>
                   </div>
@@ -212,7 +212,7 @@ export function LeadGen() {
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="john@yourcompany.com"
                       required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-300"
                     />
                   </div>
 
@@ -237,14 +237,14 @@ export function LeadGen() {
                   <Button
                     disabled={isSubmitting}
                     size="lg"
-                    className="w-full min-h-[52px] h-auto py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-base whitespace-normal leading-snug rounded-lg"
+                    className="w-full min-h-[52px] h-auto py-3 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-base whitespace-normal leading-snug rounded-lg"
                   >
                     {isSubmitting ? "Preparing..." : (
                       <>Send Me The Revenue Leak Playbook <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></>
                     )}
                   </Button>
 
-                  <p className="text-xs text-center text-slate-500 mt-4">
+                  <p className="text-xs text-center text-slate-400 mt-4">
                     Includes the $1M Playbook. We respect your inbox — unsubscribe anytime.
                   </p>
                 </form>

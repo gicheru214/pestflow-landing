@@ -11,6 +11,7 @@ import Support from "@/pages/support";
 import Privacy from "@/pages/privacy";
 import DataDeletion from "@/pages/data-deletion";
 import Terms from "@/pages/terms";
+import Accessibility from "@/pages/accessibility";
 import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
 import SignupSuccess from "@/pages/signup-success";
@@ -49,6 +50,7 @@ function AppRouter() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/data-deletion" component={DataDeletion} />
         <Route path="/terms" component={Terms} />
+        <Route path="/accessibility" component={Accessibility} />
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/admin" component={Admin} />
         <Route path="/signup-success" component={SignupSuccess} />

@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, PlayCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import videoBackground from "@assets/generated_videos/pest_control_professional_suburban.mp4";
 import { useState } from "react";
 import { DemoVideoModal } from "./auto-popup";
@@ -16,24 +16,28 @@ export function Hero({
 } = {}) {
   const isTech = variant === "tech";
   const [showDemo, setShowDemo] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden">
       <DemoVideoModal open={showDemo} onOpenChange={setShowDemo} />
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
-        {!disableBackgroundVideo && (
+        {!disableBackgroundVideo && !reduceMotion && (
           <video
             autoPlay
             muted
             loop
             playsInline
+            aria-hidden="true"
+            tabIndex={-1}
+            preload="metadata"
             className="absolute inset-0 h-full w-full object-cover"
           >
             <source src={videoBackground} type="video/mp4" />
           </video>
         )}
-        {disableBackgroundVideo && (
+        {(disableBackgroundVideo || reduceMotion) && (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
         )}
         {/* Overlay Gradient */}
@@ -83,15 +87,15 @@ export function Hero({
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 items-center justify-center pt-6"
           >
-            <Link href="/onboarding">
-              <Button 
+            <Button
+                asChild
                 size="lg"
-                className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 bg-emerald-600 hover:bg-emerald-700 border-none group text-white w-full sm:w-auto"
-                onClick={() => analytics.track(EVENTS.LANDING.CTA_CLICK, { cta: "start_trial" })}
+                className="h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg font-bold shadow-xl shadow-emerald-500/20 hover:scale-105 transition-all duration-300 bg-emerald-700 hover:bg-emerald-800 border-none group text-white w-full sm:w-auto"
               >
-                Start Trial <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+              <Link href="/onboarding" onClick={() => analytics.track(EVENTS.LANDING.CTA_CLICK, { cta: "start_trial" })}>
+                Start Trial <ArrowRight aria-hidden="true" className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </Button>
             
             <Button 
               variant="outline" 
@@ -102,7 +106,7 @@ export function Hero({
                 setShowDemo(true);
               }}
             >
-              <PlayCircle className="mr-2 h-5 w-5" /> Watch Demo
+              <PlayCircle aria-hidden="true" className="mr-2 h-5 w-5" /> Watch Demo
             </Button>
           </motion.div>
         </div>

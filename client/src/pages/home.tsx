@@ -36,6 +36,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-background">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {isMobileDevice ? (
         <PlaybookActivationPopup key={window.location.search} />
       ) : (
@@ -43,7 +46,7 @@ export default function Home() {
       )}
       {!isMobileDevice && <MobileDownloadBanner />}
       <Navbar />
-      <main className="flex-grow">
+      <main id="main-content" tabIndex={-1} className="flex-grow">
         <Hero disableBackgroundVideo={isMobileDevice} />
         <LeadGen />
         <Widgets />

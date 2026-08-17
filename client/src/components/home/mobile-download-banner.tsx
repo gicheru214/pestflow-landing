@@ -45,7 +45,7 @@ export function MobileDownloadBanner() {
         <button
           type="button"
           onClick={dismiss}
-          className="grid h-8 w-5 shrink-0 place-items-center text-[#a9a9af] transition hover:text-white"
+          className="grid h-8 w-8 shrink-0 place-items-center text-[#d4d4da] transition hover:text-white"
           aria-label="Dismiss app download banner"
         >
           <X className="h-[16px] w-[16px] stroke-[2.2]" />
@@ -73,7 +73,7 @@ export function MobileDownloadBanner() {
         <a
           href={handoffUrl}
           onClick={openAppStore}
-          className="inline-flex h-10 shrink-0 items-center justify-center rounded-[20px] bg-[#0a84ff] px-5 text-[15px] font-bold uppercase tracking-normal text-white shadow-[0_1px_2px_rgba(0,0,0,0.24)] transition hover:bg-[#1f8fff]"
+          className="inline-flex h-10 shrink-0 items-center justify-center rounded-[20px] bg-[#0066cc] px-5 text-[15px] font-bold uppercase tracking-normal text-white shadow-[0_1px_2px_rgba(0,0,0,0.24)] transition hover:bg-[#005bb8]"
           aria-label="Download Pest Flow from the App Store"
         >
           VIEW

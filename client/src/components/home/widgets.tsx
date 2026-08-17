@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { ArrowRight, TrendingUp, Zap } from "lucide-react";
 
 // ─── 1. Revenue Leak Calculator ──────────────────────────────────────────────
@@ -12,14 +12,6 @@ const WORK_DAYS = 250;
 function RevenueCalculator() {
   const [stops, setStops] = useState(8);
   const [trucks, setTrucks] = useState(2);
-  const [, setLocation] = useLocation();
-  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const scheduleRedirect = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    redirectTimer.current = setTimeout(() => setLocation("/onboarding"), 3000);
-  }, [setLocation]);
-
   const gap = Math.max(0, INDUSTRY_BENCHMARK - stops);
   const annualLeak = gap * trucks * AVG_TICKET * WORK_DAYS;
   const weeklyLeak = Math.round(annualLeak / 50);
@@ -39,36 +31,36 @@ function RevenueCalculator() {
       <div className="space-y-7 mb-8">
         <div>
           <div className="flex justify-between items-baseline mb-3">
-            <span className="text-sm font-semibold text-slate-700">Stops per truck / day</span>
-            <span className="text-2xl font-extrabold text-emerald-600">{stops}</span>
+            <label htmlFor="stops-per-truck" className="text-sm font-semibold text-slate-700">Stops per truck / day</label>
+            <output htmlFor="stops-per-truck" className="text-2xl font-extrabold text-emerald-600">{stops}</output>
           </div>
           <input
+            id="stops-per-truck"
+            aria-describedby="stops-range-help"
             type="range" min={4} max={18} value={stops}
             onChange={(e) => setStops(Number(e.target.value))}
-            onMouseUp={scheduleRedirect}
-            onTouchEnd={scheduleRedirect}
             className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
-          <div className="flex justify-between text-xs text-slate-400 mt-2">
+          <div id="stops-range-help" className="flex justify-between text-xs text-slate-500 mt-2">
             <span>4 stops</span>
-            <span className="text-emerald-500 font-semibold">industry avg: {INDUSTRY_BENCHMARK} ↑</span>
+            <span className="text-emerald-700 font-semibold">industry avg: {INDUSTRY_BENCHMARK} ↑</span>
             <span>18 stops</span>
           </div>
         </div>
 
         <div>
           <div className="flex justify-between items-baseline mb-3">
-            <span className="text-sm font-semibold text-slate-700">Number of trucks</span>
-            <span className="text-2xl font-extrabold text-emerald-600">{trucks}</span>
+            <label htmlFor="number-of-trucks" className="text-sm font-semibold text-slate-700">Number of trucks</label>
+            <output htmlFor="number-of-trucks" className="text-2xl font-extrabold text-emerald-600">{trucks}</output>
           </div>
           <input
+            id="number-of-trucks"
+            aria-describedby="trucks-range-help"
             type="range" min={1} max={15} value={trucks}
             onChange={(e) => setTrucks(Number(e.target.value))}
-            onMouseUp={scheduleRedirect}
-            onTouchEnd={scheduleRedirect}
             className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
-          <div className="flex justify-between text-xs text-slate-400 mt-2">
+          <div id="trucks-range-help" className="flex justify-between text-xs text-slate-500 mt-2">
             <span>1 truck</span>
             <span>15 trucks</span>
           </div>
@@ -77,7 +69,7 @@ function RevenueCalculator() {
 
       {gap > 0 ? (
         <div className="bg-red-50 border-2 border-red-100 rounded-2xl p-6 text-center mb-4">
-          <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-2">Estimated Annual Leak</p>
+          <p className="text-xs text-red-700 font-bold uppercase tracking-widest mb-2">Estimated Annual Leak</p>
           <p className="text-5xl sm:text-6xl font-extrabold text-red-600 tracking-tight">${annualLeak.toLocaleString()}</p>
           <p className="text-sm text-slate-500 mt-3">
             That's <span className="font-bold text-slate-700">${weeklyLeak.toLocaleString()}/week</span> left on the table
@@ -90,11 +82,11 @@ function RevenueCalculator() {
         </div>
       )}
 
-      <Link href="/onboarding" className="block">
-        <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
-          Fix this with PestFlow <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </Link>
+      <Button asChild className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-base rounded-xl">
+        <Link href="/onboarding">
+          Fix this with PestFlow <ArrowRight aria-hidden="true" className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
     </div>
   );
 }
@@ -119,7 +111,7 @@ function RouteIQGrader() {
   const yesCount = Object.values(answers).filter((v) => v === true).length;
   const score = 100 - yesCount * 28;
 
-  const scoreColor = score >= 75 ? "text-emerald-600" : score >= 45 ? "text-amber-500" : "text-red-500";
+  const scoreColor = score >= 75 ? "text-emerald-700" : score >= 45 ? "text-amber-700" : "text-red-700";
   const scoreBg = score >= 75 ? "bg-emerald-50 border-emerald-200" : score >= 45 ? "bg-amber-50 border-amber-200" : "bg-red-50 border-red-200";
   const scoreLabel = score >= 75 ? "Solid foundation" : score >= 45 ? "Room to optimize" : "Significant revenue risk";
 
@@ -139,12 +131,14 @@ function RouteIQGrader() {
         <div className="space-y-3">
           {QUESTIONS.map((q) => (
             <div key={q.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm text-slate-800 font-medium mb-3 leading-snug">{q.text}</p>
-              <div className="flex gap-3">
+              <p id={`${q.id}-question`} className="text-sm text-slate-800 font-medium mb-3 leading-snug">{q.text}</p>
+              <div role="group" aria-labelledby={`${q.id}-question`} className="flex gap-3">
                 {[true, false].map((val) => (
                   <button
+                    type="button"
                     key={String(val)}
                     onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: val }))}
+                    aria-pressed={answers[q.id] === val}
                     className={`flex-1 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${
                       answers[q.id] === val
                         ? val
@@ -163,7 +157,7 @@ function RouteIQGrader() {
           <Button
             disabled={!allAnswered}
             onClick={() => setSubmitted(true)}
-            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl disabled:opacity-40 mt-2"
+            className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-base rounded-xl disabled:opacity-40 mt-2"
           >
             Grade My Operation <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -173,7 +167,7 @@ function RouteIQGrader() {
           <div className={`rounded-2xl border-2 p-8 mb-5 ${scoreBg}`}>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Your Route IQ Score</p>
             <p className={`text-7xl font-extrabold tracking-tight ${scoreColor}`}>{score}</p>
-            <p className="text-slate-400 text-sm font-medium mb-1">out of 100</p>
+            <p className="text-slate-600 text-sm font-medium mb-1">out of 100</p>
             <p className={`text-base font-bold mt-2 ${scoreColor}`}>{scoreLabel}</p>
             {yesCount > 0 && (
               <p className="text-xs text-slate-500 mt-3">
@@ -181,14 +175,14 @@ function RouteIQGrader() {
               </p>
             )}
           </div>
-          <Link href="/onboarding" className="block">
-            <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
-              See my full audit inside PestFlow <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          <Button asChild className="w-full py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-base rounded-xl">
+            <Link href="/onboarding">
+              See my full audit inside PestFlow <ArrowRight aria-hidden="true" className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
           <button
             onClick={() => { setSubmitted(false); setAnswers({ manual_scheduling: null, manual_confirm: null, split_apps: null }); }}
-            className="text-xs text-slate-400 hover:text-slate-600 mt-3 underline block mx-auto"
+            className="text-xs text-slate-600 hover:text-slate-800 mt-3 underline block mx-auto"
           >
             Retake
           </button>
@@ -205,7 +199,7 @@ export function Widgets() {
     <section className="py-20 bg-slate-50">
       <div className="container mx-auto px-4 md:px-6 max-w-5xl">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-5">
+          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-5">
             Try It Right Now
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 font-heading tracking-tight mb-4">

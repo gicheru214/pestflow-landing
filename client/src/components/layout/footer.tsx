@@ -2,13 +2,6 @@ import { Link } from "wouter";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 export function Footer() {
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <footer className="w-full bg-secondary/30 border-t py-16">
       <div className="container mx-auto px-4 md:px-6">
@@ -21,27 +14,24 @@ export function Footer() {
           </div>
           
           <div>
-            <h4 className="font-heading font-semibold mb-4">Product</h4>
+            <h2 className="font-heading text-base font-semibold mb-4">Product</h2>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><button onClick={() => scrollToSection('features')} className="hover:text-primary transition-colors cursor-pointer">Features</button></li>
-              <li><button onClick={() => scrollToSection('pricing')} className="hover:text-primary transition-colors cursor-pointer">Pricing</button></li>
-              <li><a href="/signup-success?handoff=app_store&source=footer_mobile_app" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors cursor-pointer">Mobile App</a></li>
-              <li><span className="text-muted-foreground/50">Integrations</span></li>
+              <li><a href="/#features" className="hover:text-primary transition-colors cursor-pointer">Features</a></li>
+              <li><a href="/#pricing" className="hover:text-primary transition-colors cursor-pointer">Pricing</a></li>
+              <li><a href="/signup-success?handoff=app_store&source=footer_mobile_app" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors cursor-pointer">Mobile App <span className="sr-only">(opens in a new tab)</span></a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-heading font-semibold mb-4">Company</h4>
+            <h2 className="font-heading text-base font-semibold mb-4">Company</h2>
             <ul className="space-y-3 text-sm text-muted-foreground">
-              <li><span className="text-muted-foreground/50">About Us</span></li>
-              <li><span className="text-muted-foreground/50">Careers</span></li>
               <li><Link href="/blog" className="hover:text-primary transition-colors cursor-pointer">Blog</Link></li>
-              <li><span className="text-muted-foreground/50">Contact</span></li>
+              <li><a href="mailto:support@pestflow.org" className="hover:text-primary transition-colors cursor-pointer">Contact</a></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-heading font-semibold mb-4">Legal</h4>
+            <h2 className="font-heading text-base font-semibold mb-4">Legal</h2>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
                 <Link href="/support" className="hover:text-primary transition-colors">
@@ -63,6 +53,11 @@ export function Footer() {
                   Terms &amp; Conditions
                 </Link>
               </li>
+              <li>
+                <Link href="/accessibility" className="hover:text-primary transition-colors">
+                  Accessibility
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -70,7 +65,7 @@ export function Footer() {
         <div className="pt-8 border-t text-center md:text-left flex flex-col gap-4 md:flex-row md:justify-between md:items-center text-sm text-muted-foreground">
           <div>
             <p>&copy; {new Date().getFullYear()} Reflectly AI, Inc. All rights reserved.</p>
-            <p className="mt-1 text-xs text-muted-foreground/80">
+            <p className="mt-1 text-xs text-muted-foreground">
               PestFlow is a product operated by Reflectly AI, Inc., a Texas-based company.
             </p>
           </div>
@@ -87,6 +82,9 @@ export function Footer() {
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms &amp; Conditions
             </Link>
+            <Link href="/accessibility" className="hover:text-primary transition-colors">
+              Accessibility
+            </Link>
           </div>
           <div className="flex gap-4 mt-4 md:mt-0">
             <a
@@ -95,7 +93,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors cursor-pointer"
             >
-              Admin
+              Admin <span className="sr-only">(opens in a new tab)</span>
             </a>
           </div>
         </div>
