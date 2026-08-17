@@ -80,6 +80,48 @@ export default function Terms() {
         limitations, so some of the limitations above may not apply to you.
       </p>
 
+      <h2>Indemnification</h2>
+      <p>
+        To the maximum extent permitted by law, you will defend, indemnify, and hold harmless
+        Reflectly AI, Inc. and its affiliates, officers, directors, employees, agents, licensors,
+        service providers, successors, and assigns (collectively, the &quot;Protected Parties&quot;)
+        from and against any third-party claim, demand, action, investigation, or proceeding, and
+        any resulting liability, damage, judgment, settlement, penalty, fine, cost, or reasonable
+        attorneys&apos; fees, arising out of or relating to:
+      </p>
+      <ul>
+        <li>Your or your authorized users&apos; access to, use of, or misuse of PestFlow</li>
+        <li>Your breach or alleged breach of these terms or applicable law</li>
+        <li>
+          Data, content, instructions, communications, or materials submitted, sent, or processed
+          through your account, including claims involving privacy, intellectual-property rights,
+          consent, or unlawful messaging
+        </li>
+        <li>
+          Your pest-control services or business operations, including treatment decisions,
+          pesticide or chemical use, label compliance, safety practices, regulatory filings, and
+          representations made to customers or government authorities
+        </li>
+        <li>
+          Your fraud, negligence, willful misconduct, or violation of another person&apos;s rights
+        </li>
+      </ul>
+      <p>
+        We will provide reasonably prompt written notice of a covered claim and reasonable
+        cooperation at your expense. You may control the defense with counsel reasonably acceptable
+        to us, but you may not settle a claim in a way that admits fault by, imposes liability on,
+        or requires action from a protected party without our prior written consent. If you do not
+        promptly assume the defense, we may defend the claim and recover reasonable defense costs
+        from you. A delay in notice reduces your obligations only to the extent the delay materially
+        prejudices the defense.
+      </p>
+      <p>
+        This section does not require you to indemnify a protected party to the extent a claim is
+        finally determined to have been caused by that protected party&apos;s gross negligence or
+        willful misconduct. Your obligations under this section are not limited by the liability
+        cap above and survive termination of your account or these terms.
+      </p>
+
       <h2>Contact</h2>
       <p>
         Questions about these terms can be sent to{" "}
