@@ -54,6 +54,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/data-deletion" className="hover:text-primary transition-colors">
+                  Data Deletion Policy
+                </Link>
+              </li>
+              <li>
                 <Link href="/terms" className="hover:text-primary transition-colors">
                   Terms &amp; Conditions
                 </Link>
@@ -75,6 +80,9 @@ export function Footer() {
             </Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">
               Privacy Policy
+            </Link>
+            <Link href="/data-deletion" className="hover:text-primary transition-colors">
+              Data Deletion Policy
             </Link>
             <Link href="/terms" className="hover:text-primary transition-colors">
               Terms &amp; Conditions

@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Support from "@/pages/support";
 import Privacy from "@/pages/privacy";
+import DataDeletion from "@/pages/data-deletion";
 import Terms from "@/pages/terms";
 import Onboarding from "@/pages/onboarding";
 import Admin from "@/pages/admin";
@@ -46,6 +47,7 @@ function AppRouter() {
         <Route path="/" component={Home} />
         <Route path="/support" component={Support} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/data-deletion" component={DataDeletion} />
         <Route path="/terms" component={Terms} />
         <Route path="/onboarding" component={Onboarding} />
         <Route path="/admin" component={Admin} />
