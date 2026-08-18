@@ -21,6 +21,13 @@ export function serveStatic(app: Express) {
     res.type("application/xml").send(buildSitemapXml());
   });
 
+  // Google Play may retain a previously submitted privacy-policy URL even
+  // after the canonical page moves. Keep that public URL permanently valid
+  // and redirect crawlers before the SPA fallback can render its 404 page.
+  app.get("/privacy-policy", (_req, res) => {
+    res.redirect(308, "/privacy");
+  });
+
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist

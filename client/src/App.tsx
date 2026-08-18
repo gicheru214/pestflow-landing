@@ -48,6 +48,7 @@ function AppRouter() {
         <Route path="/" component={Home} />
         <Route path="/support" component={Support} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/privacy-policy">{() => <ExternalRedirect to="/privacy" />}</Route>
         <Route path="/data-deletion" component={DataDeletion} />
         <Route path="/terms" component={Terms} />
         <Route path="/accessibility" component={Accessibility} />
