@@ -1,11 +1,16 @@
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { analytics, EVENTS } from "@/lib/analytics";
+import {
+  buildOnboardingHandoffUrl,
+  isMobileOnboardingBrowser,
+} from "@/lib/onboardingHandoff";
 
 // Landing-side /onboarding is now a thin handoff to app.pestflow.org.
 // The old Replit-era multi-step profile form (firstName/lastName/companyName/
 // technicians/address/logo/etc.) was over-collection on the wrong codebase.
-// All real onboarding now lives in smart-pricing at /mobile/onboard/feature.
+// Phones continue into field onboarding. Desktop browsers go directly to the
+// shared desktop-safe signup page and never mount the phone shell.
 
 export default function Onboarding() {
   useEffect(() => {
@@ -26,8 +31,10 @@ export default function Onboarding() {
 
     analytics.track(EVENTS.ONBOARDING.STEP_1_VIEW, { handoff: true });
 
-    const qs = new URLSearchParams(carry).toString();
-    window.location.replace(`https://app.pestflow.org/mobile/onboard/feature?${qs}`);
+    window.location.replace(buildOnboardingHandoffUrl(
+      isMobileOnboardingBrowser(),
+      carry,
+    ));
   }, []);
 
   return (
