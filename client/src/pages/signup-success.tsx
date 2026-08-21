@@ -17,33 +17,44 @@ import {
   fireMetaAppStoreHandoffOnce,
   normalizeAppStoreHandoffEventId,
 } from "@/lib/appStoreHandoff";
+import {
+  DESKTOP_SIGNUP_URL,
+  isMobileOnboardingBrowser,
+  MOBILE_ONBOARDING_URL,
+  replaceMobileAppUrlForDesktop,
+} from "@/lib/onboardingHandoff";
 
-const DEFAULT_APP_HANDOFF_URL = "https://app.pestflow.org/mobile/onboard/feature";
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
 const APP_STORE_OPEN_DELAY_MS = 1400;
 
-export function resolveAppHandoffUrl(returnTo?: string | null): URL {
-  if (!returnTo) return new URL(DEFAULT_APP_HANDOFF_URL);
+export function resolveAppHandoffUrl(returnTo?: string | null, isMobile = true): URL {
+  const fallback = new URL(MOBILE_ONBOARDING_URL);
+  if (!returnTo) return isMobile ? fallback : replaceMobileAppUrlForDesktop(fallback);
   try {
     const candidate = new URL(returnTo, "https://app.pestflow.org");
     if (candidate.protocol === "https:" && ALLOWED_APP_RETURN_HOSTS.has(candidate.hostname)) {
-      return candidate;
+      return isMobile ? candidate : replaceMobileAppUrlForDesktop(candidate);
     }
   } catch {
     // Keep the established onboarding destination for malformed return URLs.
   }
-  return new URL(DEFAULT_APP_HANDOFF_URL);
+  return isMobile ? fallback : replaceMobileAppUrlForDesktop(fallback);
 }
 
-function buildAppHandoffUrl(extras: Record<string, string>, returnTo?: string | null) {
+function buildAppHandoffUrl(
+  extras: Record<string, string>,
+  returnTo: string | null | undefined,
+  isMobile: boolean,
+) {
   const popupData = (() => {
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); } catch { return {}; }
   })();
-  const url = resolveAppHandoffUrl(returnTo);
+  const url = resolveAppHandoffUrl(returnTo, isMobile);
   const params = url.searchParams;
   const routesRaw = parseInt(popupData.routeSize || "1", 10);
   const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
-  if (!params.has("routes")) params.set("routes", String(routes));
+  if (isMobile && !params.has("routes")) params.set("routes", String(routes));
+  if (!isMobile) params.delete("routes");
   ["email", "firstName", "lastName", "phone", ...MARKETING_ATTRIBUTION_KEYS].forEach((k) => {
     const v = popupData[k] || extras[k];
     if (v) params.set(k, v);
@@ -53,6 +64,7 @@ function buildAppHandoffUrl(extras: Record<string, string>, returnTo?: string | 
 }
 
 export default function SignupSuccess() {
+  const [isMobileClient] = useState(() => isMobileOnboardingBrowser());
   const [isAppStoreHandoff] = useState(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.split("?")[1]);
@@ -222,21 +234,29 @@ export default function SignupSuccess() {
       email,
       ...attribution,
       meta_event_id: metaEventId,
-    }, returnTo);
+    }, returnTo, isMobileClient);
     const timer = setTimeout(() => { window.location.href = handoff; }, 1200);
     return () => {
       stopLeadRetry();
       clearTimeout(timer);
     };
-  }, [isAppStoreHandoff]);
+  }, [isAppStoreHandoff, isMobileClient]);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
     if (techEmail) params.set('email', techEmail);
     if (techName) params.set('name', techName);
     if (techEmployer) params.set('employer', techEmployer);
-    const qs = params.toString() ? `?${params.toString()}` : '';
-    window.location.href = `https://app.pestflow.org/mobile/tech-signup${qs}`;
+    const destination = isMobileClient
+      ? new URL("https://app.pestflow.org/mobile/tech-signup")
+      : new URL(DESKTOP_SIGNUP_URL);
+    params.forEach((value, key) => destination.searchParams.set(key, value));
+    if (!isMobileClient) {
+      destination.searchParams.set("desktop", "true");
+      destination.searchParams.set("type", "tech");
+      destination.searchParams.set("source", "landing_tech_signup");
+    }
+    window.location.href = destination.toString();
   };
 
   return (
