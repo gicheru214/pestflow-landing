@@ -13,6 +13,7 @@
     "test:playbook-email": "tsx --test server/playbook-email.test.ts",
     "test:calendly": "tsx --test server/calendly.test.ts shared/calendly-url.test.ts",
     "test:desktop-onboarding": "tsx --test server/desktop-onboarding-handoff.test.ts",
+    "test:replay-app-store-handoff": "playwright test -c playwright.replay.config.ts",
     "blog:build-backlog": "node scripts/build-prewritten-pestflow-backlog.mjs",
     "blog:wait": "node scripts/wait-for-blog-deploy.mjs",
     "db:push": "drizzle-kit push",

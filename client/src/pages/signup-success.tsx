@@ -26,6 +26,7 @@ import {
 
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
 const APP_STORE_OPEN_DELAY_MS = 1400;
+const APP_STORE_FALLBACK_DELAY_MS = 5000;
 
 export function resolveAppHandoffUrl(returnTo?: string | null, isMobile = true): URL {
   const fallback = new URL(MOBILE_ONBOARDING_URL);
@@ -75,6 +76,7 @@ export default function SignupSuccess() {
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
   const [showTechCta, setShowTechCta] = useState(false);
+  const [showAppStoreFallback, setShowAppStoreFallback] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -170,11 +172,18 @@ export default function SignupSuccess() {
           ...eventProperties,
           method: "automatic",
         });
-        window.location.replace(APP_STORE_URL);
+        if (!isInternalPreview) window.location.replace(APP_STORE_URL);
       }, APP_STORE_OPEN_DELAY_MS);
+      const fallbackTimer = window.setTimeout(() => {
+        // A successful navigation unloads this page. If the browser blocks the
+        // scripted App Store handoff, replace the indefinite progress state
+        // with a link that runs from an explicit user gesture.
+        setShowAppStoreFallback(true);
+      }, APP_STORE_FALLBACK_DELAY_MS);
 
       return () => {
         window.clearTimeout(openTimer);
+        window.clearTimeout(fallbackTimer);
         if (appStoreRetryTimer !== undefined) {
           window.clearInterval(appStoreRetryTimer);
         }
@@ -307,7 +316,7 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {!isTech && (
+        {!isTech && !showAppStoreFallback && (
           <motion.div
             key="owner-handoff"
             initial={{ scale: 0.8, opacity: 0 }}
@@ -321,6 +330,39 @@ export default function SignupSuccess() {
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
               <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
+            </div>
+          </motion.div>
+        )}
+
+        {!isTech && isAppStoreHandoff && showAppStoreFallback && (
+          <motion.div
+            key="app-store-fallback"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10 w-full max-w-md"
+          >
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center space-y-5">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-9 h-9 text-emerald-600" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-slate-900">PestFlow didn’t open automatically</h1>
+                <p className="text-slate-500 text-sm">Tap below to continue to the App Store.</p>
+              </div>
+              <a
+                data-testid="app-store-fallback-link"
+                href={APP_STORE_URL}
+                onClick={() => analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
+                  method: "manual_fallback",
+                  surface: "signup_success",
+                  destination: "apple_app_store",
+                })}
+                className="w-full font-bold py-3.5 px-5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg text-white bg-emerald-600 hover:bg-emerald-700"
+              >
+                Open PestFlow in the App Store
+                <ArrowRight className="w-4 h-4" />
+              </a>
             </div>
           </motion.div>
         )}

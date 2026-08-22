@@ -128,7 +128,11 @@ test("fires a deduplicated Lead on success only for captured workflow leads", ()
   assert.match(successSource, /capturedWorkflowLeadEventId\(/);
   assert.match(successSource, /fireMetaLeadOnce\(leadEventId\)/);
   assert.match(successSource, /const APP_STORE_OPEN_DELAY_MS = 1400/);
-  assert.doesNotMatch(successSource, /Open the App Store/);
+  assert.match(successSource, /const APP_STORE_FALLBACK_DELAY_MS = 5000/);
+  assert.match(successSource, /setShowAppStoreFallback\(true\)/);
+  assert.match(successSource, /data-testid="app-store-fallback-link"/);
+  assert.match(successSource, /Open PestFlow in the App Store/);
+  assert.match(successSource, /method: "manual_fallback"/);
   assert.doesNotMatch(
     appStoreBranch,
     /SIGNUP\.COMPLETE|CHECKOUT\.SUCCESS|ACCOUNT\.SIGNUP_COMPLETE/,
