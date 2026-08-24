@@ -1,0 +1,28 @@
+{
+  "caseId": "pestflow-visible-handoff-20260822-01",
+  "evidenceDigest": "774dd90c0f918621477ec81e4609223154adb03345380c67541e5bbae9d7f57b",
+  "repository": "gicheru214/pestflow-landing",
+  "baseSha": "9f9a2772f85ed88787278930ae8d209fee9413a6",
+  "headSha": "0d0d54a9a58d405a3cbc55fd8ec4ea9275759f04",
+  "regressionDigest": "07aa49b197cf67b144bf7d8d6ade3830d01b0dda7130e0f0c58aed2b2562fe11",
+  "investigationDigests": [
+    "197f7eb92b26c581bb5282bd7937d54b0b1ad03531698834aa8165a902dac894",
+    "fd413171ddaa7bfc75196b0b88456f515d174e4baade3d864f50868041b6e3dc",
+    "307ef74000eb337bf254b96a1b238695fa677f0f8a673cf8673b5d0f1fcb2c28"
+  ],
+  "verdict": "approved",
+  "confidence": "high",
+  "rootCauseAgreement": true,
+  "regressionTestValid": true,
+  "mobileProofValid": true,
+  "blockingFindings": [],
+  "summary": "The exact deployed landing build used one Apple-only navigation attempt for every device and left the success page indefinitely unusable when that attempt was blocked. The reviewed repair preserves the visible Meta success state, then selects the correct Apple, Google Play, or desktop-login destination and exposes a matching usable fallback if automatic navigation does not complete.",
+  "customerSafeSummary": "The proposed fix shows the PestFlow success confirmation first, sends each device to the right next step, and gives the person a working button if the browser blocks the automatic handoff.",
+  "recommendedAdditionalTests": [
+    "Use literal evidence-frozen destination URLs in a future Playwright hardening pass so implementation constants and expectations cannot drift together.",
+    "Add a browser case where window.open returns null to exercise the immediate popup-blocked fallback path.",
+    "After an owner-approved deployment, verify the same flow in a real Facebook iOS in-app browser."
+  ],
+  "finalReviewDigest": "b42996f4d2e1b4e1cd003fe9bf62be1e14c53fbc0f691ca4a2a73d72d6c39bbf",
+  "reviewedAt": "2026-08-24T15:08:01.408Z"
+}

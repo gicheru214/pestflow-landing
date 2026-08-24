@@ -1,7 +1,64 @@
 import type { MarketingAttribution } from "@/lib/marketingAttribution";
+import type { OnboardingDeviceSignals } from "@/lib/onboardingHandoff";
 
 export const APP_STORE_URL = "https://apps.apple.com/us/app/pestflow/id6773204838";
+export const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=org.pestflow.app";
+export const DESKTOP_LOGIN_URL = "https://app.pestflow.org/login";
 export const APP_STORE_HANDOFF_EVENT = "AppStoreHandoff";
+
+export type AppHandoffPlatform = "ios_ipados" | "android" | "desktop";
+export type AppHandoffTelemetryDestination =
+  | "apple_app_store"
+  | "google_play_store"
+  | "desktop_login";
+
+export interface AppHandoffDestination {
+  platform: AppHandoffPlatform;
+  telemetryDestination: AppHandoffTelemetryDestination;
+  url: string;
+  label: string;
+  ctaLabel: string;
+}
+
+export function resolveAppHandoffDestination({
+  userAgent,
+  userAgentDataMobile,
+  maxTouchPoints = 0,
+  platform = "",
+}: OnboardingDeviceSignals): AppHandoffDestination {
+  if (/Android/i.test(userAgent)) {
+    return {
+      platform: "android",
+      telemetryDestination: "google_play_store",
+      url: GOOGLE_PLAY_URL,
+      label: "Google Play",
+      ctaLabel: "Open PestFlow in Google Play",
+    };
+  }
+
+  const isIosOrIpadOs = /iPhone|iPad|iPod/i.test(userAgent)
+    || (
+      maxTouchPoints > 1
+      && (/Macintosh/i.test(userAgent) || /^MacIntel$/i.test(platform))
+    );
+  if (isIosOrIpadOs || (userAgentDataMobile === true && /AppleWebKit/i.test(userAgent))) {
+    return {
+      platform: "ios_ipados",
+      telemetryDestination: "apple_app_store",
+      url: APP_STORE_URL,
+      label: "the App Store",
+      ctaLabel: "Open PestFlow in the App Store",
+    };
+  }
+
+  return {
+    platform: "desktop",
+    telemetryDestination: "desktop_login",
+    url: DESKTOP_LOGIN_URL,
+    label: "PestFlow login",
+    ctaLabel: "Continue to PestFlow login",
+  };
+}
 
 const EVENT_ID_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;
 const FIRED_KEY_PREFIX = "pestflow_app_store_handoff_fired:";
@@ -45,9 +102,16 @@ export function buildAppStoreSuccessPath(
  * intentionally not a Lead or Signup: opening the store proves intent, but it
  * does not prove that an account or install was completed.
  */
-export function fireMetaAppStoreHandoffOnce(eventId: string): boolean {
+export function fireMetaAppStoreHandoffOnce(
+  eventId: string,
+  destination: Pick<AppHandoffDestination, "platform" | "telemetryDestination"> = {
+    platform: "ios_ipados",
+    telemetryDestination: "apple_app_store",
+  },
+): boolean {
   const normalized = normalizeAppStoreHandoffEventId(eventId);
   if (!normalized) return false;
+  if (destination.platform === "desktop") return false;
 
   const firedKey = `${FIRED_KEY_PREFIX}${normalized}`;
   try {
@@ -61,9 +125,12 @@ export function fireMetaAppStoreHandoffOnce(eventId: string): boolean {
     "trackCustom",
     APP_STORE_HANDOFF_EVENT,
     {
-      content_name: "PestFlow iOS App",
+      content_name: destination.platform === "android"
+        ? "PestFlow Android App"
+        : "PestFlow iOS App",
       content_category: "mobile_app",
-      destination: "apple_app_store",
+      destination: destination.telemetryDestination,
+      platform: destination.platform,
     },
     { eventID: normalized },
   );

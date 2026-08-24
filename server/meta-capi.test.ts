@@ -119,6 +119,8 @@ test("App Store handoff uses the same custom event ID for CAPI deduplication", a
       eventId: "pestflow-appstore-event-123",
       eventSourceUrl: "https://pestflow.org/signup-success?handoff=app_store&fbclid=test",
       source: "mobile_v2_auth_signup",
+      platform: "ios_ipados",
+      destination: "apple_app_store",
       userData: {
         clientIpAddress: "203.0.113.5",
         clientUserAgent: "test-agent",
@@ -132,8 +134,41 @@ test("App Store handoff uses the same custom event ID for CAPI deduplication", a
     assert.equal(event.event_name, "AppStoreHandoff");
     assert.equal(event.event_id, "pestflow-appstore-event-123");
     assert.equal(event.custom_data.destination, "apple_app_store");
+    assert.equal(event.custom_data.platform, "ios_ipados");
     assert.equal(event.custom_data.source, "mobile_v2_auth_signup");
     assert.equal(event.user_data.fbc, "fb.1.123.test");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("App Store handoff CAPI reports Android destination truthfully", async () => {
+  const originalFetch = globalThis.fetch;
+  let payload: any;
+  globalThis.fetch = async (_input, init) => {
+    payload = JSON.parse(String(init?.body));
+    return new Response(JSON.stringify({ events_received: 1 }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
+  try {
+    const sent = await sendAppStoreHandoffEvent({
+      eventId: "pestflow-appstore-event-android",
+      eventSourceUrl: "https://pestflow.org/signup-success?handoff=app_store",
+      source: "replay_regression",
+      platform: "android",
+      destination: "google_play_store",
+      userData: { clientUserAgent: "android-test-agent" },
+    });
+
+    assert.equal(sent, true);
+    const event = payload.data[0];
+    assert.equal(event.event_id, "pestflow-appstore-event-android");
+    assert.equal(event.custom_data.content_name, "PestFlow Android App");
+    assert.equal(event.custom_data.destination, "google_play_store");
+    assert.equal(event.custom_data.platform, "android");
   } finally {
     globalThis.fetch = originalFetch;
   }

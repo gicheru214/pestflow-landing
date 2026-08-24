@@ -12,10 +12,10 @@ import {
   MARKETING_ATTRIBUTION_KEYS,
 } from "@/lib/marketingAttribution";
 import {
-  APP_STORE_URL,
   createAppStoreHandoffEventId,
   fireMetaAppStoreHandoffOnce,
   normalizeAppStoreHandoffEventId,
+  resolveAppHandoffDestination,
 } from "@/lib/appStoreHandoff";
 import {
   DESKTOP_SIGNUP_URL,
@@ -26,6 +26,7 @@ import {
 
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
 const APP_STORE_OPEN_DELAY_MS = 1400;
+const APP_STORE_FALLBACK_DELAY_MS = 5000;
 
 export function resolveAppHandoffUrl(returnTo?: string | null, isMobile = true): URL {
   const fallback = new URL(MOBILE_ONBOARDING_URL);
@@ -65,6 +66,18 @@ function buildAppHandoffUrl(
 
 export default function SignupSuccess() {
   const [isMobileClient] = useState(() => isMobileOnboardingBrowser());
+  const [appHandoffDestination] = useState(() => {
+    const nav = navigator as Navigator & {
+      userAgentData?: { mobile?: boolean };
+      maxTouchPoints?: number;
+    };
+    return resolveAppHandoffDestination({
+      userAgent: nav.userAgent || "",
+      userAgentDataMobile: nav.userAgentData?.mobile,
+      maxTouchPoints: nav.maxTouchPoints,
+      platform: nav.platform,
+    });
+  });
   const [isAppStoreHandoff] = useState(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.split("?")[1]);
@@ -75,6 +88,7 @@ export default function SignupSuccess() {
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
   const [showTechCta, setShowTechCta] = useState(false);
+  const [showHandoffFallback, setShowHandoffFallback] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -100,19 +114,28 @@ export default function SignupSuccess() {
         ...attribution,
         source: appStoreSource,
         surface: "signup_success",
-        destination: "apple_app_store",
+        platform: appHandoffDestination.platform,
+        destination: appHandoffDestination.telemetryDestination,
       };
+      const isStoreDestination = appHandoffDestination.platform !== "desktop";
 
       analytics.pageView("Signup Success", eventProperties);
-      analytics.track(EVENTS.LANDING.APP_STORE_HANDOFF, eventProperties);
+      analytics.track(
+        isStoreDestination
+          ? EVENTS.LANDING.APP_STORE_HANDOFF
+          : EVENTS.LANDING.QUALIFIED_LEAD_HANDOFF,
+        eventProperties,
+      );
 
-      if (!isInternalPreview) {
+      if (!isInternalPreview && isStoreDestination) {
         void fetch("/api/meta/app-store-handoff", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             eventId: appStoreEventId,
             source: appStoreSource,
+            platform: appHandoffDestination.platform,
+            destination: appHandoffDestination.telemetryDestination,
           }),
           keepalive: true,
         }).catch(() => {
@@ -124,12 +147,13 @@ export default function SignupSuccess() {
       let appStoreRetryAttempts = 0;
       if (
         !isInternalPreview
-        && !fireMetaAppStoreHandoffOnce(appStoreEventId)
+        && isStoreDestination
+        && !fireMetaAppStoreHandoffOnce(appStoreEventId, appHandoffDestination)
       ) {
         appStoreRetryTimer = window.setInterval(() => {
           appStoreRetryAttempts += 1;
           if (
-            fireMetaAppStoreHandoffOnce(appStoreEventId)
+            fireMetaAppStoreHandoffOnce(appStoreEventId, appHandoffDestination)
             || appStoreRetryAttempts >= 12
           ) {
             if (appStoreRetryTimer !== undefined) {
@@ -166,15 +190,29 @@ export default function SignupSuccess() {
       }
 
       const openTimer = window.setTimeout(() => {
+        const openedWindow = isInternalPreview
+          ? null
+          : window.open(appHandoffDestination.url, "_blank");
+        if (openedWindow) openedWindow.opener = null;
         analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
           ...eventProperties,
           method: "automatic",
+          navigation_mode: "new_window",
+          automatic_result: isInternalPreview
+            ? "internal_preview"
+            : openedWindow ? "window_created" : "popup_blocked",
         });
-        window.location.replace(APP_STORE_URL);
+        if (!isInternalPreview && !openedWindow) setShowHandoffFallback(true);
       }, APP_STORE_OPEN_DELAY_MS);
+      const fallbackTimer = window.setTimeout(() => {
+        // Keep the original page usable when an in-app browser blocks or
+        // aborts the external request after creating the destination window.
+        setShowHandoffFallback(true);
+      }, APP_STORE_FALLBACK_DELAY_MS);
 
       return () => {
         window.clearTimeout(openTimer);
+        window.clearTimeout(fallbackTimer);
         if (appStoreRetryTimer !== undefined) {
           window.clearInterval(appStoreRetryTimer);
         }
@@ -240,7 +278,7 @@ export default function SignupSuccess() {
       stopLeadRetry();
       clearTimeout(timer);
     };
-  }, [isAppStoreHandoff, isMobileClient]);
+  }, [appHandoffDestination, isAppStoreHandoff, isMobileClient]);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
@@ -307,7 +345,7 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {!isTech && (
+        {!isTech && !showHandoffFallback && (
           <motion.div
             key="owner-handoff"
             initial={{ scale: 0.8, opacity: 0 }}
@@ -321,6 +359,45 @@ export default function SignupSuccess() {
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-slate-900 tracking-tight">You're In!</h1>
               <p className="text-lg text-slate-500 max-w-sm mx-auto">Taking you into PestFlow…</p>
+            </div>
+          </motion.div>
+        )}
+
+        {!isTech && isAppStoreHandoff && showHandoffFallback && (
+          <motion.div
+            key="app-store-fallback"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative z-10 w-full max-w-md"
+          >
+            <div className="bg-white rounded-2xl shadow-xl p-8 text-center space-y-5">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-9 h-9 text-emerald-600" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="text-2xl font-bold text-slate-900">PestFlow didn’t open automatically</h1>
+                <p className="text-slate-500 text-sm">
+                  Select Continue to open {appHandoffDestination.label}.
+                </p>
+              </div>
+              <a
+                data-testid="handoff-fallback-link"
+                href={appHandoffDestination.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
+                  method: "manual_fallback",
+                  navigation_mode: "new_window",
+                  surface: "signup_success",
+                  platform: appHandoffDestination.platform,
+                  destination: appHandoffDestination.telemetryDestination,
+                })}
+                className="w-full font-bold py-3.5 px-5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg text-white bg-emerald-600 hover:bg-emerald-700"
+              >
+                {appHandoffDestination.ctaLabel}
+                <ArrowRight className="w-4 h-4" />
+              </a>
             </div>
           </motion.div>
         )}

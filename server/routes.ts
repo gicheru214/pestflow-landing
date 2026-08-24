@@ -110,6 +110,17 @@ function appStoreHandoffData(
     return null;
   }
 
+  // Keep already-open pages from the previous deployment working while new
+  // clients send explicit platform data. The legacy payload was Apple-only.
+  const platform = candidate.platform ?? "ios_ipados";
+  const destination = candidate.destination ?? "apple_app_store";
+  const validDestination = (
+    platform === "ios_ipados" && destination === "apple_app_store"
+  ) || (
+    platform === "android" && destination === "google_play_store"
+  );
+  if (!validDestination) return null;
+
   const cookies = parseCookies(req.headers.cookie);
   const forwardedProto = firstHeaderValue(req.headers["x-forwarded-proto"]) || req.protocol || "https";
   const forwardedHost = firstHeaderValue(req.headers["x-forwarded-host"]) || req.get("host") || "pestflow.org";
@@ -131,6 +142,8 @@ function appStoreHandoffData(
     eventId: candidate.eventId,
     eventSourceUrl,
     source: candidate.source,
+    platform,
+    destination,
     userData: {
       clientIpAddress:
         firstHeaderValue(req.headers["x-forwarded-for"])
