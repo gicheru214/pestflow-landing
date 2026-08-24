@@ -12,10 +12,10 @@ import {
   MARKETING_ATTRIBUTION_KEYS,
 } from "@/lib/marketingAttribution";
 import {
-  APP_STORE_URL,
   createAppStoreHandoffEventId,
   fireMetaAppStoreHandoffOnce,
   normalizeAppStoreHandoffEventId,
+  resolveAppHandoffDestination,
 } from "@/lib/appStoreHandoff";
 import {
   DESKTOP_SIGNUP_URL,
@@ -66,6 +66,18 @@ function buildAppHandoffUrl(
 
 export default function SignupSuccess() {
   const [isMobileClient] = useState(() => isMobileOnboardingBrowser());
+  const [appHandoffDestination] = useState(() => {
+    const nav = navigator as Navigator & {
+      userAgentData?: { mobile?: boolean };
+      maxTouchPoints?: number;
+    };
+    return resolveAppHandoffDestination({
+      userAgent: nav.userAgent || "",
+      userAgentDataMobile: nav.userAgentData?.mobile,
+      maxTouchPoints: nav.maxTouchPoints,
+      platform: nav.platform,
+    });
+  });
   const [isAppStoreHandoff] = useState(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.split("?")[1]);
@@ -76,7 +88,7 @@ export default function SignupSuccess() {
   const [techName, setTechName] = useState("");
   const [techEmployer, setTechEmployer] = useState("");
   const [showTechCta, setShowTechCta] = useState(false);
-  const [showAppStoreFallback, setShowAppStoreFallback] = useState(false);
+  const [showHandoffFallback, setShowHandoffFallback] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -102,19 +114,28 @@ export default function SignupSuccess() {
         ...attribution,
         source: appStoreSource,
         surface: "signup_success",
-        destination: "apple_app_store",
+        platform: appHandoffDestination.platform,
+        destination: appHandoffDestination.telemetryDestination,
       };
+      const isStoreDestination = appHandoffDestination.platform !== "desktop";
 
       analytics.pageView("Signup Success", eventProperties);
-      analytics.track(EVENTS.LANDING.APP_STORE_HANDOFF, eventProperties);
+      analytics.track(
+        isStoreDestination
+          ? EVENTS.LANDING.APP_STORE_HANDOFF
+          : EVENTS.LANDING.QUALIFIED_LEAD_HANDOFF,
+        eventProperties,
+      );
 
-      if (!isInternalPreview) {
+      if (!isInternalPreview && isStoreDestination) {
         void fetch("/api/meta/app-store-handoff", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             eventId: appStoreEventId,
             source: appStoreSource,
+            platform: appHandoffDestination.platform,
+            destination: appHandoffDestination.telemetryDestination,
           }),
           keepalive: true,
         }).catch(() => {
@@ -126,12 +147,13 @@ export default function SignupSuccess() {
       let appStoreRetryAttempts = 0;
       if (
         !isInternalPreview
-        && !fireMetaAppStoreHandoffOnce(appStoreEventId)
+        && isStoreDestination
+        && !fireMetaAppStoreHandoffOnce(appStoreEventId, appHandoffDestination)
       ) {
         appStoreRetryTimer = window.setInterval(() => {
           appStoreRetryAttempts += 1;
           if (
-            fireMetaAppStoreHandoffOnce(appStoreEventId)
+            fireMetaAppStoreHandoffOnce(appStoreEventId, appHandoffDestination)
             || appStoreRetryAttempts >= 12
           ) {
             if (appStoreRetryTimer !== undefined) {
@@ -168,17 +190,24 @@ export default function SignupSuccess() {
       }
 
       const openTimer = window.setTimeout(() => {
+        const openedWindow = isInternalPreview
+          ? null
+          : window.open(appHandoffDestination.url, "_blank");
+        if (openedWindow) openedWindow.opener = null;
         analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
           ...eventProperties,
           method: "automatic",
+          navigation_mode: "new_window",
+          automatic_result: isInternalPreview
+            ? "internal_preview"
+            : openedWindow ? "window_created" : "popup_blocked",
         });
-        if (!isInternalPreview) window.location.replace(APP_STORE_URL);
+        if (!isInternalPreview && !openedWindow) setShowHandoffFallback(true);
       }, APP_STORE_OPEN_DELAY_MS);
       const fallbackTimer = window.setTimeout(() => {
-        // A successful navigation unloads this page. If the browser blocks the
-        // scripted App Store handoff, replace the indefinite progress state
-        // with a link that runs from an explicit user gesture.
-        setShowAppStoreFallback(true);
+        // Keep the original page usable when an in-app browser blocks or
+        // aborts the external request after creating the destination window.
+        setShowHandoffFallback(true);
       }, APP_STORE_FALLBACK_DELAY_MS);
 
       return () => {
@@ -249,7 +278,7 @@ export default function SignupSuccess() {
       stopLeadRetry();
       clearTimeout(timer);
     };
-  }, [isAppStoreHandoff, isMobileClient]);
+  }, [appHandoffDestination, isAppStoreHandoff, isMobileClient]);
 
   const handleTechGoToApp = () => {
     const params = new URLSearchParams();
@@ -316,7 +345,7 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {!isTech && !showAppStoreFallback && (
+        {!isTech && !showHandoffFallback && (
           <motion.div
             key="owner-handoff"
             initial={{ scale: 0.8, opacity: 0 }}
@@ -334,7 +363,7 @@ export default function SignupSuccess() {
           </motion.div>
         )}
 
-        {!isTech && isAppStoreHandoff && showAppStoreFallback && (
+        {!isTech && isAppStoreHandoff && showHandoffFallback && (
           <motion.div
             key="app-store-fallback"
             initial={{ opacity: 0, y: 16 }}
@@ -348,19 +377,25 @@ export default function SignupSuccess() {
               </div>
               <div className="space-y-2">
                 <h1 className="text-2xl font-bold text-slate-900">PestFlow didn’t open automatically</h1>
-                <p className="text-slate-500 text-sm">Tap below to continue to the App Store.</p>
+                <p className="text-slate-500 text-sm">
+                  Select Continue to open {appHandoffDestination.label}.
+                </p>
               </div>
               <a
-                data-testid="app-store-fallback-link"
-                href={APP_STORE_URL}
+                data-testid="handoff-fallback-link"
+                href={appHandoffDestination.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => analytics.track(EVENTS.LANDING.APP_STORE_OPEN_ATTEMPT, {
                   method: "manual_fallback",
+                  navigation_mode: "new_window",
                   surface: "signup_success",
-                  destination: "apple_app_store",
+                  platform: appHandoffDestination.platform,
+                  destination: appHandoffDestination.telemetryDestination,
                 })}
                 className="w-full font-bold py-3.5 px-5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg text-white bg-emerald-600 hover:bg-emerald-700"
               >
-                Open PestFlow in the App Store
+                {appHandoffDestination.ctaLabel}
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>

@@ -54,6 +54,8 @@ export interface AppStoreHandoffEventData {
   eventId: string;
   eventSourceUrl: string;
   source: string;
+  platform: 'ios_ipados' | 'android';
+  destination: 'apple_app_store' | 'google_play_store';
   userData: Pick<
     UserData,
     'clientIpAddress' | 'clientUserAgent' | 'fbc' | 'fbp'
@@ -263,9 +265,12 @@ export async function sendAppStoreHandoffEvent(
           fbp: clean(data.userData.fbp),
         },
         custom_data: {
-          content_name: 'PestFlow iOS App',
+          content_name: data.platform === 'android'
+            ? 'PestFlow Android App'
+            : 'PestFlow iOS App',
           content_category: 'mobile_app',
-          destination: 'apple_app_store',
+          destination: data.destination,
+          platform: data.platform,
           source: data.source,
         },
       },
