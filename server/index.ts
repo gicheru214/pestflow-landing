@@ -9,9 +9,12 @@ import {
   reconcileAllProspectRegistrations,
   startMetaProspectWorker,
 } from "./meta-prospect-registration";
+import { createBlockedIpMiddleware } from "./blocked-ip";
 
 const app = express();
 const httpServer = createServer(app);
+
+app.use(createBlockedIpMiddleware());
 
 declare module "http" {
   interface IncomingMessage {
