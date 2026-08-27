@@ -9,6 +9,31 @@ const REQUEST_IP_HEADERS = [
   "fly-client-ip",
 ] as const;
 
+export const BLOCKED_BROWSER_COOKIE = "__Secure-pestflow-denied";
+const BLOCKED_BROWSER_COOKIE_VALUE = "1";
+const BLOCKED_BROWSER_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 10;
+
+export function hasBlockedBrowserMarker(cookieHeader: unknown): boolean {
+  if (typeof cookieHeader !== "string") return false;
+  return cookieHeader.split(";").some((entry) => {
+    const [name, ...valueParts] = entry.trim().split("=");
+    return name === BLOCKED_BROWSER_COOKIE
+      && valueParts.join("=") === BLOCKED_BROWSER_COOKIE_VALUE;
+  });
+}
+
+export function blockedBrowserCookie(): string {
+  return [
+    `${BLOCKED_BROWSER_COOKIE}=${BLOCKED_BROWSER_COOKIE_VALUE}`,
+    "Domain=.pestflow.org",
+    "Path=/",
+    `Max-Age=${BLOCKED_BROWSER_COOKIE_MAX_AGE}`,
+    "Secure",
+    "HttpOnly",
+    "SameSite=Lax",
+  ].join("; ");
+}
+
 export function normalizeIp(value: unknown): string | null {
   if (typeof value !== "string") return null;
 
@@ -80,12 +105,20 @@ export function createBlockedIpMiddleware(
   const blocked = parseBlockedIps(configuredIps);
 
   return (req, res, next) => {
+    if (hasBlockedBrowserMarker(req.headers.cookie)) {
+      console.warn(`[blocked-browser] rejected ${req.method} ${req.path}`);
+      res.setHeader("Cache-Control", "no-store");
+      return res.status(403).type("text/plain").send("Forbidden");
+    }
+
     if (blocked.size === 0) return next();
 
     const matchedIp = blockedIpForHeaders(req.headers, Array.from(blocked).join(","));
     if (!matchedIp) return next();
 
     console.warn(`[blocked-ip] rejected ${req.method} ${req.path} from ${matchedIp}`);
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Set-Cookie", blockedBrowserCookie());
     res.status(403).type("text/plain").send("Forbidden");
   };
 }

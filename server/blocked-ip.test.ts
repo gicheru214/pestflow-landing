@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  BLOCKED_BROWSER_COOKIE,
+  blockedBrowserCookie,
   blockedIpForHeaders,
+  hasBlockedBrowserMarker,
   normalizeIp,
   parseBlockedIps,
 } from "./blocked-ip";
@@ -39,4 +42,15 @@ test("allows unlisted and missing request addresses", () => {
     null,
   );
   assert.equal(blockedIpForHeaders({}, "172.56.190.98"), null);
+});
+
+test("recognizes the cross-subdomain blocked-browser marker", () => {
+  assert.equal(
+    hasBlockedBrowserMarker(`other=ok; ${BLOCKED_BROWSER_COOKIE}=1`),
+    true,
+  );
+  assert.equal(hasBlockedBrowserMarker(`${BLOCKED_BROWSER_COOKIE}=0`), false);
+  assert.match(blockedBrowserCookie(), /Domain=\.pestflow\.org/);
+  assert.match(blockedBrowserCookie(), /HttpOnly/);
+  assert.match(blockedBrowserCookie(), /Secure/);
 });

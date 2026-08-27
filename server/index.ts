@@ -10,6 +10,7 @@ import {
   startMetaProspectWorker,
 } from "./meta-prospect-registration";
 import { createBlockedIpMiddleware } from "./blocked-ip";
+import { createBlockedSubmissionIdentityMiddleware } from "./blocked-identity";
 
 const app = express();
 const httpServer = createServer(app);
@@ -31,6 +32,7 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+app.use("/api/submissions", createBlockedSubmissionIdentityMiddleware());
 
 // Serve mobile-app wireframes/preview as static files
 app.use("/mobile-app", express.static(path.join(process.cwd(), "mobile-app")));
