@@ -19,7 +19,13 @@ import {
   buildPestFlowCalendlyUrl,
   PESTFLOW_CALENDLY_URL,
 } from "@shared/calendly-url";
-import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
+import {
+  isValidNanpPhone,
+  limitPhoneInput,
+  NANP_COUNTRY_CODE,
+  nanpNationalDigits,
+  nanpPhoneErrorMessage,
+} from "@shared/phone";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
 export type WorkflowId = "recurring" | "invoice" | "schedule";
@@ -131,7 +137,13 @@ function campaignFromUrl() {
 
 function pushPartial(payload: Record<string, unknown>) {
   try {
-    const body = JSON.stringify({ type: "popup_partial", ...payload });
+    const sanitizedPayload = {
+      ...payload,
+      phone: isValidNanpPhone(payload.phone)
+        ? nanpNationalDigits(payload.phone)
+        : undefined,
+    };
+    const body = JSON.stringify({ type: "popup_partial", ...sanitizedPayload });
     if (navigator.sendBeacon) {
       navigator.sendBeacon(
         "/api/submissions",
@@ -439,7 +451,7 @@ export function PlaybookActivationPopup() {
   const submitPlaybook = async () => {
     const nameParts = name.trim().split(/\s+/).filter(Boolean);
     const normalizedEmail = email.trim().toLowerCase();
-    const normalizedPhone = limitPhoneInput(phone);
+    const normalizedPhone = nanpNationalDigits(phone);
     let valid = true;
 
     if (nameParts.length < 2 || name.trim().length < 3) {
@@ -448,8 +460,9 @@ export function PlaybookActivationPopup() {
     } else {
       setNameError("");
     }
-    if (!isTenDigitPhone(normalizedPhone)) {
-      setPhoneError("Please enter exactly 10 digits");
+    const phoneValidationError = nanpPhoneErrorMessage(normalizedPhone);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
       valid = false;
     } else {
       setPhoneError("");
@@ -650,21 +663,35 @@ export function PlaybookActivationPopup() {
                     <label className="mb-1 block text-xs font-medium text-slate-400">
                       Phone <span className="text-red-400">*</span>
                     </label>
-                    <Input
-                      value={phone}
-                      onChange={(event) => {
-                        setPhone(limitPhoneInput(event.target.value));
-                        setPhoneError("");
-                        setSubmitError("");
-                      }}
-                      placeholder="(555) 123-4567"
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      className={`h-9 border-white/10 bg-white/5 text-sm text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 ${
-                        phoneError ? "border-red-500" : ""
+                    <div
+                      className={`flex h-9 overflow-hidden rounded-md border bg-white/5 transition-shadow focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#0d1117] ${
+                        phoneError ? "border-red-500" : "border-white/10"
                       }`}
-                    />
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="flex shrink-0 items-center border-r border-white/10 bg-white/5 px-3 text-sm font-semibold text-slate-200"
+                      >
+                        {NANP_COUNTRY_CODE}
+                      </span>
+                      <Input
+                        aria-label="Phone number after +1"
+                        aria-invalid={Boolean(phoneError)}
+                        data-testid="popup-phone-input"
+                        value={phone}
+                        onChange={(event) => {
+                          setPhone(limitPhoneInput(event.target.value));
+                          setPhoneError("");
+                          setSubmitError("");
+                        }}
+                        placeholder="5551234567"
+                        type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel-national"
+                        pattern="[2-9][0-9]{2}[2-9][0-9]{6}"
+                        className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                    </div>
                     {phoneError && (
                       <p className="mt-0.5 text-xs text-red-400">{phoneError}</p>
                     )}
