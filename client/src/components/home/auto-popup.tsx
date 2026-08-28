@@ -10,7 +10,13 @@ import {
   fireMetaLeadOnce,
   getOrCreateMetaLeadEventId,
 } from "@/lib/metaLeadEvent";
-import { isTenDigitPhone, limitPhoneInput } from "@shared/phone";
+import {
+  isValidNanpPhone,
+  limitPhoneInput,
+  NANP_COUNTRY_CODE,
+  nanpNationalDigits,
+  nanpPhoneErrorMessage,
+} from "@shared/phone";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 
@@ -50,7 +56,13 @@ function GoogleIcon() {
 // Uses sendBeacon when available so it survives page unload.
 function pushPartial(payload: Record<string, unknown>) {
   try {
-    const body = JSON.stringify({ type: "popup_partial", ...payload });
+    const sanitizedPayload = {
+      ...payload,
+      phone: isValidNanpPhone(payload.phone)
+        ? nanpNationalDigits(payload.phone)
+        : undefined,
+    };
+    const body = JSON.stringify({ type: "popup_partial", ...sanitizedPayload });
     if (typeof navigator !== "undefined" && navigator.sendBeacon) {
       const blob = new Blob([body], { type: "application/json" });
       navigator.sendBeacon("/api/submissions", blob);
@@ -221,6 +233,7 @@ export function AutoPopup() {
   };
 
   const handleGuideSubmit = async () => {
+    const normalizedPhone = nanpNationalDigits(phone);
     let valid = true;
     if (!name.trim() || name.trim().length < 2) {
       setNameError("Please enter your full name");
@@ -228,8 +241,9 @@ export function AutoPopup() {
     } else {
       setNameError("");
     }
-    if (!isTenDigitPhone(phone)) {
-      setPhoneError("Please enter exactly 10 digits");
+    const phoneValidationError = nanpPhoneErrorMessage(normalizedPhone);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
       valid = false;
     } else {
       setPhoneError("");
@@ -249,7 +263,7 @@ export function AutoPopup() {
 
     localStorage.setItem(
       "pestflow_popup_data",
-      JSON.stringify({ name, firstName, lastName, phone, email })
+      JSON.stringify({ name, firstName, lastName, phone: normalizedPhone, email })
     );
 
     try {
@@ -261,7 +275,7 @@ export function AutoPopup() {
           firstName,
           lastName,
           email,
-          phone,
+          phone: normalizedPhone,
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId,
@@ -290,7 +304,7 @@ export function AutoPopup() {
       analytics.identify(email.trim(), {
         $email: email.trim(),
         $name: name.trim(),
-        $phone: phone.trim(),
+        $phone: normalizedPhone,
       });
       analytics.track(EVENTS.LANDING.POPUP_SUBMIT);
       localStorage.setItem("pestflow_popup_submitted", "true");
@@ -302,6 +316,7 @@ export function AutoPopup() {
 
     pushPartial({
       ...snapshotRef.current,
+      phone: normalizedPhone,
       reason: "guide_submit_contact_capture",
       metaEventId,
     });
@@ -312,7 +327,7 @@ export function AutoPopup() {
       firstName,
       lastName,
       email,
-      phone,
+      phone: normalizedPhone,
       metaEventId,
       search: window.location.search,
     });
@@ -437,20 +452,36 @@ export function AutoPopup() {
                     <label className="text-xs font-medium text-slate-400 mb-1 block">
                       Phone <span className="text-red-400">*</span>
                     </label>
-                    <Input
-                      value={phone}
-                      onChange={(e) => {
-                        setPhone(limitPhoneInput(e.target.value));
-                        setPhoneError("");
-                      }}
-                      placeholder="5551234567"
-                      type="tel"
-                      inputMode="numeric"
-                      autoComplete="tel-national"
-                      maxLength={10}
-                      pattern="[0-9]{10}"
-                      className={`bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-emerald-500 h-9 text-sm ${phoneError ? "border-red-500" : ""}`}
-                    />
+                    <div
+                      className={`flex h-9 overflow-hidden rounded-md border bg-white/5 transition-shadow focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#0d1117] ${
+                        phoneError ? "border-red-500" : "border-white/10"
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        data-testid="phone-country-prefix"
+                        className="flex shrink-0 items-center gap-1.5 border-r border-white/10 bg-white/5 px-3 text-sm font-semibold text-slate-200"
+                      >
+                        <span className="text-[13px] leading-none">🇺🇸</span>
+                        {NANP_COUNTRY_CODE}
+                      </span>
+                      <Input
+                        aria-label="Phone number after +1"
+                        aria-invalid={Boolean(phoneError)}
+                        data-testid="popup-phone-input"
+                        value={phone}
+                        onChange={(e) => {
+                          setPhone(limitPhoneInput(e.target.value));
+                          setPhoneError("");
+                        }}
+                        placeholder="5551234567"
+                        type="tel"
+                        inputMode="numeric"
+                        autoComplete="tel-national"
+                        pattern="[2-9][0-9]{2}[2-9][0-9]{6}"
+                        className="h-full min-w-0 flex-1 rounded-none border-0 bg-transparent text-sm text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                    </div>
                     {phoneError && <p className="text-red-400 text-xs mt-0.5">{phoneError}</p>}
                   </div>
 

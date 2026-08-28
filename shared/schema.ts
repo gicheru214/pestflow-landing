@@ -2,7 +2,12 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { hasAtMostTenPhoneDigits } from "./phone";
+import {
+  hasAtMostTenPhoneDigits,
+  isValidNanpPhone,
+  nanpNationalDigits,
+  phoneDigits,
+} from "./phone";
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -220,9 +225,41 @@ export const insertSubmissionSchema = createInsertSchema(submissions)
     mtaSyncedAt: true,
     mtaNextRetryAt: true,
   })
-  .refine((submission) => hasAtMostTenPhoneDigits(submission.phone), {
-    path: ["phone"],
-    message: "Phone number cannot exceed 10 digits",
+  .superRefine((submission, ctx) => {
+    const digits = phoneDigits(submission.phone);
+    const isCompletedPopupPhone = (
+      submission.type === "newsletter"
+      || (submission.type === "popup_partial" && digits.length >= 10)
+    );
+
+    if (digits && isCompletedPopupPhone) {
+      if (!isValidNanpPhone(submission.phone)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["phone"],
+          message: "Phone must be a valid +1 number with a valid area code",
+        });
+      }
+      return;
+    }
+
+    if (!hasAtMostTenPhoneDigits(submission.phone)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["phone"],
+        message: "Phone number cannot exceed 10 digits",
+      });
+    }
+  })
+  .transform((submission) => {
+    if (
+      submission.phone
+      && (submission.type === "newsletter" || submission.type === "popup_partial")
+      && isValidNanpPhone(submission.phone)
+    ) {
+      return { ...submission, phone: nanpNationalDigits(submission.phone) };
+    }
+    return submission;
   });
 
 export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
