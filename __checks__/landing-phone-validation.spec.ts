@@ -41,7 +41,16 @@ for (const device of ["desktop", "ios"] as const) {
     ).toHaveAttribute("href", "https://app.pestflow.org/admin");
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByText("+1", { exact: true })).toBeVisible();
+    await expect(dialog.getByTestId("phone-country-prefix")).toHaveText(
+      /🇺🇸\s*\+1/,
+    );
+    await expect(dialog.getByText("Returning user?", { exact: true })).toBeVisible();
+    await expect(
+      dialog.getByRole("button", { name: "Sign in with Google" }),
+    ).toBeVisible();
+    await expect(
+      dialog.getByRole("link", { name: "Or sign in with email →" }),
+    ).toHaveAttribute("href", "https://app.pestflow.org/login");
 
     await dialog.getByPlaceholder("John Smith").fill("Jordan Owner");
     await dialog.getByPlaceholder("john@example.com").fill("jordan@example.net");

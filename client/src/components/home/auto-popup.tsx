@@ -459,8 +459,10 @@ export function AutoPopup() {
                     >
                       <span
                         aria-hidden="true"
-                        className="flex shrink-0 items-center border-r border-white/10 bg-white/5 px-3 text-sm font-semibold text-slate-200"
+                        data-testid="phone-country-prefix"
+                        className="flex shrink-0 items-center gap-1.5 border-r border-white/10 bg-white/5 px-3 text-sm font-semibold text-slate-200"
                       >
+                        <span className="text-[13px] leading-none">🇺🇸</span>
                         {NANP_COUNTRY_CODE}
                       </span>
                       <Input
