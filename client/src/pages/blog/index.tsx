@@ -7,6 +7,41 @@ import { BLOG_POSTS } from "@/lib/blog-data";
 import { BlogIndexCTA } from "@/components/blog/blog-layout";
 import { analytics, EVENTS } from "@/lib/analytics";
 
+const SORO_EMBED_SCRIPT_ID = "pestflow-soro-blog-embed";
+const SORO_EMBED_SRC =
+  "https://app.trysoro.com/api/embed/6ef964cf-c53d-45a7-8c8f-c00c065bee13";
+
+function SoroBlogEmbed() {
+  useEffect(() => {
+    // The target exists before this effect runs, so Soro can render into it
+    // immediately. Reload the script whenever the SPA returns to /blog.
+    document.getElementById(SORO_EMBED_SCRIPT_ID)?.remove();
+
+    const script = document.createElement("script");
+    script.id = SORO_EMBED_SCRIPT_ID;
+    script.src = SORO_EMBED_SRC;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, []);
+
+  return (
+    <section className="container mx-auto max-w-5xl px-4 py-16 md:px-6" aria-labelledby="latest-guides-heading">
+      <h2 id="latest-guides-heading" className="mb-6 text-sm font-semibold uppercase tracking-widest text-emerald-700">
+        Latest guides
+      </h2>
+      <div id="soro-blog" className="min-h-48" aria-live="polite">
+        <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">
+          Loading the latest PestFlow articles…
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function BlogIndex() {
   useEffect(() => {
     document.title = "Pest Control Business Guides & Templates | PestFlow Blog";
@@ -56,6 +91,8 @@ export default function BlogIndex() {
             </p>
           </div>
         </section>
+
+        <SoroBlogEmbed />
 
         <section className="container mx-auto px-4 md:px-6 max-w-5xl py-16">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-emerald-700 mb-4">
