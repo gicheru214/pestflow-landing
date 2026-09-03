@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildPestFlowCalendlyUrl } from "./calendly-url";
+import {
+  buildPestFlowCalendlyUrl,
+  buildSoroArticleCalendlyUrl,
+} from "./calendly-url";
 
 test("prefills Calendly from the captured playbook contact", () => {
   const url = new URL(buildPestFlowCalendlyUrl({
@@ -30,4 +33,13 @@ test("preserves inbound campaign attribution in the Calendly handoff", () => {
   assert.equal(url.searchParams.get("utm_medium"), "paid_social");
   assert.equal(url.searchParams.get("utm_campaign"), "owner-playbook-test");
   assert.equal(url.searchParams.get("utm_content"), "popup-b");
+});
+
+test("attributes Soro article demo bookings to the exact article", () => {
+  const url = new URL(buildSoroArticleCalendlyUrl(" pest-control-routing-guide "));
+
+  assert.equal(url.searchParams.get("utm_source"), "pestflow_blog");
+  assert.equal(url.searchParams.get("utm_medium"), "website");
+  assert.equal(url.searchParams.get("utm_campaign"), "soro_article_demo");
+  assert.equal(url.searchParams.get("utm_content"), "pest-control-routing-guide");
 });

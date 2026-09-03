@@ -1,11 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight, BookOpen, Clock } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Clock } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Button } from "@/components/ui/button";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { BlogIndexCTA } from "@/components/blog/blog-layout";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { buildSoroArticleCalendlyUrl } from "@shared/calendly-url";
 
 const SORO_EMBED_SCRIPT_ID = "pestflow-soro-blog-embed";
 const SORO_EMBED_SRC =
@@ -14,8 +16,100 @@ const BLOG_TITLE = "Pest Control Business Guides & Templates | PestFlow Blog";
 const BLOG_DESCRIPTION =
   "Pest control software guides for owners comparing scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.";
 
+function SoroArticleCTA({ articleSlug }: { articleSlug: string }) {
+  const calendlyUrl = buildSoroArticleCalendlyUrl(articleSlug);
+
+  const trackClick = (cta: "book_demo" | "explore_pestflow", destination: string) => {
+    const properties = {
+      cta: `soro_article_${cta}`,
+      placement: "soro_article_end",
+      post: articleSlug,
+      destination,
+    };
+    analytics.track(EVENTS.LANDING.CTA_CLICK, properties);
+    if (cta === "book_demo") {
+      analytics.track(EVENTS.LANDING.DEMO_REQUEST_START, properties);
+    }
+  };
+
+  return (
+    <aside
+      className="mt-10 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-emerald-50 p-7 shadow-sm md:p-10"
+      aria-labelledby="soro-article-cta-heading"
+      data-pestflow-soro-cta={articleSlug}
+    >
+      <div className="inline-flex items-center gap-2 rounded-full bg-emerald-600/10 px-3 py-1 text-xs font-semibold text-emerald-700">
+        <CalendarDays className="h-3.5 w-3.5" />
+        See PestFlow in action
+      </div>
+      <h2
+        id="soro-article-cta-heading"
+        className="mt-4 text-2xl font-bold font-heading tracking-tight text-foreground md:text-3xl"
+      >
+        Ready to make this easier in your business?
+      </h2>
+      <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
+        Book a PestFlow demo and we’ll show you how scheduling, routes, billing,
+        technician workflows, and customer communication work together for your team.
+      </p>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <Button
+          asChild
+          size="lg"
+          className="group w-full bg-emerald-600 font-bold text-white shadow-lg hover:bg-emerald-700 sm:w-auto"
+        >
+          <a
+            href={calendlyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackClick("book_demo", "calendly")}
+          >
+            Book a demo
+            <ArrowRight className="ml-1 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </a>
+        </Button>
+        <Button asChild variant="outline" size="lg" className="w-full bg-white sm:w-auto">
+          <Link
+            href="/"
+            onClick={() => trackClick("explore_pestflow", "pestflow_home")}
+          >
+            Explore PestFlow
+          </Link>
+        </Button>
+      </div>
+    </aside>
+  );
+}
+
 function SoroBlogEmbed() {
+  const [articleSlug, setArticleSlug] = useState<string | null>(null);
+
   useEffect(() => {
+    if (!articleSlug) return;
+    analytics.track(EVENTS.LANDING.PAGE_VIEW, {
+      page: "soro_blog_article",
+      post: articleSlug,
+    });
+  }, [articleSlug]);
+
+  useEffect(() => {
+    const target = document.getElementById("soro-blog");
+    if (!target) return;
+
+    let syncTimer: number | undefined;
+    const syncArticle = () => {
+      window.clearTimeout(syncTimer);
+      syncTimer = window.setTimeout(() => {
+        const hasRenderedArticle = Boolean(target.querySelector(".soro-blog-article"));
+        const currentSlug = new URLSearchParams(window.location.search).get("post")?.trim();
+        setArticleSlug(hasRenderedArticle && currentSlug ? currentSlug : null);
+      }, 0);
+    };
+
+    const observer = new MutationObserver(syncArticle);
+    observer.observe(target, { childList: true, subtree: true });
+    window.addEventListener("popstate", syncArticle);
+
     // The target exists before this effect runs, so Soro can render into it
     // immediately. Reload the script whenever the SPA returns to /blog.
     document.getElementById(SORO_EMBED_SCRIPT_ID)?.remove();
@@ -25,8 +119,12 @@ function SoroBlogEmbed() {
     script.src = SORO_EMBED_SRC;
     script.defer = true;
     document.body.appendChild(script);
+    syncArticle();
 
     return () => {
+      observer.disconnect();
+      window.removeEventListener("popstate", syncArticle);
+      window.clearTimeout(syncTimer);
       script.remove();
     };
   }, []);
@@ -41,6 +139,7 @@ function SoroBlogEmbed() {
           Loading the latest PestFlow articles…
         </div>
       </div>
+      {articleSlug ? <SoroArticleCTA articleSlug={articleSlug} /> : null}
     </section>
   );
 }
@@ -100,10 +199,9 @@ export default function BlogIndex() {
     syncBlogHead();
 
     const initialArticle = new URLSearchParams(window.location.search).get("post");
-    analytics.track(EVENTS.LANDING.PAGE_VIEW, {
-      page: initialArticle ? "soro_blog_article" : "blog_index",
-      ...(initialArticle ? { post: initialArticle } : {}),
-    });
+    if (!initialArticle) {
+      analytics.track(EVENTS.LANDING.PAGE_VIEW, { page: "blog_index" });
+    }
 
     return () => {
       headObserver.disconnect();

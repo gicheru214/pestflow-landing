@@ -55,3 +55,12 @@ export function buildPestFlowCalendlyUrl({
   url.searchParams.set("utm_content", utmContent || "playbook_calendar");
   return url.toString();
 }
+
+export function buildSoroArticleCalendlyUrl(articleSlug: string) {
+  return buildPestFlowCalendlyUrl({
+    utmSource: "pestflow_blog",
+    utmMedium: "website",
+    utmCampaign: "soro_article_demo",
+    utmContent: articleSlug.trim() || "unknown_article",
+  });
+}
