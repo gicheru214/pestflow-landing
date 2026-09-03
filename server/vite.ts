@@ -52,8 +52,8 @@ export async function setupVite(server: Server, app: Express) {
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
       const transformed = await vite.transformIndexHtml(url, template);
-      const pathname = new URL(url, "https://pestflow.org").pathname.replace(/\/$/, "") || "/";
-      const page = injectSeoHtml(transformed, pathname);
+      const requestUrl = new URL(url, "https://pestflow.org");
+      const page = await injectSeoHtml(transformed, requestUrl);
       res.status(200).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);

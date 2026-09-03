@@ -10,6 +10,9 @@ import { analytics, EVENTS } from "@/lib/analytics";
 const SORO_EMBED_SCRIPT_ID = "pestflow-soro-blog-embed";
 const SORO_EMBED_SRC =
   "https://app.trysoro.com/api/embed/6ef964cf-c53d-45a7-8c8f-c00c065bee13";
+const BLOG_TITLE = "Pest Control Business Guides & Templates | PestFlow Blog";
+const BLOG_DESCRIPTION =
+  "Pest control software guides for owners comparing scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.";
 
 function SoroBlogEmbed() {
   useEffect(() => {
@@ -44,7 +47,6 @@ function SoroBlogEmbed() {
 
 export default function BlogIndex() {
   useEffect(() => {
-    document.title = "Pest Control Business Guides & Templates | PestFlow Blog";
     const setMeta = (name: string, content: string, attr: "name" | "property" = "name") => {
       let tag = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
       if (!tag) {
@@ -54,18 +56,60 @@ export default function BlogIndex() {
       }
       tag.setAttribute("content", content);
     };
-    setMeta(
-      "description",
-      "Pest control software guides for owners comparing scheduling, routing, CRM, billing, field operations, reporting, inventory, and automation.",
-    );
-    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      document.head.appendChild(canonical);
-    }
-    canonical.href = "https://pestflow.org/blog";
-    analytics.track(EVENTS.LANDING.PAGE_VIEW, { page: "blog_index" });
+
+    const syncBlogHead = () => {
+      const isArticle = Boolean(new URLSearchParams(window.location.search).get("post"));
+      const canonicals = Array.from(
+        document.querySelectorAll('link[rel="canonical"]'),
+      ) as HTMLLinkElement[];
+
+      if (isArticle) {
+        const soroCanonical = canonicals.find((tag) => tag.hasAttribute("data-soro"));
+        if (soroCanonical) {
+          canonicals.forEach((tag) => {
+            if (tag !== soroCanonical) tag.remove();
+          });
+        }
+        return;
+      }
+
+      document.title = BLOG_TITLE;
+      setMeta("description", BLOG_DESCRIPTION);
+      let canonical = canonicals[0];
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.rel = "canonical";
+        document.head.appendChild(canonical);
+      }
+      canonical.removeAttribute("data-soro");
+      canonical.href = "https://pestflow.org/blog";
+      canonicals.slice(1).forEach((tag) => tag.remove());
+    };
+
+    const queueHeadSync = () => window.setTimeout(syncBlogHead, 0);
+    const originalPushState = history.pushState;
+    const patchedPushState: History["pushState"] = function (this: History, ...args) {
+      originalPushState.apply(this, args);
+      queueHeadSync();
+    };
+    history.pushState = patchedPushState;
+    window.addEventListener("popstate", queueHeadSync);
+
+    const headObserver = new MutationObserver(queueHeadSync);
+    headObserver.observe(document.head, { childList: true });
+    syncBlogHead();
+
+    const initialArticle = new URLSearchParams(window.location.search).get("post");
+    analytics.track(EVENTS.LANDING.PAGE_VIEW, {
+      page: initialArticle ? "soro_blog_article" : "blog_index",
+      ...(initialArticle ? { post: initialArticle } : {}),
+    });
+
+    return () => {
+      headObserver.disconnect();
+      window.removeEventListener("popstate", queueHeadSync);
+      if (history.pushState === patchedPushState) history.pushState = originalPushState;
+    };
   }, []);
 
   const featured = BLOG_POSTS[0];
