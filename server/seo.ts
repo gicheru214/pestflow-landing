@@ -1,6 +1,7 @@
 import generatedPosts from "../client/src/content/generated-blog-posts.json";
 import scheduledPosts from "../client/src/content/scheduled-blog-posts.json";
 import scheduledPhaseTwoPosts from "../client/src/content/scheduled-blog-posts-phase-two.json";
+import { getSoroFeedSnapshot, type SoroArticle, type SoroFeedSnapshot } from "./soro";
 
 const SITE_URL = "https://pestflow.org";
 
@@ -9,8 +10,16 @@ type SeoPage = {
   title: string;
   description: string;
   type?: "website" | "article";
+  schemaType?: "Article" | "BlogPosting";
   publishedAt?: string;
   updatedAt?: string;
+  image?: string;
+  soroManaged?: boolean;
+};
+
+export type ResolvedSeoRequest = {
+  page: SeoPage;
+  known: boolean;
 };
 
 const STATIC_PAGES: SeoPage[] = [
@@ -102,32 +111,85 @@ function safeJson(value: unknown) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-export function getSeoPage(pathname: string) {
-  return publishedPages().find((page) => page.path === pathname) || {
-    ...STATIC_PAGES[0],
-    path: pathname,
+function normalizeRequestUrl(requestUrl: string | URL) {
+  const url = requestUrl instanceof URL ? requestUrl : new URL(requestUrl, SITE_URL);
+  url.pathname = url.pathname.replace(/\/$/, "") || "/";
+  return url;
+}
+
+function soroPage(article: SoroArticle): SeoPage {
+  return {
+    path: `/blog?post=${encodeURIComponent(article.slug)}`,
+    title: `${article.title} | PestFlow`,
+    description: article.excerpt,
+    type: "article",
+    schemaType: "BlogPosting",
+    publishedAt: article.isoDate,
+    updatedAt: article.isoDate,
+    image: article.image,
+    soroManaged: true,
   };
 }
 
-export function isKnownBlogPath(pathname: string) {
-  return !pathname.startsWith("/blog/") || publishedPages().some((page) => page.path === pathname);
+export async function resolveSeoRequest(
+  requestUrl: string | URL,
+  feedOverride?: SoroFeedSnapshot,
+): Promise<ResolvedSeoRequest> {
+  const url = normalizeRequestUrl(requestUrl);
+  const pathname = url.pathname;
+  const requestedSoroSlug = pathname === "/blog" ? url.searchParams.get("post")?.trim() : undefined;
+
+  if (requestedSoroSlug) {
+    const feed = feedOverride || await getSoroFeedSnapshot();
+    const article = feed.articles.find((candidate) => candidate.slug === requestedSoroSlug);
+    if (article) return { page: soroPage(article), known: true };
+
+    if (feed.available) {
+      return { page: { ...STATIC_PAGES[1] }, known: false };
+    }
+
+    // Fail open during a transient Soro outage. The embed can still render the
+    // article client-side, and the query URL remains its canonical URL.
+    return {
+      page: {
+        ...STATIC_PAGES[1],
+        path: `/blog?post=${encodeURIComponent(requestedSoroSlug)}`,
+        soroManaged: true,
+      },
+      known: true,
+    };
+  }
+
+  const page = publishedPages().find((candidate) => candidate.path === pathname) || {
+    ...STATIC_PAGES[0],
+    path: pathname,
+  };
+  const known = !pathname.startsWith("/blog/") || publishedPages().some((candidate) => candidate.path === pathname);
+  return { page, known };
 }
 
-export function injectSeoHtml(template: string, pathname: string) {
-  const page = getSeoPage(pathname);
+export async function injectSeoHtml(
+  template: string,
+  requestUrl: string | URL,
+  resolvedOverride?: ResolvedSeoRequest,
+) {
+  const { page } = resolvedOverride || await resolveSeoRequest(requestUrl);
   const canonical = `${SITE_URL}${page.path}`;
+  const escapedCanonical = escapeHtml(canonical);
   const title = escapeHtml(page.title);
   const description = escapeHtml(page.description);
   const type = page.type || "website";
   const structuredData = page.type === "article"
     ? {
         "@context": "https://schema.org",
-        "@type": "Article",
+        "@type": page.schemaType || "Article",
         headline: page.title,
         description: page.description,
         mainEntityOfPage: canonical,
+        url: canonical,
         datePublished: page.publishedAt,
         dateModified: page.updatedAt || page.publishedAt,
+        ...(page.image ? { image: page.image } : {}),
         author: { "@type": "Organization", name: "PestFlow" },
         publisher: { "@type": "Organization", name: "PestFlow", url: SITE_URL },
       }
@@ -143,9 +205,14 @@ export function injectSeoHtml(template: string, pathname: string) {
   const extraHead = [
     `<meta name="description" content="${description}" />`,
     `<meta name="robots" content="index,follow,max-image-preview:large" />`,
-    `<link rel="canonical" href="${canonical}" />`,
-    `<meta property="og:url" content="${canonical}" />`,
-    `<script type="application/ld+json">${safeJson(structuredData)}</script>`,
+    `<link rel="canonical" href="${escapedCanonical}"${page.soroManaged ? ' data-soro="true"' : ""} />`,
+    `<meta property="og:url" content="${escapedCanonical}" />`,
+    ...(page.image ? [
+      `<meta property="og:image" content="${escapeHtml(page.image)}" />`,
+      `<meta property="og:image:alt" content="${title}" />`,
+      `<meta name="twitter:image" content="${escapeHtml(page.image)}" />`,
+    ] : []),
+    `<script${page.soroManaged ? ' id="soro-blog-jsonld"' : ""} type="application/ld+json">${safeJson(structuredData)}</script>`,
   ].join("\n    ");
 
   return template
@@ -158,12 +225,26 @@ export function injectSeoHtml(template: string, pathname: string) {
     .replace("</head>", `    ${extraHead}\n  </head>`);
 }
 
-export function buildSitemapXml() {
-  const urls = publishedPages().map((page) => {
+function escapeXml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+export async function buildSitemapXml(feedOverride?: SoroFeedSnapshot) {
+  const feed = feedOverride || await getSoroFeedSnapshot();
+  const allPages = [
+    ...publishedPages(),
+    ...feed.articles.map(soroPage),
+  ];
+  const urls = allPages.map((page) => {
     const lastmod = page.updatedAt || page.publishedAt;
     return [
       "  <url>",
-      `    <loc>${SITE_URL}${page.path}</loc>`,
+      `    <loc>${escapeXml(`${SITE_URL}${page.path}`)}</loc>`,
       ...(lastmod ? [`    <lastmod>${lastmod.slice(0, 10)}</lastmod>`] : []),
       "  </url>",
     ].join("\n");
