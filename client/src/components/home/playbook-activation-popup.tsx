@@ -208,6 +208,7 @@ function workflowHandoffUrl(
     "utm_content",
     "utm_term",
     "fbclid",
+    "ttclid",
   ].forEach((key) => {
     const value = current.get(key);
     if (value) next.set(key, value);

@@ -59,7 +59,7 @@ export function buildOnboardingHandoffUrl(
 
 const DESKTOP_SAFE_QUERY_KEYS = new Set([
   "email", "firstName", "lastName", "name", "phone", "source", "meta_event_id",
-  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid",
+  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid", "ttclid",
 ]);
 
 export function replaceMobileAppUrlForDesktop(url: URL): URL {
