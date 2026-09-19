@@ -23,6 +23,7 @@ import {
   MOBILE_ONBOARDING_URL,
   replaceMobileAppUrlForDesktop,
 } from "@/lib/onboardingHandoff";
+import { fireTikTokCompleteRegistrationOnce } from "@/lib/tiktokPixel";
 
 const ALLOWED_APP_RETURN_HOSTS = new Set(["app.pestflow.org", "new.pestflow.org"]);
 const APP_STORE_OPEN_DELAY_MS = 1400;
@@ -249,6 +250,26 @@ export default function SignupSuccess() {
       urlParams.get('meta_event_id') || hashParams.get('meta_event_id'),
     );
 
+    let tiktokRetryTimer: number | undefined;
+    let tiktokRetryAttempts = 0;
+    const tiktokPixelId = import.meta.env.VITE_TIKTOK_PIXEL_ID;
+    if (
+      completedAccountSignup
+      && !isInternalPreview
+      && !fireTikTokCompleteRegistrationOnce(metaEventId, tiktokPixelId)
+    ) {
+      tiktokRetryTimer = window.setInterval(() => {
+        tiktokRetryAttempts += 1;
+        if (
+          fireTikTokCompleteRegistrationOnce(metaEventId, tiktokPixelId)
+          || tiktokRetryAttempts >= 10
+        ) {
+          if (tiktokRetryTimer !== undefined) window.clearInterval(tiktokRetryTimer);
+          tiktokRetryTimer = undefined;
+        }
+      }, 100);
+    }
+
     // Lead remains the qualified owner conversion. Retry during the short
     // success flash if the Pixel is still initializing, and use the same ID
     // as CAPI so Meta keeps one conversion when both copies arrive.
@@ -265,6 +286,7 @@ export default function SignupSuccess() {
     }
     const stopLeadRetry = () => {
       if (leadRetryTimer !== undefined) window.clearInterval(leadRetryTimer);
+      if (tiktokRetryTimer !== undefined) window.clearInterval(tiktokRetryTimer);
     };
 
     // Owner: brief confirmation flash, then hand off to the app.

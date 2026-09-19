@@ -13,7 +13,8 @@ test("desktop onboarding goes to desktop signup without routes or a mobile path"
   const url = new URL(buildOnboardingHandoffUrl(isMobile, {
     routes: "73",
     email: "arthur@example.com",
-    utm_source: "google",
+    utm_source: "tiktok",
+    ttclid: "tiktok-click-456",
   }));
 
   assert.equal(isMobile, false);
@@ -21,6 +22,7 @@ test("desktop onboarding goes to desktop signup without routes or a mobile path"
   assert.equal(url.searchParams.get("desktop"), "true");
   assert.equal(url.searchParams.get("routes"), null);
   assert.equal(url.searchParams.get("email"), "arthur@example.com");
+  assert.equal(url.searchParams.get("ttclid"), "tiktok-click-456");
   assert.equal(url.toString().includes("/mobile/"), false);
 });
 

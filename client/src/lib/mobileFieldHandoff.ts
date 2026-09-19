@@ -10,6 +10,7 @@ const ATTRIBUTION_KEYS = [
   "utm_term",
   "gclid",
   "fbclid",
+  "ttclid",
 ] as const;
 
 export interface MobileFieldLead {

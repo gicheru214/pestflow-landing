@@ -24,7 +24,11 @@ export default function Onboarding() {
     const routes = isNaN(routesRaw) || routesRaw < 1 ? 1 : Math.min(routesRaw, 74);
     carry.routes = String(routes);
 
-    ["email", "firstName", "lastName", "phone", "utm_source", "utm_campaign", "utm_content"].forEach((k) => {
+    [
+      "email", "firstName", "lastName", "phone",
+      "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
+      "gclid", "fbclid", "ttclid",
+    ].forEach((k) => {
       const v = urlParams.get(k) || popupData[k];
       if (v) carry[k] = String(v);
     });

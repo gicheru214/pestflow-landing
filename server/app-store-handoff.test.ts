@@ -20,6 +20,7 @@ test("builds the shared success path for an App Store handoff with paid attribut
       utm_source: "facebook",
       utm_campaign: "july-winners",
       fbclid: "fb-click-123",
+      ttclid: "tiktok-click-456",
     },
     "pestflow-appstore-event-123",
   );
@@ -32,6 +33,7 @@ test("builds the shared success path for an App Store handoff with paid attribut
   assert.equal(url.searchParams.get("utm_source"), "facebook");
   assert.equal(url.searchParams.get("utm_campaign"), "july-winners");
   assert.equal(url.searchParams.get("fbclid"), "fb-click-123");
+  assert.equal(url.searchParams.get("ttclid"), "tiktok-click-456");
 });
 
 test("builds the shared success path before mobile-v2 signup", () => {
@@ -40,7 +42,7 @@ test("builds the shared success path before mobile-v2 signup", () => {
     firstName: "Alex",
     email: "alex@example.com",
     metaEventId: "pestflow-lead-event-123",
-    search: "?utm_source=facebook&fbclid=fb-click-123",
+    search: "?utm_source=tiktok&ttclid=tiktok-click-456",
   });
   const successUrl = new URL(path, "https://pestflow.org");
   const finalUrl = new URL(successUrl.searchParams.get("return_to") || "");
@@ -48,7 +50,8 @@ test("builds the shared success path before mobile-v2 signup", () => {
   assert.equal(successUrl.pathname, "/signup-success");
   assert.equal(successUrl.searchParams.get("source"), "popup_playbook");
   assert.equal(successUrl.searchParams.get("meta_event_id"), "pestflow-lead-event-123");
-  assert.equal(successUrl.searchParams.get("utm_source"), "facebook");
+  assert.equal(successUrl.searchParams.get("utm_source"), "tiktok");
+  assert.equal(successUrl.searchParams.get("ttclid"), "tiktok-click-456");
   assert.equal(finalUrl.pathname, "/mobile-v2-field.html");
   assert.equal(finalUrl.searchParams.get("screen"), "auth-signup");
   assert.equal(finalUrl.searchParams.get("firstName"), "Alex");
