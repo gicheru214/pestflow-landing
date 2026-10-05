@@ -39,6 +39,16 @@ const STATIC_PAGES: SeoPage[] = [
     description: "Read PestFlow's accessibility goals, supported measures, and how to request assistance or report a barrier.",
   },
   {
+    path: "/about",
+    title: "About PestFlow | Pest Control Business Software",
+    description: "Learn about PestFlow, the pest control business software product operated by Reflectly AI, Inc.",
+  },
+  {
+    path: "/contact",
+    title: "Contact PestFlow | Product and Account Support",
+    description: "Contact the PestFlow team for product, account, billing, and onboarding support.",
+  },
+  {
     path: "/blog/pest-control-pricing-chart",
     title: "Pest Control Pricing Chart by Service Type | Owner Edition",
     description: "A practical pricing reference for pest control owners quoting general pest, roaches, termites, mosquitoes, rodents, and specialty work.",
