@@ -8,6 +8,8 @@ import { GuidedTourProvider } from "@/components/onboarding/GuidedTooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Support from "@/pages/support";
+import About from "@/pages/about";
+import Contact from "@/pages/contact";
 import Privacy from "@/pages/privacy";
 import DataDeletion from "@/pages/data-deletion";
 import Terms from "@/pages/terms";
@@ -49,6 +51,8 @@ function AppRouter() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/support" component={Support} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/privacy-policy">{() => <ExternalRedirect to="/privacy" />}</Route>
         <Route path="/data-deletion" component={DataDeletion} />
