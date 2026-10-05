@@ -774,7 +774,7 @@ export async function registerRoutes(
     try {
       const { name, email, phone, companyName, businessType, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent } = parsed.data;
       const [firstName, ...rest] = name.split(/\s+/);
-      await storage.createSubmission({
+      const application = await storage.createSubmission({
         type: "referral_partner",
         firstName,
         lastName: rest.join(" ") || "—",
@@ -792,7 +792,7 @@ export async function registerRoutes(
           utmContent: utmContent || "",
         },
       });
-      return res.status(201).json({ ok: true });
+      return res.status(201).json({ ok: true, applicationId: application.id });
     } catch (error) {
       console.error("[referral-partners] application save failed:", error instanceof Error ? error.message : error);
       return res.status(500).json({ error: "We couldn't save your application. Please try again." });

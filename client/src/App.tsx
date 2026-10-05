@@ -22,6 +22,7 @@ import AiTutorPage from "@/pages/ai-tutor";
 import Playbook from "@/pages/playbook";
 import GrowthKit from "@/pages/growth-kit";
 import ReferralPartners from "@/pages/referral-partners";
+import ReferralPartnerThanks from "@/pages/referral-partner-thanks";
 import BlogIndex from "@/pages/blog/index";
 import PricingChartPost from "@/pages/blog/pricing-chart";
 import StartBusinessPost from "@/pages/blog/start-business";
@@ -63,6 +64,7 @@ function AppRouter() {
         <Route path="/playbook" component={Playbook} />
         <Route path="/growth-kit" component={GrowthKit} />
         <Route path="/referral-partners" component={ReferralPartners} />
+        <Route path="/referral-partners/thanks" component={ReferralPartnerThanks} />
         {/* Removed fake in-app clone — hand stale traffic to the real app. */}
         <Route path="/login">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
         <Route path="/create-account">{() => <ExternalRedirect to="https://app.pestflow.org/login" />}</Route>
