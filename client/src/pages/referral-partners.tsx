@@ -3,6 +3,7 @@ import { ArrowRight, Check, ChevronDown, Handshake, MessageCircle, ShieldCheck, 
 import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { rememberReferralPartnerApplication } from "@/lib/referralPartnerConversion";
+import { limitPhoneInput, nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";
 
 type Application = {
   name: string;
@@ -10,6 +11,7 @@ type Application = {
   phone: string;
   companyName: string;
   businessType: string;
+  businessTypeOther: string;
   ownerRelationships: string;
   introTiming: string;
   ownerSituation: string;
@@ -17,7 +19,7 @@ type Application = {
 };
 
 const initialApplication: Application = {
-  name: "", email: "", phone: "", companyName: "", businessType: "",
+  name: "", email: "", phone: "", companyName: "", businessType: "", businessTypeOther: "",
   ownerRelationships: "", introTiming: "", ownerSituation: "", website: "",
 };
 const POPUP_SEEN_KEY = "pestflow_referral_partner_popup_seen";
@@ -43,32 +45,45 @@ function SelectField({ label, value, onChange, options }: {
   </label>;
 }
 
-function PartnerApplicationForm({ form, update, submit, sending, error, compact = false }: {
+function PartnerApplicationForm({ form, update, submit, sending, error }: {
   form: Application;
   update: (key: keyof Application, value: string) => void;
   submit: (event: FormEvent<HTMLFormElement>) => void;
   sending: boolean;
   error: string;
-  compact?: boolean;
 }) {
-  const qualification = <>
-    <div className="grid gap-5 sm:grid-cols-2">
-      <SelectField label="Pest owners you work with" value={form.ownerRelationships} onChange={(value) => update("ownerRelationships", value)} options={[{value:"0",label:"None yet"},{value:"1",label:"One"},{value:"2-5",label:"Two to five"},{value:"6+",label:"Six or more"}]} />
-      <SelectField label="When could you make a warm introduction?" value={form.introTiming} onChange={(value) => update("introTiming", value)} options={[{value:"this_week",label:"This week"},{value:"two_weeks",label:"Within two weeks"},{value:"later",label:"Later"},{value:"unsure",label:"Not sure yet"}]} />
-    </div>
-    <SelectField label="What does your business do?" value={form.businessType} onChange={(value) => update("businessType", value)} options={[{value:"agency",label:"Marketing agency"},{value:"bookkeeper",label:"Bookkeeping / accounting"},{value:"supplier",label:"Supplier / distributor"},{value:"consultant",label:"Consulting"},{value:"other",label:"Something else"}]} />
-  </>;
-  const contact = <>
-    <div className="grid gap-5 sm:grid-cols-2"><label className={labelClass}>Your name<input required autoComplete="name" className={inputClass} value={form.name} onChange={(event) => update("name", event.target.value)} /></label><label className={labelClass}>Work email<input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(event) => update("email", event.target.value)} /></label></div>
-    <div className="grid gap-5 sm:grid-cols-2"><label className={labelClass}>Your business<input required autoComplete="organization" className={inputClass} value={form.companyName} onChange={(event) => update("companyName", event.target.value)} /></label><label className={labelClass}>Phone <span className="font-normal text-[#718676]">(optional)</span><input type="tel" autoComplete="tel" className={inputClass} value={form.phone} onChange={(event) => update("phone", event.target.value)} /></label></div>
-  </>;
+  const [step, setStep] = useState<1 | 2>(1);
+  const [stepError, setStepError] = useState("");
 
-  return <form onSubmit={submit} className="space-y-5">
-    {compact ? <>{qualification}{contact}</> : <>{contact}{qualification}</>}
-    {!compact && <label className={labelClass}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (step === 2) return submit(event);
+    const phoneError = nanpPhoneErrorMessage(form.phone);
+    if (form.name.trim().length < 2) return setStepError("Please enter your full name.");
+    if (phoneError) return setStepError(phoneError);
+    if (form.businessType === "other" && !form.businessTypeOther.trim()) return setStepError("Please describe what your business does.");
+    setStepError("");
+    setStep(2);
+  };
+
+  return <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.12em] text-[#296e14]"><span>Step {step} of 2</span><span>{step === 1 ? "About you" : "Your connections"}</span></div>
+    <div className="flex gap-2" aria-hidden="true"><span className="h-1.5 flex-1 rounded-full bg-[#348a1a]" /><span className={`h-1.5 flex-1 rounded-full ${step === 2 ? "bg-[#348a1a]" : "bg-[#e0f5d5]"}`} /></div>
+    {step === 1 ? <>
+      <label className={labelClass}>Full name <span aria-hidden="true">*</span><input required minLength={2} autoComplete="name" className={inputClass} value={form.name} onChange={(event) => { update("name", event.target.value); setStepError(""); }} /></label>
+      <label className={labelClass}>Phone number <span aria-hidden="true">*</span><span className="relative block"><span aria-hidden="true" className="absolute left-4 top-[1.16rem] text-sm font-semibold text-[#225810]">+1</span><input required type="tel" inputMode="numeric" autoComplete="tel-national" aria-label="Phone number after +1" placeholder="2145550123" className={`${inputClass} pl-12`} value={form.phone} onChange={(event) => { update("phone", limitPhoneInput(event.target.value)); setStepError(""); }} /></span></label>
+      <SelectField label="What does your business do?" value={form.businessType} onChange={(value) => { update("businessType", value); setStepError(""); }} options={[{value:"agency",label:"Marketing agency"},{value:"bookkeeper",label:"Bookkeeping / accounting"},{value:"supplier",label:"Supplier / distributor"},{value:"consultant",label:"Consulting"},{value:"other",label:"Something else"}]} />
+      {form.businessType === "other" && <label className={labelClass}>Describe your business <span aria-hidden="true">*</span><input required maxLength={120} placeholder="What service do you provide?" className={inputClass} value={form.businessTypeOther} onChange={(event) => { update("businessTypeOther", event.target.value); setStepError(""); }} /></label>}
+      {stepError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{stepError}</p>}
+      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 py-4 font-bold text-white transition hover:bg-[#296e14]">Continue <ArrowRight className="h-5 w-5" /></button>
+    </> : <>
+      <div className="grid gap-5 sm:grid-cols-2"><label className={labelClass}>Work email <span aria-hidden="true">*</span><input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(event) => update("email", event.target.value)} /></label><label className={labelClass}>Your business <span aria-hidden="true">*</span><input required autoComplete="organization" className={inputClass} value={form.companyName} onChange={(event) => update("companyName", event.target.value)} /></label></div>
+      <div className="grid gap-5 sm:grid-cols-2"><SelectField label="Pest owners you work with" value={form.ownerRelationships} onChange={(value) => update("ownerRelationships", value)} options={[{value:"0",label:"None yet"},{value:"1",label:"One"},{value:"2-5",label:"Two to five"},{value:"6+",label:"Six or more"}]} /><SelectField label="When could you make a warm introduction?" value={form.introTiming} onChange={(value) => update("introTiming", value)} options={[{value:"this_week",label:"This week"},{value:"two_weeks",label:"Within two weeks"},{value:"later",label:"Later"},{value:"unsure",label:"Not sure yet"}]} /></div>
+      <label className={labelClass}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>
+      {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      <div className="flex gap-3"><button type="button" disabled={sending} onClick={() => setStep(1)} className="rounded-xl border border-[#c0ecac] px-5 py-4 font-semibold text-[#225810] hover:bg-[#f2fbee]">Back</button><button type="submit" disabled={sending} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 py-4 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60">{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
+    </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
-    {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-    <button type="submit" disabled={sending} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 py-4 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60">{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button>
     <p className="text-xs leading-5 text-[#68806d]">By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
   </form>;
 }
@@ -124,6 +139,7 @@ export default function ReferralPartners() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          phone: nanpNationalDigits(form.phone),
           utmSource: params.get("utm_source") || "",
           utmCampaign: params.get("utm_campaign") || "",
           utmContent: params.get("utm_content") || "",
@@ -229,7 +245,7 @@ export default function ReferralPartners() {
         </div>
         <div className="px-6 pb-7 pt-5 sm:px-8">
           <p className="mb-4 text-sm font-bold text-[#0d280a]">Tell us about the pest businesses you already know.</p>
-          <PartnerApplicationForm compact form={form} update={update} submit={submit} sending={sending} error={error} />
+          <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} />
         </div>
       </DialogContent>
     </Dialog>

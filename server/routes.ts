@@ -4,6 +4,7 @@ import fs from "fs";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
+import { isValidNanpPhone, nanpNationalDigits } from "@shared/phone";
 import { z } from "zod";
 import {
   sendReviewRequest,
@@ -755,9 +756,10 @@ export async function registerRoutes(
     const applicationSchema = z.object({
       name: z.string().trim().min(2).max(120),
       email: z.string().trim().email().max(254),
-      phone: z.string().trim().max(30).optional(),
+      phone: z.string().trim().min(1).max(30).refine(isValidNanpPhone),
       companyName: z.string().trim().min(2).max(160),
       businessType: z.enum(["agency", "bookkeeper", "supplier", "consultant", "other"]),
+      businessTypeOther: z.string().trim().max(120).optional(),
       ownerRelationships: z.enum(["0", "1", "2-5", "6+"]),
       introTiming: z.enum(["this_week", "two_weeks", "later", "unsure"]),
       ownerSituation: z.string().trim().max(500).optional(),
@@ -765,6 +767,10 @@ export async function registerRoutes(
       utmCampaign: z.string().trim().max(120).optional(),
       utmContent: z.string().trim().max(120).optional(),
       website: z.string().max(200).optional(), // Honeypot; hidden from people.
+    }).superRefine((value, context) => {
+      if (value.businessType === "other" && !value.businessTypeOther) {
+        context.addIssue({ code: "custom", path: ["businessTypeOther"], message: "Describe your business." });
+      }
     });
 
     const parsed = applicationSchema.safeParse(req.body);
@@ -772,17 +778,18 @@ export async function registerRoutes(
     if (parsed.data.website) return res.status(201).json({ ok: true });
 
     try {
-      const { name, email, phone, companyName, businessType, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent } = parsed.data;
+      const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent } = parsed.data;
       const [firstName, ...rest] = name.split(/\s+/);
       const application = await storage.createSubmission({
         type: "referral_partner",
         firstName,
         lastName: rest.join(" ") || "—",
         email,
-        phone: phone || null,
+        phone: nanpNationalDigits(phone),
         companyName,
         quizAnswers: {
           businessType,
+          businessTypeOther: businessType === "other" ? businessTypeOther || "" : "",
           ownerRelationships,
           introTiming,
           ownerSituation: ownerSituation || "",
