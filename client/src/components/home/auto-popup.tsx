@@ -132,7 +132,8 @@ export function AutoPopup() {
     try { return JSON.parse(localStorage.getItem("pestflow_popup_data") || "{}"); }
     catch { return {} as any; }
   })();
-  const [showClose, setShowClose] = useState(false);
+  // First-time visitors must be able to reach the public site without submitting the lead form.
+  const [showClose, setShowClose] = useState(true);
 
   const seedName = (() => {
     const f = urlParams.get("firstName");
