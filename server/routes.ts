@@ -749,6 +749,56 @@ export async function registerRoutes(
     }
   });
 
+  // Partner applications are kept separate from the owner lead funnel. In
+  // particular, they must not enroll applicants in owner SMS or Meta events.
+  app.post("/api/referral-partners/apply", async (req, res) => {
+    const applicationSchema = z.object({
+      name: z.string().trim().min(2).max(120),
+      email: z.string().trim().email().max(254),
+      phone: z.string().trim().max(30).optional(),
+      companyName: z.string().trim().min(2).max(160),
+      businessType: z.enum(["agency", "bookkeeper", "supplier", "consultant", "other"]),
+      ownerRelationships: z.enum(["0", "1", "2-5", "6+"]),
+      introTiming: z.enum(["this_week", "two_weeks", "later", "unsure"]),
+      ownerSituation: z.string().trim().max(500).optional(),
+      utmSource: z.string().trim().max(120).optional(),
+      utmCampaign: z.string().trim().max(120).optional(),
+      utmContent: z.string().trim().max(120).optional(),
+      website: z.string().max(200).optional(), // Honeypot; hidden from people.
+    });
+
+    const parsed = applicationSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: "Please check your application fields." });
+    if (parsed.data.website) return res.status(201).json({ ok: true });
+
+    try {
+      const { name, email, phone, companyName, businessType, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent } = parsed.data;
+      const [firstName, ...rest] = name.split(/\s+/);
+      await storage.createSubmission({
+        type: "referral_partner",
+        firstName,
+        lastName: rest.join(" ") || "—",
+        email,
+        phone: phone || null,
+        companyName,
+        quizAnswers: {
+          businessType,
+          ownerRelationships,
+          introTiming,
+          ownerSituation: ownerSituation || "",
+          source: "referral-partners-page",
+          utmSource: utmSource || "",
+          utmCampaign: utmCampaign || "",
+          utmContent: utmContent || "",
+        },
+      });
+      return res.status(201).json({ ok: true });
+    } catch (error) {
+      console.error("[referral-partners] application save failed:", error instanceof Error ? error.message : error);
+      return res.status(500).json({ error: "We couldn't save your application. Please try again." });
+    }
+  });
+
   app.post("/api/submissions", async (req, res) => {
     try {
       // Tech popup posts {name, email, phone, employer, ownerName} but the

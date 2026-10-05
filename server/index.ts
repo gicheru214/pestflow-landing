@@ -33,6 +33,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 app.use("/api/submissions", createBlockedSubmissionIdentityMiddleware());
+app.use("/api/referral-partners", createBlockedSubmissionIdentityMiddleware());
 
 // Serve mobile-app wireframes/preview as static files
 app.use("/mobile-app", express.static(path.join(process.cwd(), "mobile-app")));
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
   const path = req.path;
   const containsLeadPii =
     path === "/api/submissions"
+    || path.startsWith("/api/referral-partners")
     || path === "/api/audit-leads"
     || path === "/api/tech-leads";
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
