@@ -1,5 +1,6 @@
 const SUCCESS_KEY = "pestflow_referral_partner_success";
 const FIRED_PREFIX = "pestflow_referral_partner_event_fired:";
+const LEAD_FIRED_PREFIX = "pestflow_referral_partner_lead_fired:";
 const MAX_AGE_MS = 30 * 60 * 1000;
 const APPLICATION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f-]{27,}$/i;
 
@@ -29,28 +30,38 @@ export function completedReferralPartnerApplication(): CompletedApplication | nu
   }
 }
 
-// This is a distinct partner conversion, separate from the owner Lead event.
-// It only fires after the application endpoint confirms a saved record.
+// Both Meta events only fire after the application endpoint confirms a saved record.
 export function fireReferralPartnerApplicationOnce(): boolean {
   const completed = completedReferralPartnerApplication();
   if (!completed) return false;
 
-  const firedKey = `${FIRED_PREFIX}${completed.applicationId}`;
+  const customFiredKey = `${FIRED_PREFIX}${completed.applicationId}`;
+  const leadFiredKey = `${LEAD_FIRED_PREFIX}${completed.applicationId}`;
+  let customFired = false;
+  let leadFired = false;
   try {
-    if (sessionStorage.getItem(firedKey) === "1") return true;
+    customFired = sessionStorage.getItem(customFiredKey) === "1";
+    leadFired = sessionStorage.getItem(leadFiredKey) === "1";
   } catch {
     // A storage restriction should not hide a completed application.
   }
+  if (customFired && leadFired) return true;
 
   if (typeof window.fbq !== "function") return false;
-  window.fbq(
-    "trackCustom",
-    "ReferralPartnerApplication",
-    { application_type: "paid_referral_partner" },
-    { eventID: `pestflow-referral-${completed.applicationId}` },
-  );
+  if (!customFired) {
+    window.fbq(
+      "trackCustom",
+      "ReferralPartnerApplication",
+      { application_type: "paid_referral_partner" },
+      { eventID: `pestflow-referral-${completed.applicationId}` },
+    );
+  }
+  if (!leadFired) {
+    window.fbq("track", "Lead", {}, { eventID: `pestflow-referral-lead-${completed.applicationId}` });
+  }
   try {
-    sessionStorage.setItem(firedKey, "1");
+    if (!customFired) sessionStorage.setItem(customFiredKey, "1");
+    if (!leadFired) sessionStorage.setItem(leadFiredKey, "1");
   } catch {
     // Meta can still receive the event when browser storage is restricted.
   }
