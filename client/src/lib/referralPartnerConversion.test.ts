@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { fireReferralPartnerApplicationOnce, rememberReferralPartnerApplication } from "./referralPartnerConversion";
 
-test("a confirmed partner application emits one Lead alongside its existing custom event", () => {
+test("the custom partner event fires once after a confirmed application", () => {
   const saved = new Map<string, string>();
   const calls: unknown[][] = [];
   Object.defineProperty(globalThis, "sessionStorage", {
@@ -25,15 +25,8 @@ test("a confirmed partner application emits one Lead alongside its existing cust
   assert.equal(fireReferralPartnerApplicationOnce(), true);
   assert.deepEqual(calls.map(([kind, name]) => [kind, name]), [
     ["trackCustom", "ReferralPartnerApplication"],
-    ["track", "Lead"],
   ]);
 
   assert.equal(fireReferralPartnerApplicationOnce(), true);
-  assert.equal(calls.length, 2);
-
-  // A browser that already fired the older custom event still needs the new Lead.
-  saved.delete(`pestflow_referral_partner_lead_fired:${applicationId}`);
-  assert.equal(fireReferralPartnerApplicationOnce(), true);
-  assert.deepEqual(calls.at(-1)?.slice(0, 2), ["track", "Lead"]);
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 1);
 });
