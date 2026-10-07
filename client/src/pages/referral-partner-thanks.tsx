@@ -10,8 +10,8 @@ export default function ReferralPartnerThanks() {
     document.title = completed ? "Application received | PestFlow Partners" : "Referral partners | PestFlow";
     if (!completed) return;
 
-    // The base Pixel records PageView on the full-page navigation. This
-    // partner-specific event is sent only for a confirmed application.
+    // The base Pixel records PageView and Lead on this URL. The custom
+    // partner event is sent only for a confirmed application.
     let attempts = 0;
     if (fireReferralPartnerApplicationOnce()) return;
     const retry = window.setInterval(() => {
