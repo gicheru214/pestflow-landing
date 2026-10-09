@@ -96,7 +96,7 @@ function PartnerApplicationForm({ form, update, submit, sending, error, compact 
       <div className="flex gap-2.5 sm:gap-3"><button type="button" disabled={sending} onClick={() => { setStep(1); onStepChange?.(1); }} className={`rounded-xl border border-[#c0ecac] px-4 font-semibold text-[#225810] hover:bg-[#f2fbee] sm:px-5 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Back</button><button type="submit" disabled={sending} className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-3 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60 sm:px-6 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
     </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
-    <p className={compact ? "text-[10px] leading-4 text-[#68806d] sm:text-xs sm:leading-5" : "text-xs leading-5 text-[#68806d]"}>Information you enter may be saved even if you leave before applying. By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
+    <p className={compact ? "text-[10px] leading-4 text-[#68806d] sm:text-xs sm:leading-5" : "text-xs leading-5 text-[#68806d]"}>Entries may be saved before you apply. Applying lets PestFlow contact you. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Disclose paid recommendations where required.</p>
   </form>;
 }
 
