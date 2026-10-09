@@ -617,7 +617,7 @@ export async function getAuditSubmissionsWithMetaStatus() {
     ]),
   );
   return allSubmissions.map((submission) => {
-    if (isTestProspect(submission)) return submission;
+    if (isTestProspect(submission) || submission.type === "referral_partner" || submission.type === "referral_partner_partial") return submission;
     const prospectKeyHash = hashProspectKey(
       adminProspectCanonicalKey(submission),
     );

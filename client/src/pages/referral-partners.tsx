@@ -23,6 +23,11 @@ const initialApplication: Application = {
   ownerRelationships: "", introTiming: "", ownerSituation: "", website: "",
 };
 const POPUP_SEEN_KEY = "pestflow_referral_partner_popup_seen";
+const hasDraftContent = (form: Application) => (
+  [form.name, form.email, form.phone, form.companyName, form.businessType,
+    form.businessTypeOther, form.ownerRelationships, form.introTiming, form.ownerSituation]
+    .some((value) => value.trim().length > 0)
+);
 
 const inputClass = "mt-1 h-10 w-full rounded-xl border border-[#c0ecac] bg-white px-3 text-base text-[#0d280a] outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15 sm:mt-1.5 sm:h-12 sm:px-4 sm:text-sm";
 const labelClass = "block text-xs font-semibold text-[#225810] sm:text-sm";
@@ -91,7 +96,7 @@ function PartnerApplicationForm({ form, update, submit, sending, error, compact 
       <div className="flex gap-2.5 sm:gap-3"><button type="button" disabled={sending} onClick={() => { setStep(1); onStepChange?.(1); }} className={`rounded-xl border border-[#c0ecac] px-4 font-semibold text-[#225810] hover:bg-[#f2fbee] sm:px-5 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Back</button><button type="submit" disabled={sending} className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-3 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60 sm:px-6 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
     </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
-    <p className={compact ? "text-[10px] leading-4 text-[#68806d] sm:text-xs sm:leading-5" : "text-xs leading-5 text-[#68806d]"}>By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
+    <p className={compact ? "text-[10px] leading-4 text-[#68806d] sm:text-xs sm:leading-5" : "text-xs leading-5 text-[#68806d]"}>Information you enter may be saved even if you leave before applying. By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
   </form>;
 }
 
@@ -103,6 +108,47 @@ export default function ReferralPartners() {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupStep, setPopupStep] = useState<1 | 2>(1);
   const skipTimedPopup = useRef(false);
+  const draftId = useRef(crypto.randomUUID());
+  const draftRevision = useRef(0);
+  const latestForm = useRef(form);
+  const completed = useRef(false);
+
+  const draftPayload = (value: Application, revision: number) => {
+    const params = new URLSearchParams(window.location.search);
+    return JSON.stringify({
+      ...value,
+      draftId: draftId.current,
+      revision,
+      utmSource: params.get("utm_source") || "",
+      utmCampaign: params.get("utm_campaign") || "",
+      utmContent: params.get("utm_content") || "",
+    });
+  };
+
+  useEffect(() => {
+    if (!hasDraftContent(form) || form.website || completed.current) return;
+    const timer = window.setTimeout(() => {
+      void fetch("/api/referral-partners/partial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: draftPayload(form, draftRevision.current),
+        keepalive: true,
+      }).catch(() => { /* The pagehide beacon provides a second save opportunity. */ });
+    }, 650);
+    return () => window.clearTimeout(timer);
+  }, [form]);
+
+  useEffect(() => {
+    const saveOnExit = () => {
+      if (completed.current || latestForm.current.website || !hasDraftContent(latestForm.current)) return;
+      navigator.sendBeacon("/api/referral-partners/partial", new Blob(
+        [draftPayload(latestForm.current, draftRevision.current)],
+        { type: "application/json" },
+      ));
+    };
+    window.addEventListener("pagehide", saveOnExit);
+    return () => window.removeEventListener("pagehide", saveOnExit);
+  }, []);
 
   useEffect(() => {
     document.title = "Referral Partners | PestFlow";
@@ -134,7 +180,11 @@ export default function ReferralPartners() {
     try { sessionStorage.setItem(POPUP_SEEN_KEY, "1"); } catch { /* no-op */ }
   };
 
-  const update = (key: keyof Application, value: string) => setForm((current) => ({ ...current, [key]: value }));
+  const update = (key: keyof Application, value: string) => setForm((current) => {
+    draftRevision.current += 1;
+    latestForm.current = { ...current, [key]: value };
+    return latestForm.current;
+  });
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -147,6 +197,7 @@ export default function ReferralPartners() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          draftId: draftId.current,
           phone: nanpNationalDigits(form.phone),
           utmSource: params.get("utm_source") || "",
           utmCampaign: params.get("utm_campaign") || "",
@@ -156,6 +207,7 @@ export default function ReferralPartners() {
       if (!response.ok) throw new Error("Your application could not be saved. Please try again.");
       const saved = await response.json() as { applicationId?: string };
       if (!saved.applicationId) throw new Error("Your application could not be confirmed. Please try again.");
+      completed.current = true;
       if (rememberReferralPartnerApplication(saved.applicationId)) {
         window.location.assign("/referral-partners/thanks");
       } else {

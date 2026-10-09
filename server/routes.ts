@@ -536,7 +536,7 @@ export async function registerRoutes(
   app.get("/api/submissions", async (req, res) => {
     try {
       const allSubmissions = await storage.getSubmissions();
-      res.json(allSubmissions);
+      res.json(allSubmissions.filter((submission) => submission.type !== "referral_partner_partial"));
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch submissions" });
     }
@@ -752,6 +752,59 @@ export async function registerRoutes(
 
   // Partner applications are kept separate from the owner lead funnel. In
   // particular, they must not enroll applicants in owner SMS or Meta events.
+  app.post("/api/referral-partners/partial", async (req, res) => {
+    const parsed = z.object({
+      draftId: z.string().uuid(),
+      revision: z.number().int().min(0).max(1_000_000_000),
+      name: z.string().trim().max(120).default(""),
+      email: z.string().trim().max(254).default(""),
+      phone: z.string().trim().max(30).default(""),
+      companyName: z.string().trim().max(160).default(""),
+      businessType: z.enum(["", "agency", "bookkeeper", "supplier", "consultant", "other"]).default(""),
+      businessTypeOther: z.string().trim().max(120).default(""),
+      ownerRelationships: z.enum(["", "0", "1", "2-5", "6+"]).default(""),
+      introTiming: z.enum(["", "this_week", "two_weeks", "later", "unsure"]).default(""),
+      ownerSituation: z.string().trim().max(500).default(""),
+      utmSource: z.string().trim().max(120).default(""),
+      utmCampaign: z.string().trim().max(120).default(""),
+      utmContent: z.string().trim().max(120).default(""),
+      website: z.string().max(200).default(""),
+    }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: "Invalid draft." });
+    const draft = parsed.data;
+    if (draft.website) return res.sendStatus(204);
+    if (![draft.name, draft.email, draft.phone, draft.companyName, draft.businessType,
+      draft.businessTypeOther, draft.ownerRelationships, draft.introTiming, draft.ownerSituation]
+      .some(Boolean)) return res.sendStatus(204);
+    try {
+      const [firstName = "", ...lastName] = draft.name.split(/\s+/).filter(Boolean);
+      await storage.saveReferralPartnerSubmission(draft.draftId, {
+        type: "referral_partner_partial",
+        firstName,
+        lastName: lastName.join(" "),
+        email: draft.email,
+        phone: draft.phone,
+        companyName: draft.companyName,
+        quizAnswers: {
+          businessType: draft.businessType,
+          businessTypeOther: draft.businessTypeOther,
+          ownerRelationships: draft.ownerRelationships,
+          introTiming: draft.introTiming,
+          ownerSituation: draft.ownerSituation,
+          source: "referral-partners-page",
+          draftRevision: draft.revision,
+          utmSource: draft.utmSource,
+          utmCampaign: draft.utmCampaign,
+          utmContent: draft.utmContent,
+        },
+      }, draft.revision);
+      return res.sendStatus(204);
+    } catch (error) {
+      console.error("[referral-partners] draft save failed:", error instanceof Error ? error.message : error);
+      return res.status(500).json({ error: "Could not save draft." });
+    }
+  });
+
   app.post("/api/referral-partners/apply", async (req, res) => {
     const applicationSchema = z.object({
       name: z.string().trim().min(2).max(120),
@@ -767,6 +820,7 @@ export async function registerRoutes(
       utmCampaign: z.string().trim().max(120).optional(),
       utmContent: z.string().trim().max(120).optional(),
       website: z.string().max(200).optional(), // Honeypot; hidden from people.
+      draftId: z.string().uuid().optional(),
     }).superRefine((value, context) => {
       if (value.businessType === "other" && !value.businessTypeOther) {
         context.addIssue({ code: "custom", path: ["businessTypeOther"], message: "Describe your business." });
@@ -778,9 +832,9 @@ export async function registerRoutes(
     if (parsed.data.website) return res.status(201).json({ ok: true });
 
     try {
-      const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent } = parsed.data;
+      const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent, draftId } = parsed.data;
       const [firstName, ...rest] = name.split(/\s+/);
-      const application = await storage.createSubmission({
+      const values = {
         type: "referral_partner",
         firstName,
         lastName: rest.join(" ") || "—",
@@ -798,7 +852,11 @@ export async function registerRoutes(
           utmCampaign: utmCampaign || "",
           utmContent: utmContent || "",
         },
-      });
+      };
+      const application = draftId
+        ? await storage.saveReferralPartnerSubmission(draftId, values)
+        : await storage.createSubmission(values);
+      if (!application) return res.status(409).json({ error: "This application was already submitted." });
       return res.status(201).json({ ok: true, applicationId: application.id });
     } catch (error) {
       console.error("[referral-partners] application save failed:", error instanceof Error ? error.message : error);

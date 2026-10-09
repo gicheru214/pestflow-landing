@@ -11,7 +11,7 @@ import {
   users, jobs, routes, customers, services, invoices, onboardingProgress, featureUsage, submissions 
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -258,6 +258,27 @@ export class DatabaseStorage implements IStorage {
 
   async createSubmission(insertSubmission: InsertSubmission): Promise<Submission> {
     const [submission] = await db.insert(submissions).values(insertSubmission).returning();
+    return submission;
+  }
+
+  async saveReferralPartnerSubmission(
+    id: string,
+    values: InsertSubmission,
+    revision?: number,
+  ): Promise<Submission | undefined> {
+    const [submission] = await db.insert(submissions)
+      .values({ ...values, id, submittedAt: new Date() })
+      .onConflictDoUpdate({
+        target: submissions.id,
+        set: { ...values, submittedAt: new Date() },
+        setWhere: revision === undefined
+          ? eq(submissions.type, "referral_partner_partial")
+          : and(
+            eq(submissions.type, "referral_partner_partial"),
+            sql`coalesce((${submissions.quizAnswers}->>'draftRevision')::integer, -1) <= ${revision}`,
+          ),
+      })
+      .returning();
     return submission;
   }
 }
