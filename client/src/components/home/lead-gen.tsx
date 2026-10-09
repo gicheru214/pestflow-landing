@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 
-type Stage = "gate" | "form" | "exit";
+type Stage = "gate" | "form" | "download" | "exit";
 
 export function LeadGen() {
   const [stage, setStage] = useState<Stage>("gate");
@@ -39,9 +39,6 @@ export function LeadGen() {
       const saved = await response.json().catch(() => null) as {
         playbookDelivery?: { accepted?: boolean };
       } | null;
-      if (saved?.playbookDelivery?.accepted === false) {
-        throw new Error("Resend did not accept the playbook email");
-      }
 
       analytics.identify(formData.email.trim(), {
         $email: formData.email.trim(),
@@ -49,6 +46,11 @@ export function LeadGen() {
         routes: formData.routes,
       });
       analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
+      if (saved?.playbookDelivery?.accepted !== true) {
+        setIsSubmitting(false);
+        setStage("download");
+        return;
+      }
       window.location.href = buildMobileFieldSuccessPath({
         source: "homepage_playbook",
         firstName: formData.firstName,
@@ -249,6 +251,22 @@ export function LeadGen() {
                   </p>
                 </form>
               </>
+            )}
+
+            {stage === "download" && (
+              <div className="space-y-4">
+                <CheckCircle2 className="h-9 w-9 text-emerald-400" />
+                <h3 className="text-xl font-bold">Your request was saved</h3>
+                <p role="status" className="text-sm text-slate-300">
+                  Email delivery is temporarily unavailable. Download the playbook here; there is no need to submit again.
+                </p>
+                <a href="/pest-control-revenue-leak-playbook.pdf" download className="block rounded-lg bg-emerald-600 px-4 py-3 text-center font-bold text-white hover:bg-emerald-500">
+                  Download the free playbook
+                </a>
+                <a href={buildMobileFieldSuccessPath({ source: "homepage_playbook", firstName: formData.firstName, lastName: formData.lastName, email: formData.email, routes: formData.routes, search: window.location.search })} className="block text-center text-sm text-emerald-300 underline">
+                  Continue to PestFlow
+                </a>
+              </div>
             )}
 
             {stage === "exit" && (

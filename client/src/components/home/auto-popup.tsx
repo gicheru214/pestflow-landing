@@ -111,7 +111,7 @@ export function DemoVideoModal({ open, onOpenChange }: { open: boolean; onOpenCh
   );
 }
 
-type Step = "guide" | "offer";
+type Step = "guide" | "offer" | "delivery";
 
 const popupScrollStyle = {
   maxHeight: "min(88vh, calc(100dvh - 5.5rem))",
@@ -121,6 +121,7 @@ export function AutoPopup() {
   const [open, setOpen] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleErr, setGoogleErr] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
   const initialStep = urlParams.get("popup_step") as Step | null;
   const validInitial: Step[] = ["offer"];
@@ -234,6 +235,7 @@ export function AutoPopup() {
   };
 
   const handleGuideSubmit = async () => {
+    if (submitting) return;
     const normalizedPhone = nanpNationalDigits(phone);
     let valid = true;
     if (!name.trim() || name.trim().length < 2) {
@@ -267,6 +269,8 @@ export function AutoPopup() {
       JSON.stringify({ name, firstName, lastName, phone: normalizedPhone, email })
     );
 
+    setSubmitting(true);
+    let emailAccepted = false;
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
@@ -294,9 +298,7 @@ export function AutoPopup() {
           accepted?: boolean;
         };
       } | null;
-      if (saved?.playbookDelivery?.accepted === false) {
-        throw new Error("Resend did not accept the playbook email");
-      }
+      emailAccepted = saved?.playbookDelivery?.accepted === true;
       const canonicalMetaEventId =
         saved?.metaRegistration?.eventId || metaEventId;
       if (saved?.metaRegistration?.shouldFireBrowser !== false) {
@@ -311,8 +313,10 @@ export function AutoPopup() {
       localStorage.setItem("pestflow_popup_submitted", "true");
     } catch (e) {
       console.error("Failed to save guide request", e);
-      setEmailError("We couldn't email the playbook yet. Please try again.");
+      setEmailError("We couldn't save your request. Please try again.");
       return;
+    } finally {
+      setSubmitting(false);
     }
 
     pushPartial({
@@ -322,6 +326,10 @@ export function AutoPopup() {
       metaEventId,
     });
     localStorage.setItem("pestflow_popup_submitted", "true");
+    if (!emailAccepted) {
+      setStep("delivery");
+      return;
+    }
     setOpen(false);
     window.location.href = buildMobileFieldSuccessPath({
       source: "popup_playbook",
@@ -502,9 +510,10 @@ export function AutoPopup() {
 
                   <Button
                     onClick={handleGuideSubmit}
+                    disabled={submitting}
                     className="w-full h-11 text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg mt-1"
                   >
-                    Send Me the Free Playbook <ArrowRight className="ml-2 h-4 w-4" />
+                    {submitting ? "Saving your request…" : "Send Me the Free Playbook"} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-0.5">
                     No spam — we don't do that.
@@ -570,6 +579,21 @@ export function AutoPopup() {
               </motion.div>
             )}
 
+            {step === "delivery" && (
+              <motion.div key="delivery" variants={slideVariants} initial="initial" animate="animate" exit="exit" className="p-6 text-center">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
+                <h2 className="mt-3 text-lg font-bold text-white">Your request was saved</h2>
+                <p role="status" className="mt-2 text-sm text-slate-300">
+                  Email delivery is temporarily unavailable. Download the playbook now; there is no need to submit again.
+                </p>
+                <a href="/pest-control-revenue-leak-playbook.pdf" download className="mt-5 block rounded-lg bg-emerald-600 px-4 py-3 font-bold text-white hover:bg-emerald-500">
+                  Download the free playbook
+                </a>
+                <a href={buildMobileFieldSuccessPath({ source: "popup_playbook", firstName: name.trim().split(" ")[0], lastName: name.trim().split(" ").slice(1).join(" "), email, phone: nanpNationalDigits(phone), search: window.location.search })} className="mt-4 block text-sm text-emerald-300 underline">
+                  Continue to PestFlow
+                </a>
+              </motion.div>
+            )}
             {/* ── STEP 2: Offer / CTA ── */}
             {step === "offer" && (
               <motion.div

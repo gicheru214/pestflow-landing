@@ -10,6 +10,7 @@ export default function Playbook() {
   const legacyHandoff = params.get("download") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [emailUnavailable, setEmailUnavailable] = useState(false);
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", companyName: "" });
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function Playbook() {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (emailUnavailable || submitting) return;
     setSubmitting(true);
     setError("");
     try {
@@ -44,8 +46,9 @@ export default function Playbook() {
       const saved = await response.json().catch(() => null) as {
         playbookDelivery?: { accepted?: boolean };
       } | null;
-      if (saved?.playbookDelivery?.accepted === false) {
-        throw new Error("Resend did not accept the playbook email");
+      if (saved?.playbookDelivery?.accepted !== true) {
+        setEmailUnavailable(true);
+        return;
       }
       window.location.href = buildMobileFieldSuccessPath({
         source: params.get("source") || "playbook_page",
@@ -131,9 +134,9 @@ export default function Playbook() {
                 <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700">
                   <Mail className="h-6 w-6" />
                 </div>
-                <p className="text-center text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Delivered by email</p>
+                <p className="text-center text-xs font-black uppercase tracking-[0.16em] text-emerald-700">Free playbook</p>
                 <h2 className="mt-2 text-2xl font-black text-[#123b24]">Get the full scorecard.</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">We’ll email the PDF, then open PestFlow so you can put the scorecard to work without another dead-end download screen.</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">Get the PDF and open PestFlow so you can put the scorecard to work.</p>
                 <form onSubmit={submit} className="mt-6 space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <Input aria-label="First name" placeholder="First name" required value={form.firstName} onChange={(event) => setForm({ ...form, firstName: event.target.value })} />
@@ -142,8 +145,15 @@ export default function Playbook() {
                   <Input aria-label="Work email" type="email" placeholder="Work email" required value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
                   <Input aria-label="Company name" placeholder="Pest control company" value={form.companyName} onChange={(event) => setForm({ ...form, companyName: event.target.value })} />
                   {error && <p role="alert" className="text-sm font-medium text-red-600">{error}</p>}
-                  <Button type="submit" size="lg" disabled={submitting} className="w-full bg-emerald-600 font-bold hover:bg-emerald-700">
-                    {submitting ? "Emailing your playbook…" : "Email my playbook & open PestFlow"}
+                  {emailUnavailable && (
+                    <div role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-950">
+                      <p>Your request was saved. Email delivery is temporarily unavailable, so download the playbook here. There is no need to submit again.</p>
+                      <a href="/pest-control-revenue-leak-playbook.pdf" download className="mt-3 block font-bold underline">Download the free playbook</a>
+                      <a href={buildMobileFieldSuccessPath({ source: params.get("source") || "playbook_page", firstName: form.firstName, lastName: form.lastName, email: form.email, search: window.location.search })} className="mt-2 block font-bold underline">Continue to PestFlow</a>
+                    </div>
+                  )}
+                  <Button type="submit" size="lg" disabled={submitting || emailUnavailable} className="w-full bg-emerald-600 font-bold hover:bg-emerald-700">
+                    {submitting ? "Saving your request…" : emailUnavailable ? "Request saved" : "Get my playbook & open PestFlow"}
                     {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
                   </Button>
                 </form>

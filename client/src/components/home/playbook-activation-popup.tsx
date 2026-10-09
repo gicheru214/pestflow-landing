@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { beginMetaLeadEvent } from "@/lib/metaLeadEvent";
+import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import {
   buildPestFlowCalendlyUrl,
   PESTFLOW_CALENDLY_URL,
@@ -35,6 +35,7 @@ type PopupStep = "playbook" | "workflow";
 type SubmissionResponse = {
   metaRegistration?: {
     eventId?: string;
+    shouldFireBrowser?: boolean;
   };
   playbookDelivery?: {
     accepted?: boolean;
@@ -249,6 +250,7 @@ export function PlaybookActivationPopup() {
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [playbookEmailUnavailable, setPlaybookEmailUnavailable] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleErr, setGoogleErr] = useState("");
@@ -527,11 +529,12 @@ export function PlaybookActivationPopup() {
       if (!response.ok) throw new Error("capture_failed");
 
       const saved = (await response.json()) as SubmissionResponse;
-      if (saved.playbookDelivery?.accepted === false) {
-        throw new Error("playbook_delivery_failed");
-      }
+      setPlaybookEmailUnavailable(saved.playbookDelivery?.accepted !== true);
       const canonicalMetaEventId =
         saved.metaRegistration?.eventId || preferredMetaEventId;
+      if (saved.metaRegistration?.shouldFireBrowser !== false) {
+        fireMetaLeadOnce(canonicalMetaEventId);
+      }
 
       localStorage.setItem(
         POPUP_DATA_KEY,
@@ -761,7 +764,7 @@ export function PlaybookActivationPopup() {
                   >
                     {submitting
                       ? "Sending the playbook…"
-                      : "Send Me the Free Playbook"}
+                      : "Get My Free Playbook"}
                     {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
                   </Button>
                   <p className="pt-0.5 text-center text-xs text-slate-500">
@@ -864,14 +867,26 @@ export function PlaybookActivationPopup() {
                     <CheckCircle2 className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">
-                      Playbook requested
-                    </p>
+                    <p className="text-[10px] font-black uppercase tracking-[.14em] text-emerald-300">Playbook ready</p>
                     <h2 className="mt-1 text-lg font-black leading-tight text-white">
-                      Okay—the playbook will be sent in 10 minutes.
+                      {playbookEmailUnavailable
+                        ? "Your request is saved. Download the playbook now."
+                        : "Your playbook is on its way. Download it now, too."}
                     </h2>
                   </div>
                 </div>
+                {playbookEmailUnavailable && (
+                  <p role="status" className="mt-3 text-xs text-amber-200">
+                    Email delivery is temporarily unavailable. Your request was saved; there is no need to submit again.
+                  </p>
+                )}
+                <a
+                  href="/pest-control-revenue-leak-playbook.pdf"
+                  download
+                  className="mt-3 flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-500"
+                >
+                  Download the free playbook
+                </a>
 
                 <section className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_16px_50px_rgba(15,23,42,0.22)]">
                   <div className="flex items-center gap-3">
