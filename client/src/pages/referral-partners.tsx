@@ -24,14 +24,15 @@ const initialApplication: Application = {
 };
 const POPUP_SEEN_KEY = "pestflow_referral_partner_popup_seen";
 
-const inputClass = "mt-1.5 h-12 w-full rounded-xl border border-[#c0ecac] bg-white px-4 text-sm text-[#0d280a] outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15";
-const labelClass = "block text-sm font-semibold text-[#225810]";
+const inputClass = "mt-1 h-10 w-full rounded-xl border border-[#c0ecac] bg-white px-3 text-base text-[#0d280a] outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15 sm:mt-1.5 sm:h-12 sm:px-4 sm:text-sm";
+const labelClass = "block text-xs font-semibold text-[#225810] sm:text-sm";
 
-function SelectField({ label, value, onChange, options }: {
+function SelectField({ label, value, onChange, options, compact = false }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  compact?: boolean;
 }) {
   return <label className={labelClass}>
     {label}
@@ -40,20 +41,23 @@ function SelectField({ label, value, onChange, options }: {
         <option value="" disabled>Select one</option>
         {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
       </select>
-      <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-4 top-5 h-4 w-4 text-[#296e14]" />
+      <ChevronDown aria-hidden="true" className={`pointer-events-none absolute right-3 top-3 h-4 w-4 text-[#296e14] ${compact ? "sm:top-5" : "sm:right-4 sm:top-5"}`} />
     </span>
   </label>;
 }
 
-function PartnerApplicationForm({ form, update, submit, sending, error }: {
+function PartnerApplicationForm({ form, update, submit, sending, error, compact = false, onStepChange }: {
   form: Application;
   update: (key: keyof Application, value: string) => void;
   submit: (event: FormEvent<HTMLFormElement>) => void;
   sending: boolean;
   error: string;
+  compact?: boolean;
+  onStepChange?: (step: 1 | 2) => void;
 }) {
   const [step, setStep] = useState<1 | 2>(1);
   const [stepError, setStepError] = useState("");
+  const [optionalOpen, setOptionalOpen] = useState(false);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -64,27 +68,30 @@ function PartnerApplicationForm({ form, update, submit, sending, error }: {
     if (form.businessType === "other" && !form.businessTypeOther.trim()) return setStepError("Please describe what your business does.");
     setStepError("");
     setStep(2);
+    onStepChange?.(2);
   };
 
-  return <form onSubmit={handleSubmit} className="space-y-5">
+  return <form onSubmit={handleSubmit} className={compact ? "space-y-3 sm:space-y-5" : "space-y-5"}>
     <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.12em] text-[#296e14]"><span>Step {step} of 2</span><span>{step === 1 ? "About you" : "Your connections"}</span></div>
     <div className="flex gap-2" aria-hidden="true"><span className="h-1.5 flex-1 rounded-full bg-[#348a1a]" /><span className={`h-1.5 flex-1 rounded-full ${step === 2 ? "bg-[#348a1a]" : "bg-[#e0f5d5]"}`} /></div>
     {step === 1 ? <>
       <label className={labelClass}>Full name <span aria-hidden="true">*</span><input required minLength={2} autoComplete="name" className={inputClass} value={form.name} onChange={(event) => { update("name", event.target.value); setStepError(""); }} /></label>
-      <label className={labelClass}>Phone number <span aria-hidden="true">*</span><span className="relative block"><span aria-hidden="true" className="absolute left-4 top-[1.16rem] text-sm font-semibold text-[#225810]">+1</span><input required type="tel" inputMode="numeric" autoComplete="tel-national" aria-label="Phone number after +1" placeholder="2145550123" className={`${inputClass} pl-12`} value={form.phone} onChange={(event) => { update("phone", limitPhoneInput(event.target.value)); setStepError(""); }} /></span></label>
+      <label className={labelClass}>Phone number <span aria-hidden="true">*</span><span className="relative block"><span aria-hidden="true" className="absolute left-4 top-2.5 text-sm font-semibold text-[#225810] sm:top-[1.16rem]">+1</span><input required type="tel" inputMode="numeric" autoComplete="tel-national" aria-label="Phone number after +1" placeholder="2145550123" className={`${inputClass} pl-12`} value={form.phone} onChange={(event) => { update("phone", limitPhoneInput(event.target.value)); setStepError(""); }} /></span></label>
       <SelectField label="What does your business do?" value={form.businessType} onChange={(value) => { update("businessType", value); setStepError(""); }} options={[{value:"agency",label:"Marketing agency"},{value:"bookkeeper",label:"Bookkeeping / accounting"},{value:"supplier",label:"Supplier / distributor"},{value:"consultant",label:"Consulting"},{value:"other",label:"Something else"}]} />
       {form.businessType === "other" && <label className={labelClass}>Describe your business <span aria-hidden="true">*</span><input required maxLength={120} placeholder="What service do you provide?" className={inputClass} value={form.businessTypeOther} onChange={(event) => { update("businessTypeOther", event.target.value); setStepError(""); }} /></label>}
       {stepError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{stepError}</p>}
-      <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 py-4 font-bold text-white transition hover:bg-[#296e14]">Continue <ArrowRight className="h-5 w-5" /></button>
+      <button type="submit" className={`flex w-full items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 font-bold text-white transition hover:bg-[#296e14] ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Continue <ArrowRight className="h-5 w-5" /></button>
     </> : <>
-      <div className="grid gap-5 sm:grid-cols-2"><label className={labelClass}>Work email <span aria-hidden="true">*</span><input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(event) => update("email", event.target.value)} /></label><label className={labelClass}>Your business <span aria-hidden="true">*</span><input required autoComplete="organization" className={inputClass} value={form.companyName} onChange={(event) => update("companyName", event.target.value)} /></label></div>
-      <div className="grid gap-5 sm:grid-cols-2"><SelectField label="Pest owners you work with" value={form.ownerRelationships} onChange={(value) => update("ownerRelationships", value)} options={[{value:"0",label:"None yet"},{value:"1",label:"One"},{value:"2-5",label:"Two to five"},{value:"6+",label:"Six or more"}]} /><SelectField label="When could you make a warm introduction?" value={form.introTiming} onChange={(value) => update("introTiming", value)} options={[{value:"this_week",label:"This week"},{value:"two_weeks",label:"Within two weeks"},{value:"later",label:"Later"},{value:"unsure",label:"Not sure yet"}]} /></div>
-      <label className={labelClass}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>
+      <div className={compact ? "grid grid-cols-2 gap-2.5 sm:gap-5" : "grid gap-5 sm:grid-cols-2"}><label className={labelClass}>Work email <span aria-hidden="true">*</span><input required type="email" autoComplete="email" className={inputClass} value={form.email} onChange={(event) => update("email", event.target.value)} /></label><label className={labelClass}>Your business <span aria-hidden="true">*</span><input required autoComplete="organization" className={inputClass} value={form.companyName} onChange={(event) => update("companyName", event.target.value)} /></label></div>
+      <div className={compact ? "grid grid-cols-2 gap-2.5 sm:gap-5" : "grid gap-5 sm:grid-cols-2"}><SelectField compact={compact} label={compact ? "Pest owners you know" : "Pest owners you work with"} value={form.ownerRelationships} onChange={(value) => update("ownerRelationships", value)} options={[{value:"0",label:"None yet"},{value:"1",label:"One"},{value:"2-5",label:"Two to five"},{value:"6+",label:"Six or more"}]} /><SelectField compact={compact} label={compact ? "When could you introduce?" : "When could you make a warm introduction?"} value={form.introTiming} onChange={(value) => update("introTiming", value)} options={[{value:"this_week",label:"This week"},{value:"two_weeks",label:"Within two weeks"},{value:"later",label:"Later"},{value:"unsure",label:"Not sure yet"}]} /></div>
+      {compact && <button type="button" aria-expanded={optionalOpen} onClick={() => setOptionalOpen((open) => !open)} className="flex w-full items-center justify-between rounded-lg border border-[#c0ecac] px-3 py-2 text-left text-xs font-semibold text-[#225810] sm:hidden">Anything else about the owner? (optional)<ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${optionalOpen ? "rotate-180" : ""}`} /></button>}
+      {(!compact || optionalOpen) && <label className={`${labelClass} ${compact ? "sm:hidden" : ""}`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={compact ? 2 : 3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-base font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15 sm:text-sm" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
+      {compact && <label className={`${labelClass} hidden sm:block`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
       {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-      <div className="flex gap-3"><button type="button" disabled={sending} onClick={() => setStep(1)} className="rounded-xl border border-[#c0ecac] px-5 py-4 font-semibold text-[#225810] hover:bg-[#f2fbee]">Back</button><button type="submit" disabled={sending} className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-6 py-4 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60">{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
+      <div className="flex gap-2.5 sm:gap-3"><button type="button" disabled={sending} onClick={() => { setStep(1); onStepChange?.(1); }} className={`rounded-xl border border-[#c0ecac] px-4 font-semibold text-[#225810] hover:bg-[#f2fbee] sm:px-5 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Back</button><button type="submit" disabled={sending} className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-3 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60 sm:px-6 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
     </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
-    <p className="text-xs leading-5 text-[#68806d]">By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
+    <p className={compact ? "text-[10px] leading-4 text-[#68806d] sm:text-xs sm:leading-5" : "text-xs leading-5 text-[#68806d]"}>By applying, you agree that PestFlow may contact you about this partner program. See our <a className="font-semibold underline" href="/privacy">privacy policy</a>. Paid recommendations should be disclosed where required.</p>
   </form>;
 }
 
@@ -94,6 +101,7 @@ export default function ReferralPartners() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [popupOpen, setPopupOpen] = useState(false);
+  const [popupStep, setPopupStep] = useState<1 | 2>(1);
   const skipTimedPopup = useRef(false);
 
   useEffect(() => {
@@ -116,7 +124,7 @@ export default function ReferralPartners() {
       if (skipTimedPopup.current || window.location.hash === "#apply" || window.scrollY > 400) return;
       setPopupOpen(true);
       try { sessionStorage.setItem(POPUP_SEEN_KEY, "1"); } catch { /* no-op */ }
-    }, 4000);
+    }, 1200);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -229,23 +237,23 @@ export default function ReferralPartners() {
     </section>
 
     <Dialog open={popupOpen && !submitted} onOpenChange={setPopupOpen}>
-      <DialogContent hideCloseButton className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] overflow-y-auto rounded-3xl border-[#c0ecac] bg-white p-0 sm:max-w-[560px]">
-        <button type="button" aria-label="Close partner invitation" onClick={() => setPopupOpen(false)} className="absolute right-4 top-4 z-10 rounded-full bg-white/95 p-2 text-[#225810] shadow-sm hover:bg-[#f2fbee]"><X className="h-5 w-5" /></button>
-        <div className="px-6 pb-5 pt-5 sm:px-8">
-          <img src={logoImage} alt="PestFlow" className="h-16 w-auto object-contain" />
-          <DialogTitle className="mt-2 font-heading text-2xl font-black leading-tight text-[#0d280a] sm:text-3xl">Already work with pest control owners?</DialogTitle>
-          <DialogDescription className="mt-3 text-sm leading-6 text-[#577060]">When an owner is starting out, using no software, or considering a change, you can make a warm introduction to PestFlow.</DialogDescription>
+      <DialogContent hideCloseButton className="z-[1000010] max-h-[calc(100dvh-0.75rem)] w-[calc(100vw-0.75rem)] overflow-y-auto rounded-3xl border-[#c0ecac] bg-white p-0 sm:max-w-[560px]">
+        <button type="button" aria-label="Close partner invitation" onClick={() => setPopupOpen(false)} className="absolute right-3 top-3 z-10 rounded-full bg-white/95 p-2 text-[#225810] shadow-sm hover:bg-[#f2fbee] sm:right-4 sm:top-4"><X className="h-5 w-5" /></button>
+        <div className="px-4 pb-2 pt-3 sm:px-8 sm:pb-5 sm:pt-5">
+          <img src={logoImage} alt="PestFlow" className="h-9 w-auto object-contain sm:h-16" />
+          <DialogTitle className="mt-1 pr-8 font-heading text-lg font-black leading-tight text-[#0d280a] sm:mt-2 sm:pr-0 sm:text-3xl"><span className="sm:hidden">{popupStep === 1 ? "Know pest control owners?" : "Tell us about your connections."}</span><span className="hidden sm:inline">Already work with pest control owners?</span></DialogTitle>
+          <DialogDescription className="sr-only sm:not-sr-only sm:mt-3 sm:text-sm sm:leading-6 sm:text-[#577060]">When an owner is starting out, using no software, or considering a change, you can make a warm introduction to PestFlow.</DialogDescription>
         </div>
-        <div className="border-y border-[#c0ecac] bg-[#f2fbee] px-6 py-4 sm:px-8">
+        <div className="hidden border-y border-[#c0ecac] bg-[#f2fbee] px-6 py-4 sm:block sm:px-8">
           <ul className="space-y-2 text-sm font-medium leading-5 text-[#225810]">
             <li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#348a1a]" /> You introduce us with the owner’s permission.</li>
             <li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#348a1a]" /> PestFlow handles the demo and onboarding.</li>
             <li className="flex gap-2"><Check className="h-5 w-5 shrink-0 text-[#348a1a]" /> You earn a commission if they become a paying customer.</li>
           </ul>
         </div>
-        <div className="px-6 pb-7 pt-5 sm:px-8">
-          <p className="mb-4 text-sm font-bold text-[#0d280a]">Tell us about the pest businesses you already know.</p>
-          <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} />
+        <div className="px-4 pb-3 pt-1 sm:px-8 sm:pb-7 sm:pt-5">
+          <p className="mb-4 hidden text-sm font-bold text-[#0d280a] sm:block">Tell us about the pest businesses you already know.</p>
+          <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} compact onStepChange={setPopupStep} />
         </div>
       </DialogContent>
     </Dialog>
