@@ -29,6 +29,7 @@ import {
 } from "./meta-prospect-registration";
 import {
   calendlyBookingSubmission,
+  findExistingCalendlyBooking,
   findMatchingCalendlyProspect,
   hasValidCalendlyWebhookSignature,
   isPestFlowSetupEvent,
@@ -593,9 +594,11 @@ export async function registerRoutes(
       }
 
       const submissions = await storage.getSubmissions();
-      const existing = submissions.find(
-        (submission) => submission.type === "calendly_booking"
-          && submission.website === booking.inviteeUri,
+      const existing = findExistingCalendlyBooking(
+        booking.inviteeUri,
+        booking.scheduledEvent,
+        booking.invitee,
+        submissions,
       );
       if (existing) {
         return res.json({ duplicate: true, submissionId: existing.id });

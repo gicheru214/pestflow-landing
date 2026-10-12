@@ -91,6 +91,26 @@ function calendlyPhone(invitee: JsonRecord, scheduledEvent: JsonRecord): string 
     || phoneDigits(location.location);
 }
 
+export function findExistingCalendlyBooking<T extends {
+  type?: string | null;
+  website?: string | null;
+  email?: string | null;
+}>(
+  inviteeUri: string,
+  scheduledEvent: JsonRecord,
+  invitee: JsonRecord,
+  submissions: T[],
+): T | undefined {
+  const eventUri = text(scheduledEvent.uri);
+  const email = text(invitee.email).toLowerCase();
+  return submissions.find((submission) =>
+    submission.type === "calendly_booking"
+    && (submission.website === inviteeUri
+      || (eventUri && submission.website === eventUri
+        && email && text(submission.email).toLowerCase() === email)),
+  );
+}
+
 export function findMatchingCalendlyProspect<T extends CalendlyProspectLike>(
   invitee: JsonRecord,
   scheduledEvent: JsonRecord,
