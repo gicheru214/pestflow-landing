@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,34 +30,20 @@ export default function Admin() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") === "true") {
-      setIsAuthenticated(true);
-      loadSubmissions();
-    }
-  }, []);
-
-  const loadSubmissions = async () => {
-    try {
-      const res = await fetch("/api/submissions");
-      if (res.ok) {
-        const data = await res.json();
-        setSubmissions(data.reverse());
-      }
-    } catch (e) {
-      console.error("Failed to load submissions", e);
-    }
-  };
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "Cowboys214") {
+    try {
+      const res = await fetch("/api/submissions", {
+        headers: { "x-admin-password": password },
+      });
+      if (!res.ok) throw new Error("Unauthorized");
+      const data = await res.json();
+      setSubmissions(data.reverse());
       setIsAuthenticated(true);
-      sessionStorage.setItem("adminAuth", "true");
+      setPassword("");
       setError("");
-      loadSubmissions();
-    } else {
-      setError("Incorrect password");
+    } catch (e) {
+      setError("Access was not confirmed. Please check the password and try again.");
     }
   };
 
@@ -121,7 +107,7 @@ export default function Admin() {
       <header className="border-b border-zinc-800 sticky top-0 z-30 bg-zinc-950/90 backdrop-blur">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <span className="font-bold text-white text-sm">PestFlow Admin</span>
-          <button onClick={() => { setIsAuthenticated(false); sessionStorage.removeItem("adminAuth"); }} className="text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 text-sm">
+          <button onClick={() => { setIsAuthenticated(false); setSubmissions([]); }} className="text-zinc-500 hover:text-zinc-300 flex items-center gap-1.5 text-sm">
             <LogOut className="w-4 h-4" /> Logout
           </button>
         </div>
