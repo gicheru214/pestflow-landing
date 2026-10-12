@@ -47,6 +47,21 @@ function matchesWebhookSecret(
     && crypto.timingSafeEqual(candidate, configured);
 }
 
+function configuredSecretMatches(provided: unknown, expected: string | undefined): boolean {
+  return typeof provided === "string"
+    && Boolean(expected?.trim())
+    && matchesWebhookSecret(provided, expected!.trim());
+}
+
+function hasAdminAccess(req: Request): boolean {
+  return configuredSecretMatches(req.get("x-admin-password"), process.env.ADMIN_PASSWORD);
+}
+
+function hasAuditAccess(req: Request): boolean {
+  return hasAdminAccess(req)
+    || configuredSecretMatches(req.get("x-audit-secret"), process.env.AUDIT_API_SECRET);
+}
+
 function parseCookies(value: string | undefined): Record<string, string> {
   if (!value) return {};
   return Object.fromEntries(
@@ -534,6 +549,8 @@ export async function registerRoutes(
 
   // Submissions API (for lead capture from landing page)
   app.get("/api/submissions", async (req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    if (!hasAdminAccess(req)) return res.status(401).json({ error: "Unauthorized" });
     try {
       const allSubmissions = await storage.getSubmissions();
       res.json(allSubmissions.filter((submission) => submission.type !== "referral_partner_partial"));
@@ -634,11 +651,8 @@ export async function registerRoutes(
   });
   app.get("/api/audit-leads", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    const secret = req.headers["x-audit-secret"];
-    const adminPwd = req.headers["x-admin-password"];
-    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
-    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
-    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
+    res.setHeader("Cache-Control", "no-store");
+    if (!hasAuditAccess(req)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
@@ -650,11 +664,8 @@ export async function registerRoutes(
   });
   app.get("/api/prospect-tracking-summary", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    const secret = req.headers["x-audit-secret"];
-    const adminPwd = req.headers["x-admin-password"];
-    const expectedSecret = process.env.AUDIT_API_SECRET ?? "pestflow-audit-secret";
-    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
-    if (secret !== expectedSecret && adminPwd !== expectedAdmin) {
+    res.setHeader("Cache-Control", "no-store");
+    if (!hasAuditAccess(req)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
@@ -673,9 +684,8 @@ export async function registerRoutes(
   });
   app.get("/api/tech-leads", async (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    const adminPwd = req.headers["x-admin-password"];
-    const expectedAdmin = process.env.ADMIN_PASSWORD ?? "Cowboys214";
-    if (adminPwd !== expectedAdmin) {
+    res.setHeader("Cache-Control", "no-store");
+    if (!hasAdminAccess(req)) {
       return res.status(401).json({ error: "Unauthorized" });
     }
     try {
