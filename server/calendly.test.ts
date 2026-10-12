@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import crypto from "node:crypto";
 import {
   calendlyBookingSubmission,
   findMatchingCalendlyProspect,
+  hasValidCalendlyWebhookSignature,
   isPestFlowSetupEvent,
   resolveCalendlyBooking,
 } from "./calendly";
@@ -109,4 +111,18 @@ test("resolves only exact Calendly API event and invitee resources", async () =>
     }, "token", fetchImpl),
     /valid resource URIs/,
   );
+});
+
+test("accepts only fresh Calendly signatures over the raw request body", () => {
+  const body = Buffer.from('{"event":"invitee.created"}');
+  const signingKey = "test-signing-key";
+  const timestamp = 1_728_000_000;
+  const digest = crypto.createHmac("sha256", signingKey)
+    .update(String(timestamp)).update(".").update(body).digest("hex");
+  const header = `t=${timestamp},v1=${digest}`;
+  assert.equal(hasValidCalendlyWebhookSignature(body, header, signingKey, timestamp), true);
+  assert.equal(hasValidCalendlyWebhookSignature(body, header, signingKey, timestamp + 181), false);
+  assert.equal(hasValidCalendlyWebhookSignature(Buffer.from("changed"), header, signingKey, timestamp), false);
+  assert.equal(hasValidCalendlyWebhookSignature(body, header, "wrong-key", timestamp), false);
+  assert.equal(hasValidCalendlyWebhookSignature(body, undefined, signingKey, timestamp), false);
 });
