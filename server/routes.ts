@@ -30,6 +30,7 @@ import {
 import {
   calendlyBookingSubmission,
   findMatchingCalendlyProspect,
+  hasValidCalendlyWebhookSignature,
   isPestFlowSetupEvent,
   resolveCalendlyBooking,
 } from "./calendly";
@@ -564,16 +565,12 @@ export async function registerRoutes(
   // funnel so app.pestflow.org/admin remains the complete prospect ledger.
   // This path deliberately does not send email, text, or MTA enrollment.
   app.post("/api/calendly/webhook", async (req, res) => {
-    const expectedSecret = process.env.CALENDLY_WEBHOOK_SECRET?.trim() || "";
-    const providedSecret = String(
-      req.headers["x-pestflow-calendly-secret"]
-      || req.query.token
-      || "",
-    );
-    if (
-      !expectedSecret
-      || !matchesWebhookSecret(providedSecret, expectedSecret)
-    ) {
+    const signingKey = process.env.CALENDLY_WEBHOOK_SECRET?.trim() || "";
+    if (!hasValidCalendlyWebhookSignature(
+      req.rawBody,
+      req.get("Calendly-Webhook-Signature"),
+      signingKey,
+    )) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 

@@ -1,6 +1,26 @@
 import type { InsertSubmission } from "@shared/schema";
+import crypto from "node:crypto";
 
 type JsonRecord = Record<string, unknown>;
+
+// Calendly signs the exact raw JSON bytes as timestamp + "." + body.
+export function hasValidCalendlyWebhookSignature(
+  rawBody: unknown,
+  header: unknown,
+  signingKey: string,
+  nowSeconds = Math.floor(Date.now() / 1000),
+): boolean {
+  if (!Buffer.isBuffer(rawBody) || typeof header !== "string" || !signingKey) return false;
+  const parts = Object.fromEntries(header.split(",").map((part) => part.trim().split("=")));
+  const timestamp = parts.t;
+  const signature = parts.v1;
+  if (!/^\d+$/.test(timestamp || "") || !/^[a-f0-9]{64}$/i.test(signature || "")) return false;
+  if (Math.abs(nowSeconds - Number(timestamp)) > 180) return false;
+  const expected = crypto.createHmac("sha256", signingKey)
+    .update(timestamp).update(".").update(rawBody).digest();
+  const provided = Buffer.from(signature, "hex");
+  return crypto.timingSafeEqual(expected, provided);
+}
 
 export interface CalendlyBookingResources {
   inviteeUri: string;
