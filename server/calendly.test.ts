@@ -3,6 +3,7 @@ import test from "node:test";
 import crypto from "node:crypto";
 import {
   calendlyBookingSubmission,
+  findExistingCalendlyBooking,
   findMatchingCalendlyProspect,
   hasValidCalendlyWebhookSignature,
   isPestFlowSetupEvent,
@@ -125,4 +126,15 @@ test("accepts only fresh Calendly signatures over the raw request body", () => {
   assert.equal(hasValidCalendlyWebhookSignature(Buffer.from("changed"), header, signingKey, timestamp), false);
   assert.equal(hasValidCalendlyWebhookSignature(body, header, "wrong-key", timestamp), false);
   assert.equal(hasValidCalendlyWebhookSignature(body, undefined, signingKey, timestamp), false);
+});
+
+test("recognizes a manually backfilled booking by event and email", () => {
+  const event = { uri: "https://api.calendly.com/scheduled_events/event-1" };
+  const invitee = { email: "brad@example.com" };
+  const rows = [
+    { id: "other", type: "calendly_booking", website: event.uri, email: "other@example.com" },
+    { id: "brad", type: "calendly_booking", website: event.uri, email: "brad@example.com" },
+  ];
+  assert.equal(findExistingCalendlyBooking("https://api.calendly.com/scheduled_events/event-1/invitees/invitee-1", event, invitee, rows)?.id, "brad");
+  assert.equal(findExistingCalendlyBooking("https://api.calendly.com/scheduled_events/event-2/invitees/invitee-2", { uri: "https://api.calendly.com/scheduled_events/event-2" }, invitee, rows), undefined);
 });
