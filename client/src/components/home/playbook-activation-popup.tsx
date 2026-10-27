@@ -26,7 +26,7 @@ import {
   nanpNationalDigits,
   nanpPhoneErrorMessage,
 } from "@shared/phone";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import { BrandLogo } from "@/components/brand-logo";
 
 export type WorkflowId = "recurring" | "invoice" | "schedule";
 
@@ -632,10 +632,10 @@ export function PlaybookActivationPopup() {
                 exit={{ opacity: 0, x: -18 }}
                 className="flex flex-col items-center p-4 sm:p-6"
               >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="mb-2 h-12 w-auto object-contain sm:h-14"
+                <BrandLogo
+                  className="mb-2"
+                  iconClassName="h-10 w-10 sm:h-12 sm:w-12"
+                  textClassName="text-lg text-white sm:text-xl"
                 />
                 <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">

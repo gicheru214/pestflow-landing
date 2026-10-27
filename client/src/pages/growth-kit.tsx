@@ -2,7 +2,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { ArrowRight, Calculator, Check, ClipboardCheck, Download, Gauge, MessageSquareText, Printer, ShieldCheck, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 
 const categories = [
   { name: "Recurring revenue", checks: ["Valid payment method coverage", "Service-to-invoice handoff", "Failed-payment recovery", "Skipped-service recovery", "Agreement and price control"] },

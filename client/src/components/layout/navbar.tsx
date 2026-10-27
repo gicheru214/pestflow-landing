@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Navbar() {
   const scrollToSection = (sectionId: string) => {
@@ -14,12 +14,8 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-24 items-center justify-between mx-auto px-4 md:px-6">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2 cursor-pointer">
-            <img 
-              src={logoImage} 
-              alt="PestFlow" 
-              className="h-28 w-auto object-contain" 
-            />
+          <Link href="/" aria-label="PestFlow home" className="flex items-center gap-2 cursor-pointer">
+            <BrandLogo iconClassName="h-11 w-11" textClassName="text-xl sm:text-2xl" />
           </Link>
         </div>
 

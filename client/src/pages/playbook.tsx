@@ -3,7 +3,7 @@ import { ArrowRight, CheckCircle2, ClipboardCheck, Mail, ShieldCheck } from "luc
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 
 export default function Playbook() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
