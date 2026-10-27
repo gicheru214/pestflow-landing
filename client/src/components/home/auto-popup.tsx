@@ -18,7 +18,7 @@ import {
   nanpPhoneErrorMessage,
 } from "@shared/phone";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import { BrandLogo } from "@/components/brand-logo";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
@@ -413,10 +413,10 @@ export function AutoPopup() {
                 exit="exit"
                 className="p-4 sm:p-6 flex flex-col items-center"
               >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="h-12 sm:h-14 w-auto object-contain mb-2"
+                <BrandLogo
+                  className="mb-2"
+                  iconClassName="h-10 w-10 sm:h-12 sm:w-12"
+                  textClassName="text-lg text-white sm:text-xl"
                 />
 
                 <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-3">
@@ -604,10 +604,10 @@ export function AutoPopup() {
                 exit="exit"
                 className="p-6 sm:p-8 flex flex-col items-center"
               >
-                <img
-                  src={logoImage}
-                  alt="PestFlow"
-                  className="h-24 w-auto object-contain mb-5"
+                <BrandLogo
+                  className="mb-5"
+                  iconClassName="h-16 w-16"
+                  textClassName="text-2xl text-white"
                 />
                 <div className="text-3xl mb-3 animate-bounce">🎁</div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white text-center mb-2">

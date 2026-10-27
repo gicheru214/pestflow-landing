@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Check, Handshake } from "lucide-react";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 import { completedReferralPartnerApplication, fireReferralPartnerApplicationOnce } from "@/lib/referralPartnerConversion";
 
 export default function ReferralPartnerThanks() {

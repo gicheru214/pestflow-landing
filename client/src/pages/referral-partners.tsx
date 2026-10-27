@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Check, ChevronDown, Handshake, MessageCircle, ShieldCheck, Sparkles, X } from "lucide-react";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { rememberReferralPartnerApplication } from "@/lib/referralPartnerConversion";
 import { limitPhoneInput, nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";

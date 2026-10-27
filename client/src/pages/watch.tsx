@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 import { analytics, EVENTS } from "@/lib/analytics";
 
 const DESKTOP_PRICING_URL = "https://app.pestflow.org/pricing";

@@ -6,7 +6,7 @@ import {
   Lock, LogOut, Search, Phone, Mail, Building2, Route, Calendar, ArrowLeft, TrendingUp, Users, CheckCircle
 } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import logoImage from "@assets/pestflow-brand-small.jpg";
 
 const formatDate = (dateString: string) => {
   if (!dateString) return "";

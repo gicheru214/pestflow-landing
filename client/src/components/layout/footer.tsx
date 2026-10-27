@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logoImage from "@assets/CF59A14F-4807-4B1E-88AE-7ECF96E43F4F_1776102133381.PNG";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Footer() {
   const scrollToSection = (sectionId: string) => {
@@ -14,7 +14,7 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="space-y-4">
-            <img src={logoImage} alt="PestFlow" className="h-10 w-auto mix-blend-multiply" />
+            <BrandLogo iconClassName="h-10 w-10" textClassName="text-xl" />
             <p className="text-muted-foreground text-sm max-w-xs">
               The complete operating system for modern pest control businesses. Schedule, dispatch, and get paid—all in one place.
             </p>
