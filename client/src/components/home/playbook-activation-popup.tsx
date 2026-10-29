@@ -13,6 +13,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CallbackConsent } from "@/components/callback-consent";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import {
@@ -245,6 +246,7 @@ export function PlaybookActivationPopup() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [callbackConsent, setCallbackConsent] = useState(false);
   const [metaEventId, setMetaEventId] = useState("");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -524,6 +526,7 @@ export function PlaybookActivationPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId: preferredMetaEventId,
+          callbackConsent,
         }),
       });
       if (!response.ok) throw new Error("capture_failed");
@@ -756,6 +759,7 @@ export function PlaybookActivationPopup() {
                       {submitError}
                     </p>
                   )}
+                  <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} dark />
                   <Button
                     type="button"
                     disabled={submitting}

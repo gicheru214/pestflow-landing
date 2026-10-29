@@ -4,6 +4,7 @@ import logoImage from "@assets/pestflow-brand-small.jpg";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { rememberReferralPartnerApplication } from "@/lib/referralPartnerConversion";
 import { limitPhoneInput, nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";
+import { CallbackConsent } from "@/components/callback-consent";
 
 type Application = {
   name: string;
@@ -51,12 +52,14 @@ function SelectField({ label, value, onChange, options, compact = false }: {
   </label>;
 }
 
-function PartnerApplicationForm({ form, update, submit, sending, error, compact = false, onStepChange }: {
+function PartnerApplicationForm({ form, update, submit, sending, error, callbackConsent, setCallbackConsent, compact = false, onStepChange }: {
   form: Application;
   update: (key: keyof Application, value: string) => void;
   submit: (event: FormEvent<HTMLFormElement>) => void;
   sending: boolean;
   error: string;
+  callbackConsent: boolean;
+  setCallbackConsent: (checked: boolean) => void;
   compact?: boolean;
   onStepChange?: (step: 1 | 2) => void;
 }) {
@@ -93,6 +96,7 @@ function PartnerApplicationForm({ form, update, submit, sending, error, compact 
       {(!compact || optionalOpen) && <label className={`${labelClass} ${compact ? "sm:hidden" : ""}`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={compact ? 2 : 3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-base font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15 sm:text-sm" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
       {compact && <label className={`${labelClass} hidden sm:block`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
       {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+      <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} />
       <div className="flex gap-2.5 sm:gap-3"><button type="button" disabled={sending} onClick={() => { setStep(1); onStepChange?.(1); }} className={`rounded-xl border border-[#c0ecac] px-4 font-semibold text-[#225810] hover:bg-[#f2fbee] sm:px-5 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Back</button><button type="submit" disabled={sending} className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-3 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60 sm:px-6 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
     </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
@@ -105,6 +109,7 @@ export default function ReferralPartners() {
   const [sending, setSending] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [callbackConsent, setCallbackConsent] = useState(false);
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupStep, setPopupStep] = useState<1 | 2>(1);
   const skipTimedPopup = useRef(false);
@@ -199,6 +204,7 @@ export default function ReferralPartners() {
           ...form,
           draftId: draftId.current,
           phone: nanpNationalDigits(form.phone),
+          callbackConsent,
           utmSource: params.get("utm_source") || "",
           utmCampaign: params.get("utm_campaign") || "",
           utmContent: params.get("utm_content") || "",
@@ -284,7 +290,7 @@ export default function ReferralPartners() {
     <section id="apply" className="mx-auto grid max-w-7xl scroll-mt-10 gap-10 px-5 py-16 md:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:py-24">
       <div><p className="text-xs font-black uppercase tracking-[0.16em] text-[#296e14]">Partner application</p><h2 className="mt-3 font-heading text-4xl font-black tracking-tight">Tell us who you work with.</h2><p className="mt-5 text-lg leading-8 text-[#577060]">This is a short conversation starter, not a request for your client list. We'll review your fit and follow up about the partner terms.</p><p className="mt-8 rounded-2xl border border-[#c0ecac] bg-white p-5 text-sm leading-6 text-[#225810]">PestFlow helps small residential pest control businesses manage scheduling, jobs, service reports, invoicing, and payments.</p></div>
       <div className="rounded-3xl border border-[#c0ecac] bg-white p-6 shadow-[0_20px_80px_rgba(28,70,30,0.08)] sm:p-9">
-        {submitted ? <div role="status" className="py-14 text-center"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e0f5d5]"><Check className="h-8 w-8 text-[#348a1a]" /></div><h3 className="mt-6 font-heading text-3xl font-black">Thanks for applying.</h3><p className="mx-auto mt-3 max-w-sm leading-7 text-[#577060]">We received your information. The PestFlow team will review it and contact you about next steps and commission terms.</p></div> : <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} />}
+        {submitted ? <div role="status" className="py-14 text-center"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#e0f5d5]"><Check className="h-8 w-8 text-[#348a1a]" /></div><h3 className="mt-6 font-heading text-3xl font-black">Thanks for applying.</h3><p className="mx-auto mt-3 max-w-sm leading-7 text-[#577060]">We received your information. The PestFlow team will review it and contact you about next steps and commission terms.</p></div> : <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} callbackConsent={callbackConsent} setCallbackConsent={setCallbackConsent} />}
       </div>
     </section>
 
@@ -305,7 +311,7 @@ export default function ReferralPartners() {
         </div>
         <div className="px-4 pb-3 pt-1 sm:px-8 sm:pb-7 sm:pt-5">
           <p className="mb-4 hidden text-sm font-bold text-[#0d280a] sm:block">Tell us about the pest businesses you already know.</p>
-          <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} compact onStepChange={setPopupStep} />
+          <PartnerApplicationForm form={form} update={update} submit={submit} sending={sending} error={error} callbackConsent={callbackConsent} setCallbackConsent={setCallbackConsent} compact onStepChange={setPopupStep} />
         </div>
       </DialogContent>
     </Dialog>
