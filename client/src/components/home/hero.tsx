@@ -92,6 +92,15 @@ export function Hero({
                 Start Trial <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
+            {!isTech && (
+              <a
+                href="#owner-checkup"
+                className="flex h-12 w-full items-center justify-center rounded-lg border border-emerald-300/60 bg-slate-900/70 px-8 text-base font-bold text-white backdrop-blur-md transition-colors hover:bg-emerald-700 sm:h-14 sm:w-auto sm:text-lg"
+                onClick={() => analytics.track(EVENTS.LANDING.CTA_CLICK, { cta: "owner_checkup" })}
+              >
+                Free owner checkup <ArrowRight className="ml-2 h-5 w-5" />
+              </a>
+            )}
             
             <Button 
               variant="outline" 

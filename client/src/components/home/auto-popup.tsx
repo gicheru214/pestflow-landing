@@ -199,31 +199,15 @@ export function AutoPopup() {
     }
     const submitted = localStorage.getItem("pestflow_popup_submitted");
     if (submitted) return;
-    const seenBefore = localStorage.getItem("pestflow_popup_seen");
-    if (seenBefore) setShowClose(true);
+    if (localStorage.getItem("pestflow_popup_seen")) return;
     const timer = setTimeout(() => {
+      if (sessionStorage.getItem("pestflow_owner_checkup_started")) return;
       setOpen(true);
       analytics.track(EVENTS.LANDING.POPUP_SHOWN);
       localStorage.setItem("pestflow_popup_seen", "true");
-    }, 1000);
+    }, 30000);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const submitted = localStorage.getItem("pestflow_popup_submitted");
-      if (submitted || open) return;
-      const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 300;
-      if (nearBottom) {
-        setStep("guide");
-        setShowClose(true);
-        setOpen(true);
-        analytics.track(EVENTS.LANDING.POPUP_SHOWN);
-      }
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [open]);
 
   const handleClose = () => {
     analytics.track(EVENTS.LANDING.POPUP_DISMISSED);
@@ -420,21 +404,21 @@ export function AutoPopup() {
                 />
 
                 <div className="bg-emerald-500/20 border border-emerald-500/40 rounded-full px-3 py-0.5 mb-3">
-                  <span className="text-emerald-400 text-xs font-semibold tracking-wide uppercase">Free Download — $97 Value</span>
+                  <span className="text-emerald-400 text-xs font-semibold tracking-wide uppercase">Free 27-point owner playbook</span>
                 </div>
 
                 <h2 className="text-base sm:text-lg font-bold text-white text-center mb-1 leading-tight">
-                  The $1M Pest Control Playbook
+                  The Pest Control Revenue Leak Playbook
                 </h2>
                 <p className="text-slate-400 text-xs text-center mb-3">
-                  The exact blueprint top operators use to scale past 7 figures — and finally get off the truck for good.
+                  Check calls, routes, invoices, and field work with a practical seven-day fix plan.
                 </p>
 
                 <ul className="w-full space-y-1 mb-4">
                   {[
-                    "The route-stacking system that 3x revenue without adding a single truck",
-                    "The Google formula that puts you #1 in your city and keeps you there",
-                    "How to collect faster, follow up automatically & stop chasing deadbeats",
+                    "Find missed calls that need a follow-up owner",
+                    "Spot route capacity before promising another appointment",
+                    "Check that completed work reaches an invoice",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-xs sm:text-sm text-slate-300">
                       <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -516,8 +500,11 @@ export function AutoPopup() {
                     {submitting ? "Saving your request…" : "Send Me the Free Playbook"} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <p className="text-center text-xs text-slate-500 pt-0.5">
-                    No spam — we don't do that.
+                    We'll send the playbook and practical PestFlow tips. Unsubscribe anytime.
                   </p>
+                  <a href="#owner-checkup" onClick={handleClose} className="block text-center text-xs font-semibold text-emerald-300 underline">
+                    Try the free owner checkup first
+                  </a>
                 </div>
 
                 {/* ── Returning user sign-in ── */}
