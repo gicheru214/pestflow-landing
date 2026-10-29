@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Wrench, Building2 } from "lucide-react";
 import logoImage from "@assets/pestflow-brand-small.jpg";
+import { CallbackConsent } from "@/components/callback-consent";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
@@ -52,6 +53,7 @@ export function TechPopup() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("role");
   const [form, setForm] = useState({ name: "", email: "", phone: "", employer: "", ownerName: "" });
+  const [callbackConsent, setCallbackConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -95,10 +97,11 @@ export function TechPopup() {
       role: "technician",
       source: "tech-landing",
       timestamp: new Date().toISOString(),
+      callbackConsent,
     };
 
     pushTechLead(payload);
-    localStorage.setItem("pestflow_tech_lead", JSON.stringify(payload));
+    localStorage.setItem("pestflow_tech_lead", JSON.stringify({ ...payload, callbackConsent: undefined }));
 
     const params = new URLSearchParams({
       type: "tech",
@@ -310,6 +313,10 @@ export function TechPopup() {
                       className={errors.ownerName ? "border-red-400" : ""}
                     />
                   </Field>
+                </div>
+
+                <div className="mt-4">
+                  <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} />
                 </div>
 
                 <Button

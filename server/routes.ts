@@ -64,6 +64,27 @@ function hasAuditAccess(req: Request): boolean {
     || configuredSecretMatches(req.get("x-audit-secret"), process.env.AUDIT_API_SECRET);
 }
 
+const CALLBACK_CONSENT_VERSION = "pestflow-ai-sales-callback-v1";
+
+function withCallbackConsent<T extends Record<string, unknown>>(req: Request, body: T): T {
+  const existingAnswers = body.quizAnswers && typeof body.quizAnswers === "object" && !Array.isArray(body.quizAnswers)
+    ? { ...body.quizAnswers as Record<string, unknown> }
+    : {};
+  // A submitted quiz answer is never proof of consent. Only the dedicated,
+  // unchecked form control on a completed submission may create this record.
+  delete existingAnswers.aiSalesCallbackConsent;
+  if (body.callbackConsent === true && isValidNanpPhone(body.phone)) {
+    existingAnswers.aiSalesCallbackConsent = {
+      granted: true,
+      version: CALLBACK_CONSENT_VERSION,
+      recordedAt: new Date().toISOString(),
+      formType: body.type,
+      page: req.get("referer") || null,
+    };
+  }
+  return { ...body, callbackConsent: undefined, quizAnswers: existingAnswers };
+}
+
 function parseCookies(value: string | undefined): Record<string, string> {
   if (!value) return {};
   return Object.fromEntries(
@@ -831,6 +852,7 @@ export async function registerRoutes(
       utmContent: z.string().trim().max(120).optional(),
       website: z.string().max(200).optional(), // Honeypot; hidden from people.
       draftId: z.string().uuid().optional(),
+      callbackConsent: z.boolean().optional(),
     }).superRefine((value, context) => {
       if (value.businessType === "other" && !value.businessTypeOther) {
         context.addIssue({ code: "custom", path: ["businessTypeOther"], message: "Describe your business." });
@@ -842,9 +864,9 @@ export async function registerRoutes(
     if (parsed.data.website) return res.status(201).json({ ok: true });
 
     try {
-      const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent, draftId } = parsed.data;
+      const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent, draftId, callbackConsent } = parsed.data;
       const [firstName, ...rest] = name.split(/\s+/);
-      const values = {
+      const values = withCallbackConsent(req, {
         type: "referral_partner",
         firstName,
         lastName: rest.join(" ") || "—",
@@ -862,7 +884,8 @@ export async function registerRoutes(
           utmCampaign: utmCampaign || "",
           utmContent: utmContent || "",
         },
-      };
+        callbackConsent,
+      });
       const application = draftId
         ? await storage.saveReferralPartnerSubmission(draftId, values)
         : await storage.createSubmission(values);
@@ -889,7 +912,10 @@ export async function registerRoutes(
         if (body.employer && !body.companyName) body.companyName = body.employer;
         if (body.ownerName && !body.technicians) body.technicians = `Owner: ${body.ownerName}`;
       }
-      const validatedData = insertSubmissionSchema.parse(body);
+      const completePhoneForm = body.type === "newsletter" || body.type === "tech_lead" || body.type === "trial_lead";
+      const validatedData = insertSubmissionSchema.parse(
+        completePhoneForm ? withCallbackConsent(req, body) : { ...body, callbackConsent: undefined },
+      );
       const submission = await storage.createSubmission(validatedData);
       const metaRegistration = await registerSubmissionProspect(
         submission,

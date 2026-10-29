@@ -19,6 +19,7 @@ import {
 } from "@shared/phone";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 import { BrandLogo } from "@/components/brand-logo";
+import { CallbackConsent } from "@/components/callback-consent";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
@@ -147,6 +148,7 @@ export function AutoPopup() {
     limitPhoneInput(urlParams.get("phone") || cachedPopup.phone || ""),
   );
   const [email, setEmail] = useState(urlParams.get("email") || cachedPopup.email || "");
+  const [callbackConsent, setCallbackConsent] = useState(false);
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -284,6 +286,7 @@ export function AutoPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId,
+          callbackConsent,
         }),
       });
       if (!response.ok) {
@@ -507,6 +510,8 @@ export function AutoPopup() {
                     />
                     {emailError && <p className="text-red-400 text-xs mt-0.5">{emailError}</p>}
                   </div>
+
+                  <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} dark />
 
                   <Button
                     onClick={handleGuideSubmit}
