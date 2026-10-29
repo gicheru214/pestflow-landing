@@ -146,6 +146,7 @@ export function AutoPopup() {
   const [phone, setPhone] = useState(
     limitPhoneInput(urlParams.get("phone") || cachedPopup.phone || ""),
   );
+  const [aiCallConsent, setAiCallConsent] = useState(false);
   const [email, setEmail] = useState(urlParams.get("email") || cachedPopup.email || "");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -284,6 +285,9 @@ export function AutoPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId,
+          aiCallConsent,
+          aiCallConsentVersion: aiCallConsent ? "pestflow-ai-call-v1" : undefined,
+          leadTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         }),
       });
       if (!response.ok) {
@@ -507,6 +511,18 @@ export function AutoPopup() {
                     />
                     {emailError && <p className="text-red-400 text-xs mt-0.5">{emailError}</p>}
                   </div>
+
+                  <label className="flex items-start gap-2 rounded-md border border-white/10 bg-white/5 p-2.5 text-left text-xs leading-5 text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={aiCallConsent}
+                      onChange={(event) => setAiCallConsent(event.target.checked)}
+                      className="mt-1 accent-emerald-500"
+                    />
+                    <span>
+                      Optional: I agree that PestFlow may call me using an AI voice to answer questions and help book a setup call, with no more than two calls about this request. I can ask to stop calls at any time. This is not required to get the playbook.
+                    </span>
+                  </label>
 
                   <Button
                     onClick={handleGuideSubmit}
