@@ -11,6 +11,7 @@ import {
 } from "./meta-prospect-registration";
 import { createBlockedIpMiddleware } from "./blocked-ip";
 import { createBlockedSubmissionIdentityMiddleware } from "./blocked-identity";
+import { ensureAiLeadCallerSchema, startAiLeadCallerWorker } from "./ai-lead-caller";
 
 const app = express();
 const httpServer = createServer(app);
@@ -94,6 +95,7 @@ app.use((req, res, next) => {
 (async () => {
   await ensureMtaEnrollmentSchema();
   await ensureMetaProspectSchema();
+  await ensureAiLeadCallerSchema();
   const prospectSummary = await reconcileAllProspectRegistrations();
   log(
     `prospect tracking ledger: ${prospectSummary.total} total, `
@@ -104,6 +106,7 @@ app.use((req, res, next) => {
   await registerRoutes(httpServer, app);
   const stopMtaEnrollmentWorker = startMtaEnrollmentWorker();
   const stopMetaProspectWorker = startMetaProspectWorker();
+  startAiLeadCallerWorker();
   httpServer.once("close", stopMtaEnrollmentWorker);
   httpServer.once("close", stopMetaProspectWorker);
 

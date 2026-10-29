@@ -20,6 +20,7 @@ import {
   type AppStoreHandoffEventData,
 } from "./meta-capi";
 import { processSubmissionMtaEnrollment, queueSubmissionForMta } from "./mta-enrollment";
+import { captureAiCallConsent, markAiLeadBookedByCalendly, vapiLeadCallerWebhook } from "./ai-lead-caller";
 import {
   getAuditSubmissionsWithMetaStatus,
   getProspectTrackingSummary,
@@ -592,6 +593,11 @@ export async function registerRoutes(
       )) {
         return res.json({ ignored: true });
       }
+      await markAiLeadBookedByCalendly(
+        undefined,
+        typeof booking.invitee.email === "string" ? booking.invitee.email : "",
+        typeof booking.scheduledEvent.uri === "string" ? booking.scheduledEvent.uri : "",
+      );
 
       const submissions = await storage.getSubmissions();
       const existing = findExistingCalendlyBooking(
@@ -891,6 +897,23 @@ export async function registerRoutes(
       }
       const validatedData = insertSubmissionSchema.parse(body);
       const submission = await storage.createSubmission(validatedData);
+      if (submission.type === "newsletter") {
+        try {
+          await captureAiCallConsent({
+            submissionId: submission.id,
+            name: `${submission.firstName} ${submission.lastName}`.trim(),
+            email: submission.email,
+            phone: submission.phone ?? "",
+            timeZone: body.leadTimeZone,
+            consent: body.aiCallConsent,
+            consentVersion: body.aiCallConsentVersion,
+            ip: req.ip,
+            userAgent: req.header("user-agent"),
+          });
+        } catch (error) {
+          console.warn("[ai-lead-caller] consent capture failed:", error instanceof Error ? error.message : error);
+        }
+      }
       const metaRegistration = await registerSubmissionProspect(
         submission,
         prospectRequestContext(req, body),
@@ -964,6 +987,13 @@ export async function registerRoutes(
       }
       res.status(500).json({ error: "Failed to create submission" });
     }
+  });
+
+  app.post("/api/vapi/lead-caller", (req, res) => {
+    void vapiLeadCallerWebhook(req, res).catch((error) => {
+      console.warn("[ai-lead-caller] webhook failed:", error instanceof Error ? error.message : error);
+      if (!res.headersSent) res.status(500).json({ error: "Webhook failed" });
+    });
   });
 
   // ── Automation / Email API ────────────────────────────────────────────────
