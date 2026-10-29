@@ -310,9 +310,10 @@ export function PlaybookActivationPopup() {
     }
 
     const timer = window.setTimeout(() => {
+      if (sessionStorage.getItem("pestflow_owner_checkup_started")) return;
       localStorage.setItem(POPUP_SEEN_KEY, "true");
       openPopup("first_visit_timer");
-    }, 1000);
+    }, 30000);
     return () => window.clearTimeout(timer);
   }, [forced, resetPreview]);
 
@@ -639,24 +640,23 @@ export function PlaybookActivationPopup() {
                 />
                 <div className="mb-3 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-0.5">
                   <span className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                    Free Download — $97 Value
+                    Free 27-point owner playbook
                   </span>
                 </div>
                 <h2 className="mb-1 text-center text-base font-bold leading-tight text-white sm:text-lg">
-                  The $3M Pest Control Playbook
+                  The Pest Control Revenue Leak Playbook
                 </h2>
                 <p
                   id="playbook-popup-description"
                   className="mb-3 text-center text-xs text-slate-400"
                 >
-                  The exact blueprint top operators use to scale toward $3
-                  million—and finally get off the truck for good.
+                  Check calls, routes, invoices, and field work with a practical seven-day fix plan.
                 </p>
                 <ul className="mb-4 w-full space-y-1">
                   {[
-                    "The route-stacking system that grows revenue without automatically adding another truck",
-                    "The local-growth formula that helps you win your city",
-                    "How to collect faster and automate payment follow-up",
+                    "Find missed calls that need a follow-up owner",
+                    "Spot route capacity before promising another appointment",
+                    "Check that completed work reaches an invoice",
                   ].map((item) => (
                     <li
                       key={item}
@@ -768,8 +768,11 @@ export function PlaybookActivationPopup() {
                     {!submitting && <ArrowRight className="ml-2 h-4 w-4" />}
                   </Button>
                   <p className="pt-0.5 text-center text-xs text-slate-500">
-                    No spam—we don’t do that.
+                    We'll send the playbook and practical PestFlow tips. Unsubscribe anytime.
                   </p>
+                  <a href="#owner-checkup" onClick={() => setOpen(false)} className="block text-center text-xs font-semibold text-emerald-300 underline">
+                    Try the free owner checkup first
+                  </a>
                 </div>
 
                 <div className="mt-3 w-full border-t border-white/10 pt-3">
