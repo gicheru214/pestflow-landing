@@ -13,7 +13,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CallbackConsent } from "@/components/callback-consent";
+import { CallbackDisclosure } from "@/components/callback-consent";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import {
@@ -246,7 +246,6 @@ export function PlaybookActivationPopup() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [callbackConsent, setCallbackConsent] = useState(false);
   const [metaEventId, setMetaEventId] = useState("");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -492,7 +491,7 @@ export function PlaybookActivationPopup() {
     } else {
       setNameError("");
     }
-    const phoneValidationError = nanpPhoneErrorMessage(normalizedPhone);
+    const phoneValidationError = normalizedPhone ? nanpPhoneErrorMessage(normalizedPhone) : "";
     if (phoneValidationError) {
       setPhoneError(phoneValidationError);
       valid = false;
@@ -526,7 +525,7 @@ export function PlaybookActivationPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId: preferredMetaEventId,
-          callbackConsent,
+          callbackConsent: Boolean(normalizedPhone),
         }),
       });
       if (!response.ok) throw new Error("capture_failed");
@@ -695,7 +694,7 @@ export function PlaybookActivationPopup() {
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-slate-400">
-                      Phone <span className="text-red-400">*</span>
+                      Phone (optional AI callback)
                     </label>
                     <div
                       className={`flex h-9 overflow-hidden rounded-md border bg-white/5 transition-shadow focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#0d1117] ${
@@ -759,7 +758,7 @@ export function PlaybookActivationPopup() {
                       {submitError}
                     </p>
                   )}
-                  <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} dark />
+                  <CallbackDisclosure dark />
                   <Button
                     type="button"
                     disabled={submitting}

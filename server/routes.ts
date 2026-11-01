@@ -5,6 +5,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
 import { isValidNanpPhone, nanpNationalDigits } from "@shared/phone";
+import { CALLBACK_CONSENT_VERSION, CALLBACK_DISCLOSURE } from "@shared/callback";
 import { z } from "zod";
 import {
   sendReviewRequest,
@@ -64,14 +65,12 @@ function hasAuditAccess(req: Request): boolean {
     || configuredSecretMatches(req.get("x-audit-secret"), process.env.AUDIT_API_SECRET);
 }
 
-const CALLBACK_CONSENT_VERSION = "pestflow-ai-sales-callback-v1";
-
 function withCallbackConsent<T extends Record<string, unknown>>(req: Request, body: T): T {
   const existingAnswers = body.quizAnswers && typeof body.quizAnswers === "object" && !Array.isArray(body.quizAnswers)
     ? { ...body.quizAnswers as Record<string, unknown> }
     : {};
-  // A submitted quiz answer is never proof of consent. Only the dedicated,
-  // unchecked form control on a completed submission may create this record.
+  // A submitted quiz answer is never proof of consent. The completed phone
+  // form must send the callback request after showing the phone disclosure.
   delete existingAnswers.aiSalesCallbackConsent;
   if (body.callbackConsent === true && isValidNanpPhone(body.phone)) {
     existingAnswers.aiSalesCallbackConsent = {
@@ -80,6 +79,9 @@ function withCallbackConsent<T extends Record<string, unknown>>(req: Request, bo
       recordedAt: new Date().toISOString(),
       formType: body.type,
       page: req.get("referer") || null,
+      method: "phone-entry-form-submit",
+      signedBy: [body.firstName, body.lastName].filter(Boolean).join(" ") || body.name || null,
+      disclosure: CALLBACK_DISCLOSURE,
     };
   }
   return { ...body, callbackConsent: undefined, quizAnswers: existingAnswers };
@@ -840,7 +842,7 @@ export async function registerRoutes(
     const applicationSchema = z.object({
       name: z.string().trim().min(2).max(120),
       email: z.string().trim().email().max(254),
-      phone: z.string().trim().min(1).max(30).refine(isValidNanpPhone),
+      phone: z.string().trim().max(30).refine((phone) => !phone || isValidNanpPhone(phone)),
       companyName: z.string().trim().min(2).max(160),
       businessType: z.enum(["agency", "bookkeeper", "supplier", "consultant", "other"]),
       businessTypeOther: z.string().trim().max(120).optional(),
