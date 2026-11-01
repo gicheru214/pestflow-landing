@@ -17,6 +17,8 @@ export const PESTFLOW_APP_STORE_URL =
   "https://pestflow.org/signup-success?handoff=app_store&source=playbook_email_app_store";
 export const REVENUE_LEAK_PLAYBOOK_URL =
   "https://pestflow.org/pest-control-revenue-leak-playbook.pdf";
+export const DOOR_TO_DOOR_GUIDE_URL =
+  "https://pestflow.org/pestflow-door-to-door-field-guide.pdf";
 
 function escapeEmailHtml(value: string): string {
   return value.replace(
@@ -88,6 +90,31 @@ export async function sendRevenueLeakPlaybookEmail(
   firstName = "",
 ) {
   return getResend().emails.send(buildRevenueLeakPlaybookEmail(to, firstName));
+}
+
+export function buildDoorToDoorGuideEmail(to: string, firstName = "") {
+  const greeting = firstName.trim()
+    ? `Hi ${escapeEmailHtml(firstName.trim())},`
+    : "Hi there,";
+  return {
+    from: FROM,
+    to,
+    subject: "Your PestFlow door-to-door field guide",
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#17211a;line-height:1.6">
+      <div style="padding:28px 30px;background:#123b24;color:#fff"><div style="font-size:13px;font-weight:800;letter-spacing:.12em;color:#86efac">PESTFLOW</div>
+      <h1 style="margin:10px 0 0;font-size:27px;line-height:1.2">How to Turn Doorstep Interest Into Booked Pest Jobs</h1></div>
+      <div style="padding:30px;border:1px solid #dce7df;border-top:0"><p>${greeting}</p>
+      <p>Here is the field guide you requested. It covers serviceable routes, better questions at the door, and a reliable handoff from the sale to the first visit.</p>
+      <a href="${DOOR_TO_DOOR_GUIDE_URL}" style="display:block;margin:22px 0;padding:15px 20px;background:#2f8714;color:#fff;text-decoration:none;text-align:center;font-weight:800">Download the free eBook</a>
+      <p style="font-size:13px;color:#5c6a61">The PDF is attached so you can also keep or print it.</p></div></div>`,
+    text: `Hi ${firstName.trim() || "there"},\n\nYour PestFlow door-to-door field guide is ready: ${DOOR_TO_DOOR_GUIDE_URL}\n\nThe PDF is also attached.`,
+    attachments: [{ path: DOOR_TO_DOOR_GUIDE_URL, filename: "PestFlow-Door-to-Door-Field-Guide.pdf" }],
+    tags: [{ name: "email_type", value: "door_to_door_guide" }],
+  };
+}
+
+export async function sendDoorToDoorGuideEmail(to: string, firstName = "") {
+  return getResend().emails.send(buildDoorToDoorGuideEmail(to, firstName));
 }
 
 export async function sendReviewRequest(to: string, customerName: string, companyName: string) {
