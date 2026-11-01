@@ -15,6 +15,7 @@ import {
   sendOverdueReminder,
   sendJobSummary,
   sendRevenueLeakPlaybookEmail,
+  sendDoorToDoorGuideEmail,
 } from "./email";
 import {
   sendAppStoreHandoffEvent,
@@ -933,7 +934,10 @@ export async function registerRoutes(
       };
       if (submission.type === "newsletter") {
         try {
-          const delivery = await sendRevenueLeakPlaybookEmail(
+          const sendGuide = body.guide === "door_to_door"
+            ? sendDoorToDoorGuideEmail
+            : sendRevenueLeakPlaybookEmail;
+          const delivery = await sendGuide(
             submission.email,
             submission.firstName,
           );
