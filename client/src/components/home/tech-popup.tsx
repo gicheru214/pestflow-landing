@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Wrench, Building2 } from "lucide-react";
 import logoImage from "@assets/pestflow-brand-small.jpg";
-import { CallbackConsent } from "@/components/callback-consent";
+import { CallbackDisclosure } from "@/components/callback-consent";
+import { nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
@@ -36,24 +37,12 @@ function GoogleIcon() {
   );
 }
 
-function pushTechLead(payload: Record<string, unknown>) {
-  try {
-    const body = JSON.stringify({ type: "tech_lead", ...payload });
-    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
-      navigator.sendBeacon("/api/submissions", new Blob([body], { type: "application/json" }));
-      return;
-    }
-    fetch("/api/submissions", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => {});
-  } catch { /* ignore */ }
-}
-
 type Step = "role" | "lead";
 
 export function TechPopup() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("role");
   const [form, setForm] = useState({ name: "", email: "", phone: "", employer: "", ownerName: "" });
-  const [callbackConsent, setCallbackConsent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -77,7 +66,10 @@ export function TechPopup() {
     const e: Record<string, string> = {};
     if (!form.name.trim()) e.name = "Required";
     if (!form.email.trim()) e.email = "Required";
-    if (!form.phone.trim()) e.phone = "Required";
+    if (form.phone.trim()) {
+      const phoneError = nanpPhoneErrorMessage(form.phone);
+      if (phoneError) e.phone = phoneError;
+    }
     if (!form.employer.trim()) e.employer = "We need the business name to set up your account";
     if (!form.ownerName.trim()) e.ownerName = "Required";
     setErrors(e);
@@ -91,25 +83,34 @@ export function TechPopup() {
     const payload = {
       name: form.name.trim(),
       email: form.email.trim(),
-      phone: form.phone.trim(),
+      phone: form.phone.trim() ? nanpNationalDigits(form.phone) : "",
       employer: form.employer.trim(),
       ownerName: form.ownerName.trim(),
       role: "technician",
       source: "tech-landing",
       timestamp: new Date().toISOString(),
-      callbackConsent,
+      callbackConsent: Boolean(form.phone.trim()),
     };
 
-    pushTechLead(payload);
-    localStorage.setItem("pestflow_tech_lead", JSON.stringify({ ...payload, callbackConsent: undefined }));
-
-    const params = new URLSearchParams({
-      type: "tech",
-      name: payload.name,
-      email: payload.email,
-      employer: payload.employer,
-    });
-    window.location.href = `/signup-success?${params.toString()}`;
+    try {
+      const response = await fetch("/api/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "tech_lead", ...payload }),
+      });
+      if (!response.ok) throw new Error("Lead submission failed");
+      localStorage.setItem("pestflow_tech_lead", JSON.stringify({ ...payload, callbackConsent: undefined }));
+      const params = new URLSearchParams({
+        type: "tech",
+        name: payload.name,
+        email: payload.email,
+        employer: payload.employer,
+      });
+      window.location.href = `/signup-success?${params.toString()}`;
+    } catch {
+      setErrors((current) => ({ ...current, form: "We couldn't save your request. Please try again." }));
+      setSubmitting(false);
+    }
   };
 
   const handleOwnerChoice = () => {
@@ -285,7 +286,7 @@ export function TechPopup() {
                     <p className="text-[10px] text-slate-400 mt-1">Any email works — just use your work one if you have it.</p>
                   </Field>
 
-                  <Field label="Phone Number" error={errors.phone}>
+                  <Field label="Phone Number (optional AI callback)" error={errors.phone}>
                     <Input
                       type="tel"
                       placeholder="(555) 000-0000"
@@ -316,8 +317,9 @@ export function TechPopup() {
                 </div>
 
                 <div className="mt-4">
-                  <CallbackConsent checked={callbackConsent} onChange={setCallbackConsent} />
+                  <CallbackDisclosure />
                 </div>
+                {errors.form && <p role="alert" className="mt-3 text-xs text-red-600">{errors.form}</p>}
 
                 <Button
                   onClick={handleSubmit}
