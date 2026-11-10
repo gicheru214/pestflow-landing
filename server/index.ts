@@ -9,6 +9,8 @@ import {
   reconcileAllProspectRegistrations,
   startMetaProspectWorker,
 } from "./meta-prospect-registration";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 import { createBlockedIpMiddleware } from "./blocked-ip";
 import { createBlockedSubmissionIdentityMiddleware } from "./blocked-identity";
 
@@ -92,6 +94,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  await db.execute(sql`ALTER TABLE submissions ADD COLUMN IF NOT EXISTS lead_ad_source text`);
   await ensureMtaEnrollmentSchema();
   await ensureMetaProspectSchema();
   const prospectSummary = await reconcileAllProspectRegistrations();

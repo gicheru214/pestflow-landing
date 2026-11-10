@@ -25,6 +25,7 @@ test("maps a Calendly setup invitee into a non-outreach admin submission", () =>
 
   assert.deepEqual(submission, {
     type: "calendly_booking",
+    leadAdSource: null,
     firstName: "Joe",
     lastName: "Olobor",
     email: "pastorjolobor@aol.com",
@@ -39,6 +40,7 @@ test("reads a phone-call location and reuses the existing CRM identity", () => {
   const invitee = {
     name: "Jo",
     email: "pastorjolobor@aol.com",
+    tracking: { utm_source: "google", utm_medium: "cpc" },
   };
   const event = {
     location: { type: "outbound_call", location: "+1 646-996-2656" },
@@ -61,6 +63,7 @@ test("reads a phone-call location and reuses the existing CRM identity", () => {
     existing,
   );
 
+  assert.equal(submission?.leadAdSource, "google_ads");
   assert.equal(submission?.firstName, "Joe");
   assert.equal(submission?.lastName, "Olobor");
   assert.equal(submission?.phone, "6469962656");

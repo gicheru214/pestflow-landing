@@ -189,6 +189,7 @@ export const submissions = pgTable("submissions", {
   state: text("state"),
   zipCode: text("zip_code"),
   submittedAt: timestamp("submitted_at").defaultNow(),
+  leadAdSource: text("lead_ad_source"),
   // Quiz data
   routeAnswers: jsonb("route_answers"),
   quizAnswers: jsonb("quiz_answers"),
