@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CallbackDisclosure } from "@/components/callback-consent";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { trackCalendlyDemoBooking } from "@/lib/googleAdsEvents";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
 import {
   buildPestFlowCalendlyUrl,
@@ -263,6 +264,7 @@ export function PlaybookActivationPopup() {
     calendarDates[0].value,
   );
   const snapshotRef = useRef<Record<string, unknown>>({});
+  const calendarFrameRef = useRef<HTMLIFrameElement>(null);
   const calendlyLoadStartedAtRef = useRef<number | null>(null);
   const calendlyLoadTrackedRef = useRef(false);
   const calendlyReadyTrackedRef = useRef(false);
@@ -388,6 +390,9 @@ export function PlaybookActivationPopup() {
         });
       }
       if (event.data.event === "calendly.event_scheduled") {
+        if (event.source === calendarFrameRef.current?.contentWindow) {
+          trackCalendlyDemoBooking(event.data.payload?.invitee?.uri);
+        }
         analytics.track("Calendar Booking Completed", {
           funnel: FUNNEL_ID,
           placement: "preloaded_weekly_calendar",
@@ -1035,6 +1040,7 @@ export function PlaybookActivationPopup() {
               </div>
             )}
             <iframe
+              ref={calendarFrameRef}
               src={calendlyEmbedUrl(
                 step === "workflow" ? name : "",
                 step === "workflow" ? email : "",
