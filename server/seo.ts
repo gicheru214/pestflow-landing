@@ -1,3 +1,4 @@
+import { soroArticleMetadata } from "../shared/soro-article-metadata";
 import generatedPosts from "../client/src/content/generated-blog-posts.json";
 import scheduledPosts from "../client/src/content/scheduled-blog-posts.json";
 import scheduledPhaseTwoPosts from "../client/src/content/scheduled-blog-posts-phase-two.json";
@@ -128,10 +129,11 @@ function normalizeRequestUrl(requestUrl: string | URL) {
 }
 
 function soroPage(article: SoroArticle): SeoPage {
+  const metadata = soroArticleMetadata.get(article.slug);
   return {
     path: `/blog?post=${encodeURIComponent(article.slug)}`,
-    title: `${article.title} | PestFlow`,
-    description: article.excerpt,
+    title: `${metadata?.title ?? article.title} | PestFlow`,
+    description: metadata?.description ?? article.excerpt,
     type: "article",
     schemaType: "BlogPosting",
     publishedAt: article.isoDate,
