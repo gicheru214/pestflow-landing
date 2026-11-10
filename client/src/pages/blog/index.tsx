@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { BlogIndexCTA } from "@/components/blog/blog-layout";
 import { BrandLogo } from "@/components/brand-logo";
-import { BlogProductPreview } from "@/components/blog/blog-product-preview";
+import { BlogProductPreview, hasBlogProductPreview } from "@/components/blog/blog-product-preview";
 import { BlogDemoLink } from "@/components/blog/blog-demo-link";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { soroArticleMetadata } from "@shared/soro-article-metadata";
@@ -181,7 +181,7 @@ function SoroBlogEmbed() {
       )}
       <div
         id="soro-blog"
-        className={`min-h-48 scroll-mt-48 ${articleSlug && soroArticleMetadata.has(articleSlug) ? "[&_.soro-blog-article-image]:hidden" : ""}`}
+        className={`min-h-48 scroll-mt-48 ${articleSlug && hasBlogProductPreview(articleSlug) ? "[&_.soro-blog-article-image]:hidden" : ""}`}
         aria-live="polite"
       >
         <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">
