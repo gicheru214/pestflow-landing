@@ -140,6 +140,7 @@ export const EVENTS = {
   LANDING: {
     PAGE_VIEW: 'Landing Page View',
     CTA_CLICK: 'Landing CTA Click',
+    BLOG_DEMO_LINK_VIEWED: 'Blog Demo Link Viewed',
     DEMO_REQUEST_START: 'Demo Request Start',
     DEMO_REQUEST_COMPLETE: 'Demo Request Complete',
     DEMO_VIDEO_PLAY: 'Demo Video Play',
