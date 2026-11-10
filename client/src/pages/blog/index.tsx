@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { ArrowRight, BookOpen, CalendarDays, Clock } from "lucide-react";
 import { Navbar } from "@/components/layout/navbar";
@@ -6,6 +7,7 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { BlogIndexCTA } from "@/components/blog/blog-layout";
+import { BlogDemoLink } from "@/components/blog/blog-demo-link";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { buildSoroArticleCalendlyUrl } from "@shared/calendly-url";
 
@@ -83,6 +85,7 @@ function SoroArticleCTA({ articleSlug }: { articleSlug: string }) {
 
 function SoroBlogEmbed() {
   const [articleSlug, setArticleSlug] = useState<string | null>(null);
+  const [demoMount, setDemoMount] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!articleSlug) return;
@@ -97,12 +100,26 @@ function SoroBlogEmbed() {
     if (!target) return;
 
     let syncTimer: number | undefined;
+    let inlineDemo: HTMLDivElement | null = null;
     const syncArticle = () => {
       window.clearTimeout(syncTimer);
       syncTimer = window.setTimeout(() => {
-        const hasRenderedArticle = Boolean(target.querySelector(".soro-blog-article"));
+        const article = target.querySelector(".soro-blog-article");
         const currentSlug = new URLSearchParams(window.location.search).get("post")?.trim();
-        setArticleSlug(hasRenderedArticle && currentSlug ? currentSlug : null);
+        setArticleSlug(article && currentSlug ? currentSlug : null);
+
+        const content = currentSlug ? article?.querySelector(".soro-blog-article-content") : null;
+        if (inlineDemo?.parentElement !== content) {
+          inlineDemo?.remove();
+          inlineDemo = null;
+          if (content) {
+            inlineDemo = document.createElement("div");
+            const firstBlock = content.firstElementChild;
+            if (firstBlock?.tagName === "P") firstBlock.after(inlineDemo);
+            else content.prepend(inlineDemo);
+          }
+          setDemoMount(inlineDemo);
+        }
       }, 0);
     };
 
@@ -125,6 +142,7 @@ function SoroBlogEmbed() {
       observer.disconnect();
       window.removeEventListener("popstate", syncArticle);
       window.clearTimeout(syncTimer);
+      inlineDemo?.remove();
       script.remove();
     };
   }, []);
@@ -139,6 +157,9 @@ function SoroBlogEmbed() {
           Loading the latest PestFlow articles…
         </div>
       </div>
+      {articleSlug && demoMount
+        ? createPortal(<BlogDemoLink articleSlug={articleSlug} source="soro" />, demoMount)
+        : null}
       {articleSlug ? <SoroArticleCTA articleSlug={articleSlug} /> : null}
     </section>
   );

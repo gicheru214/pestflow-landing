@@ -2,6 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { Link } from "wouter";
 import { ArrowRight, ChevronRight, Calendar, Clock, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BlogDemoLink } from "@/components/blog/blog-demo-link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BLOG_POSTS, getRelatedPosts, type BlogPost } from "@/lib/blog-data";
@@ -91,6 +92,7 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
           </header>
 
           <div className="container mx-auto px-4 md:px-6 max-w-3xl py-12 md:py-16">
+            <BlogDemoLink articleSlug={post.slug} source="pestflow" />
             <div className="blog-prose">{children}</div>
 
             <BlogCTA />
