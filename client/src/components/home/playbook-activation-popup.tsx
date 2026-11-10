@@ -1,3 +1,4 @@
+import { LEAD_AD_CLICK_KEYS, leadAdSourceFromTracking } from "@shared/lead-ad-source";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -226,15 +227,23 @@ function calendlyEmbedUrl(
   selectedDate?: string,
 ) {
   const campaign = campaignFromUrl();
+  const params = new URLSearchParams(window.location.search);
+  const tracking = Object.fromEntries(params);
+  const useCurrentTracking = Boolean(tracking.utm_source || LEAD_AD_CLICK_KEYS.some((key) => tracking[key]));
+  const adSource = leadAdSourceFromTracking(useCurrentTracking ? tracking : {
+    ...campaign,
+    ...Object.fromEntries(LEAD_AD_CLICK_KEYS.map((key) => [key, sessionStorage.getItem(key)])),
+  });
   return buildPestFlowCalendlyUrl({
     name,
     email,
     phone,
     selectedDate,
-    utmSource: campaign.utm_source,
-    utmMedium: campaign.utm_medium,
-    utmCampaign: campaign.utm_campaign,
-    utmContent: campaign.utm_content || FUNNEL_ID,
+    utmSource: (useCurrentTracking ? tracking.utm_source : campaign.utm_source) || adSource,
+    utmMedium: (useCurrentTracking ? tracking.utm_medium : campaign.utm_medium)
+      || (adSource === "google_ads" ? "cpc" : null),
+    utmCampaign: useCurrentTracking ? tracking.utm_campaign : campaign.utm_campaign,
+    utmContent: (useCurrentTracking ? tracking.utm_content : campaign.utm_content) || FUNNEL_ID,
   });
 }
 

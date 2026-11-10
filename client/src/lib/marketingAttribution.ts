@@ -1,14 +1,18 @@
+import { MARKETING_ATTRIBUTION_COOKIE } from "@shared/lead-ad-source";
+
 export const MARKETING_ATTRIBUTION_KEYS = [
   "utm_source",
   "utm_medium",
   "utm_campaign",
   "utm_content",
   "utm_term",
+  "gclid",
+  "gbraid",
+  "wbraid",
   "fbclid",
   "ttclid",
 ] as const;
 
-const MARKETING_ATTRIBUTION_COOKIE = "pestflow_marketing_attribution";
 const ATTRIBUTION_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 
 export type MarketingAttribution = Partial<

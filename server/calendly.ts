@@ -1,3 +1,4 @@
+import { leadAdSourceFromTracking } from "../shared/lead-ad-source";
 import type { InsertSubmission } from "@shared/schema";
 import crypto from "node:crypto";
 
@@ -187,6 +188,7 @@ export function calendlyBookingSubmission(
 
   return {
     type: "calendly_booking",
+    leadAdSource: leadAdSourceFromTracking(invitee.tracking),
     firstName,
     lastName,
     email,
@@ -236,5 +238,5 @@ export async function resolveCalendlyBooking(
     fetchCalendlyResource(inviteeUri, accessToken, fetchImpl),
     fetchCalendlyResource(eventUri, accessToken, fetchImpl),
   ]);
-  return { inviteeUri, invitee, scheduledEvent };
+  return { inviteeUri, invitee: { ...invitee, tracking: invitee.tracking ?? payload.tracking }, scheduledEvent };
 }

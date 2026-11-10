@@ -4,6 +4,7 @@ import fs from "fs";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
+import { leadAdSourceFromRequest, MARKETING_ATTRIBUTION_COOKIE } from "@shared/lead-ad-source";
 import { isValidNanpPhone, nanpNationalDigits } from "@shared/phone";
 import { CALLBACK_CONSENT_VERSION, CALLBACK_DISCLOSURE } from "@shared/callback";
 import { z } from "zod";
@@ -916,9 +917,14 @@ export async function registerRoutes(
         if (body.ownerName && !body.technicians) body.technicians = `Owner: ${body.ownerName}`;
       }
       const completePhoneForm = body.type === "newsletter" || body.type === "tech_lead" || body.type === "trial_lead";
-      const validatedData = insertSubmissionSchema.parse(
-        completePhoneForm ? withCallbackConsent(req, body) : { ...body, callbackConsent: undefined },
-      );
+      const formData = completePhoneForm ? withCallbackConsent(req, body) : { ...body, callbackConsent: undefined };
+      const validatedData = insertSubmissionSchema.parse({
+        ...formData,
+        leadAdSource: leadAdSourceFromRequest(
+          req.get("referer"),
+          parseCookies(req.headers.cookie)[MARKETING_ATTRIBUTION_COOKIE],
+        ),
+      });
       const submission = await storage.createSubmission(validatedData);
       const metaRegistration = await registerSubmissionProspect(
         submission,
