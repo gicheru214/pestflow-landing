@@ -1,13 +1,13 @@
 [
   {
     "slug": "best-pest-control-software-for-small-business",
-    "title": "Best Pest Control Software for Small Businesses",
+    "title": "Pest Control Software for Small Businesses: A Buyer’s Guide",
     "description": "Compare pest control software by routes, recurring work, billing, field use, and setup so your small team buys the right system.",
     "keyword": "best pest control software for small business",
     "readTime": "7 min read",
     "category": "Operations",
     "updated": "July 2026",
-    "excerpt": "The best system is not the one with the longest feature list. It is the one your office and technicians can use every day without rebuilding work in spreadsheets.",
+    "excerpt": "Use this PestFlow buyer’s guide to compare the software your office and technicians will rely on for routes, recurring work, billing, and field service.",
     "author": "PestFlow Field Notes",
     "publishedAt": "2026-07-10T19:00:00.000Z",
     "sourceLinks": [
@@ -23,6 +23,14 @@
       }
     ],
     "internalLinks": [
+      {
+        "label": "See how PestFlow handles work orders",
+        "href": "/blog/pest-control-work-order-software"
+      },
+      {
+        "label": "See how PestFlow builds estimates",
+        "href": "/blog?post=pest-control-estimating-software"
+      },
       {
         "label": "Start a PestFlow trial",
         "href": "/onboarding"

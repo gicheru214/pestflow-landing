@@ -7,8 +7,11 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { BlogIndexCTA } from "@/components/blog/blog-layout";
+import { BrandLogo } from "@/components/brand-logo";
+import { BlogProductPreview } from "@/components/blog/blog-product-preview";
 import { BlogDemoLink } from "@/components/blog/blog-demo-link";
 import { analytics, EVENTS } from "@/lib/analytics";
+import { soroArticleMetadata } from "@shared/soro-article-metadata";
 import { buildSoroArticleCalendlyUrl } from "@shared/calendly-url";
 
 const SORO_EMBED_SCRIPT_ID = "pestflow-soro-blog-embed";
@@ -108,6 +111,21 @@ function SoroBlogEmbed() {
         const currentSlug = new URLSearchParams(window.location.search).get("post")?.trim();
         setArticleSlug(article && currentSlug ? currentSlug : null);
 
+        const metadata = article && currentSlug ? soroArticleMetadata.get(currentSlug) : undefined;
+        if (metadata) {
+          const heading = article?.querySelector(".soro-blog-article-title");
+          if (heading && heading.textContent !== metadata.title) {
+            heading.textContent = metadata.title;
+          }
+          const title = `${metadata.title} | PestFlow`;
+          if (document.title !== title) document.title = title;
+          document.querySelector('meta[name="description"]')?.setAttribute("content", metadata.description);
+          document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+          document.querySelector('meta[property="og:description"]')?.setAttribute("content", metadata.description);
+          document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+          document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", metadata.description);
+        }
+
         const content = currentSlug ? article?.querySelector(".soro-blog-article-content") : null;
         if (inlineDemo?.parentElement !== content) {
           inlineDemo?.remove();
@@ -148,17 +166,36 @@ function SoroBlogEmbed() {
   }, []);
 
   return (
-    <section className="container mx-auto max-w-5xl px-4 py-16 md:px-6" aria-labelledby="latest-guides-heading">
-      <h2 id="latest-guides-heading" className="mb-6 text-sm font-semibold uppercase tracking-widest text-emerald-700">
-        Latest guides
-      </h2>
-      <div id="soro-blog" className="min-h-48" aria-live="polite">
+    <section
+      className={`container mx-auto max-w-5xl px-4 md:px-6 ${articleSlug ? "py-8 md:py-12" : "py-16"}`}
+      aria-label={articleSlug ? "PestFlow article" : "Latest guides"}
+    >
+      {articleSlug ? (
+        <div className="mx-auto mb-4 max-w-[800px]">
+          <BrandLogo iconClassName="h-7 w-7" textClassName="text-lg" />
+        </div>
+      ) : (
+        <h2 className="mb-6 text-sm font-semibold uppercase tracking-widest text-emerald-700">
+          Latest guides
+        </h2>
+      )}
+      <div
+        id="soro-blog"
+        className={`min-h-48 scroll-mt-48 ${articleSlug && soroArticleMetadata.has(articleSlug) ? "[&_.soro-blog-article-image]:hidden" : ""}`}
+        aria-live="polite"
+      >
         <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">
           Loading the latest PestFlow articles…
         </div>
       </div>
       {articleSlug && demoMount
-        ? createPortal(<BlogDemoLink articleSlug={articleSlug} source="soro" />, demoMount)
+        ? createPortal(
+          <>
+            <BlogProductPreview slug={articleSlug} />
+            <BlogDemoLink articleSlug={articleSlug} source="soro" />
+          </>,
+          demoMount,
+        )
         : null}
       {articleSlug ? <SoroArticleCTA articleSlug={articleSlug} /> : null}
     </section>
@@ -166,6 +203,10 @@ function SoroBlogEmbed() {
 }
 
 export default function BlogIndex() {
+  const [isSoroArticle, setIsSoroArticle] = useState(() =>
+    Boolean(new URLSearchParams(window.location.search).get("post")),
+  );
+
   useEffect(() => {
     const setMeta = (name: string, content: string, attr: "name" | "property" = "name") => {
       let tag = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
@@ -179,6 +220,7 @@ export default function BlogIndex() {
 
     const syncBlogHead = () => {
       const isArticle = Boolean(new URLSearchParams(window.location.search).get("post"));
+      setIsSoroArticle(isArticle);
       const canonicals = Array.from(
         document.querySelectorAll('link[rel="canonical"]'),
       ) as HTMLLinkElement[];
@@ -238,22 +280,24 @@ export default function BlogIndex() {
     <div className="min-h-screen flex flex-col font-sans bg-background">
       <Navbar />
       <main className="flex-grow">
-        <section className="border-b bg-secondary/30">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl py-16 md:py-20">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold mb-6">
-              <BookOpen className="w-3 h-3" />
-              PestFlow Learn
+        {!isSoroArticle && (
+          <section className="border-b bg-secondary/30">
+            <div className="container mx-auto px-4 md:px-6 max-w-5xl py-16 md:py-20">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 text-emerald-700 px-3 py-1 text-xs font-semibold mb-6">
+                <BookOpen className="w-3 h-3" />
+                PestFlow Learn
+              </div>
+              <h1 className="text-4xl md:text-6xl font-extrabold font-heading tracking-tight leading-[1.05] mb-6">
+                Pest control software{" "}
+                <span className="text-emerald-700">guides built for owners.</span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
+                Compare scheduling, routing, CRM, billing, technician workflows, reporting, inventory,
+                automation, and the operational details that matter before you choose a system.
+              </p>
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold font-heading tracking-tight leading-[1.05] mb-6">
-              Pest control software{" "}
-              <span className="text-emerald-700">guides built for owners.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-              Compare scheduling, routing, CRM, billing, technician workflows, reporting, inventory,
-              automation, and the operational details that matter before you choose a system.
-            </p>
-          </div>
-        </section>
+          </section>
+        )}
 
         <SoroBlogEmbed />
 

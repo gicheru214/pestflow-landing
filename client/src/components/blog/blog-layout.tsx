@@ -2,6 +2,8 @@ import { useEffect, type ReactNode } from "react";
 import { Link } from "wouter";
 import { ArrowRight, ChevronRight, Calendar, Clock, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/brand-logo";
+import { BlogProductPreview } from "@/components/blog/blog-product-preview";
 import { BlogDemoLink } from "@/components/blog/blog-demo-link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -69,6 +71,10 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
                 {post.category}
               </div>
 
+              <div className="mb-4">
+                <BrandLogo iconClassName="h-7 w-7" textClassName="text-lg" />
+              </div>
+
               <h1 className="text-3xl md:text-5xl font-extrabold font-heading tracking-tight leading-[1.1] mb-6 text-foreground">
                 {post.title}
               </h1>
@@ -92,6 +98,7 @@ export function BlogLayout({ post, children }: BlogLayoutProps) {
           </header>
 
           <div className="container mx-auto px-4 md:px-6 max-w-3xl py-12 md:py-16">
+            <BlogProductPreview slug={post.slug} />
             <BlogDemoLink articleSlug={post.slug} source="pestflow" />
             <div className="blog-prose">{children}</div>
 
