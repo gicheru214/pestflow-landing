@@ -1,28 +1,21 @@
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { ArrowRight, TrendingUp, Zap } from "lucide-react";
 
 // ─── 1. Revenue Leak Calculator ──────────────────────────────────────────────
 
-const AVG_TICKET = 89;
-const INDUSTRY_BENCHMARK = 14;
+const EXAMPLE_TICKET = 89;
+const TARGET_STOPS = 14;
 const WORK_DAYS = 250;
 
 function RevenueCalculator() {
   const [stops, setStops] = useState(8);
   const [trucks, setTrucks] = useState(2);
-  const [, setLocation] = useLocation();
-  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const scheduleRedirect = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    redirectTimer.current = setTimeout(() => setLocation("/onboarding"), 3000);
-  }, [setLocation]);
-
-  const gap = Math.max(0, INDUSTRY_BENCHMARK - stops);
-  const annualLeak = gap * trucks * AVG_TICKET * WORK_DAYS;
-  const weeklyLeak = Math.round(annualLeak / 50);
+  const gap = Math.max(0, TARGET_STOPS - stops);
+  const annualCapacityValue = gap * trucks * EXAMPLE_TICKET * WORK_DAYS;
+  const weeklyCapacityValue = Math.round(annualCapacityValue / 50);
 
   return (
     <div>
@@ -31,8 +24,8 @@ function RevenueCalculator() {
           <TrendingUp className="h-5 w-5 text-white" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-slate-900">Revenue Leak Calculator</h3>
-          <p className="text-sm text-slate-500">See exactly what unoptimized routes cost you</p>
+          <h3 className="text-xl font-bold text-slate-900">Route Capacity Scenario</h3>
+          <p className="text-sm text-slate-500">Explore what additional filled stops could be worth</p>
         </div>
       </div>
 
@@ -45,13 +38,11 @@ function RevenueCalculator() {
           <input
             type="range" min={4} max={18} value={stops}
             onChange={(e) => setStops(Number(e.target.value))}
-            onMouseUp={scheduleRedirect}
-            onTouchEnd={scheduleRedirect}
             className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
             <span>4 stops</span>
-            <span className="text-emerald-500 font-semibold">industry avg: {INDUSTRY_BENCHMARK} ↑</span>
+            <span className="text-emerald-500 font-semibold">example target: {TARGET_STOPS} ↑</span>
             <span>18 stops</span>
           </div>
         </div>
@@ -64,8 +55,6 @@ function RevenueCalculator() {
           <input
             type="range" min={1} max={15} value={trucks}
             onChange={(e) => setTrucks(Number(e.target.value))}
-            onMouseUp={scheduleRedirect}
-            onTouchEnd={scheduleRedirect}
             className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer accent-emerald-600"
           />
           <div className="flex justify-between text-xs text-slate-400 mt-2">
@@ -77,24 +66,25 @@ function RevenueCalculator() {
 
       {gap > 0 ? (
         <div className="bg-red-50 border-2 border-red-100 rounded-2xl p-6 text-center mb-4">
-          <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-2">Estimated Annual Leak</p>
-          <p className="text-5xl sm:text-6xl font-extrabold text-red-600 tracking-tight">${annualLeak.toLocaleString()}</p>
+          <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-2">Illustrative annual capacity</p>
+          <p className="text-5xl sm:text-6xl font-extrabold text-red-600 tracking-tight">${annualCapacityValue.toLocaleString()}</p>
           <p className="text-sm text-slate-500 mt-3">
-            That's <span className="font-bold text-slate-700">${weeklyLeak.toLocaleString()}/week</span> left on the table
+            That is <span className="font-bold text-slate-700">${weeklyCapacityValue.toLocaleString()}/week</span> if every added stop is booked and completed.
           </p>
         </div>
       ) : (
         <div className="bg-emerald-50 border-2 border-emerald-100 rounded-2xl p-6 text-center mb-4">
-          <p className="text-lg font-bold text-emerald-700">You're at or above the benchmark.</p>
-          <p className="text-sm text-slate-500 mt-1">PestFlow keeps you there and pushes further.</p>
+          <p className="text-lg font-bold text-emerald-700">You're at or above this example target.</p>
+          <p className="text-sm text-slate-500 mt-1">Your actual route capacity depends on travel time, service mix, and demand.</p>
         </div>
       )}
 
       <Link href="/onboarding" className="block">
         <Button className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base rounded-xl">
-          Fix this with PestFlow <ArrowRight className="ml-2 h-4 w-4" />
+          Plan routes with PestFlow <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </Link>
+      <p className="mt-3 text-xs leading-5 text-slate-500">Scenario assumes ${EXAMPLE_TICKET} per completed stop and {WORK_DAYS} workdays per year. It is not a forecast or a measured loss.</p>
     </div>
   );
 }
@@ -212,7 +202,7 @@ export function Widgets() {
             See what PestFlow can do <span className="text-emerald-600">for your operation</span>
           </h2>
           <p className="text-base text-slate-500 max-w-md mx-auto">
-            Two tools. Two minutes. A clear picture of where your money's going — and how to get it back.
+            Explore route capacity assumptions and see where manual work may slow your team down.
           </p>
         </div>
 

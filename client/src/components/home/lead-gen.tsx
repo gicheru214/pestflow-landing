@@ -1,290 +1,217 @@
+import { useRef, useState, type FormEvent } from "react";
+import { ArrowRight, CheckCircle2, ClipboardCheck, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
-import { BookOpen, CheckCircle2, ArrowRight, Star } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 import { analytics, EVENTS } from "@/lib/analytics";
-import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 
-type Stage = "gate" | "form" | "download" | "exit";
+type Answer = "yes" | "sometimes" | "no";
+type CheckId = "callback" | "capacity" | "invoice";
+type Answers = Partial<Record<CheckId, Answer>>;
+
+const checks: Array<{ id: CheckId; question: string; title: string; action: string }> = [
+  {
+    id: "callback",
+    question: "Does every missed call get a same-day follow-up?",
+    title: "Missed-call follow-up",
+    action: "Review the last 10 missed calls. Give each one an owner, a callback time, and a recorded outcome.",
+  },
+  {
+    id: "capacity",
+    question: "Can your team see open route capacity before promising an appointment?",
+    title: "Route capacity",
+    action: "Look at the next five route days. Mark open slots and long drives before your team books another visit.",
+  },
+  {
+    id: "invoice",
+    question: "Does every completed job reach an invoice without someone chasing it?",
+    title: "Job-to-invoice handoff",
+    action: "Compare the last 10 completed jobs with sent invoices. Assign an owner to every missing invoice.",
+  },
+];
+
+const answerLabels: Record<Answer, string> = {
+  yes: "Yes, consistently",
+  sometimes: "Sometimes",
+  no: "No or not sure",
+};
+
+function firstPriority(answers: Answers) {
+  return checks.find((check) => answers[check.id] === "no")
+    ?? checks.find((check) => answers[check.id] === "sometimes")
+    ?? null;
+}
 
 export function LeadGen() {
-  const [stage, setStage] = useState<Stage>("gate");
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    routes: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [answers, setAnswers] = useState<Answers>({});
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [emailAccepted, setEmailAccepted] = useState(false);
+  const [error, setError] = useState("");
+  const completedTracked = useRef(false);
+  const answeredCount = checks.filter((check) => answers[check.id]).length;
+  const complete = answeredCount === checks.length;
+  const priority = complete ? firstPriority(answers) : null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const choose = (id: CheckId, answer: Answer) => {
+    const next = { ...answers, [id]: answer };
+    if (answeredCount === 0) {
+      sessionStorage.setItem("pestflow_owner_checkup_started", "true");
+      analytics.track(EVENTS.LANDING.OWNER_CHECKUP_STARTED);
+    }
+    if (!completedTracked.current && checks.every((check) => next[check.id])) {
+      completedTracked.current = true;
+      analytics.track(EVENTS.LANDING.OWNER_CHECKUP_COMPLETED, {
+        priority: firstPriority(next)?.id ?? "none",
+      });
+    }
+    setAnswers(next);
+  };
 
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!complete || submitting || saved) return;
+    setSubmitting(true);
+    setError("");
     try {
       const response = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "newsletter",
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          companyName: `Routes: ${formData.routes || "unspecified"}`
-        })
+          firstName: firstName.trim(),
+          lastName: "",
+          email: email.trim(),
+          quizAnswers: {
+            source: "homepage_owner_checkup",
+            answers,
+            priority: priority?.id ?? "none",
+          },
+        }),
       });
       if (!response.ok) throw new Error("Submission failed");
-      const saved = await response.json().catch(() => null) as {
+      const result = await response.json().catch(() => null) as {
         playbookDelivery?: { accepted?: boolean };
       } | null;
-
-      analytics.identify(formData.email.trim(), {
-        $email: formData.email.trim(),
-        $name: `${formData.firstName} ${formData.lastName}`.trim(),
-        routes: formData.routes,
+      setSaved(true);
+      setEmailAccepted(result?.playbookDelivery?.accepted === true);
+      localStorage.setItem("pestflow_popup_submitted", "true");
+      localStorage.setItem("pestflow_popup_submitted_workflow_v2", "true");
+      analytics.identify(email.trim());
+      analytics.track(EVENTS.LANDING.OWNER_CHECKUP_LEAD_SAVED, {
+        priority: priority?.id ?? "none",
       });
-      analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { routes: formData.routes });
-      if (saved?.playbookDelivery?.accepted !== true) {
-        setIsSubmitting(false);
-        setStage("download");
-        return;
-      }
-      window.location.href = buildMobileFieldSuccessPath({
-        source: "homepage_playbook",
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        routes: formData.routes,
-        search: window.location.search,
-      });
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      setIsSubmitting(false);
+    } catch {
+      setError("We couldn't save your request. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const acceptGate = () => {
-    analytics.track(EVENTS.LANDING.NEWSLETTER_SIGNUP, { gate: "owner_yes" });
-    setStage("form");
-  };
-
-  const declineGate = () => {
-    analytics.track(EVENTS.LANDING.POPUP_DISMISSED, { gate: "owner_no", source: "leadgen" });
-    setStage("exit");
-  };
-
   return (
-    <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] opacity-50" />
-      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[300px] h-[300px] bg-blue-500/20 rounded-full blur-[80px] opacity-50" />
+    <section id="owner-checkup" className="relative overflow-hidden bg-slate-900 py-20 text-white md:py-24">
+      <div className="absolute -right-20 -top-20 h-[400px] w-[400px] rounded-full bg-emerald-500/10 blur-[90px]" />
+      <div className="container relative z-10 mx-auto grid gap-10 px-4 md:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+        <div>
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-sm font-semibold text-emerald-300">
+            <ClipboardCheck className="h-4 w-4" /> Free owner checkup
+          </div>
+          <h2 className="max-w-xl font-heading text-3xl font-extrabold leading-tight md:text-4xl">
+            Find the first handoff to fix in your pest control business.
+          </h2>
+          <p className="mt-5 max-w-lg text-base leading-7 text-slate-300">
+            Answer three practical questions about calls, routes, and invoices. Get a useful next step on this page before sharing any contact details.
+          </p>
+          <div className="mt-7 space-y-3 text-sm text-slate-200">
+            <p className="flex gap-3"><CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" /> About two minutes</p>
+            <p className="flex gap-3"><CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" /> No account needed</p>
+            <p className="flex gap-3"><CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" /> Optional full 27-point playbook by email</p>
+          </div>
+        </div>
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary-foreground font-medium mb-6">
-              <BookOpen className="w-4 h-4" />
-              Free 27-Point Owner Scorecard
-            </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold font-heading mb-4 leading-tight">
-              Find the revenue leaks hiding between the sale, the route, and the invoice.
-            </h2>
-            <p className="text-lg text-slate-300 mb-8 max-w-lg">
-              Score 27 operating checks across recurring revenue, route capacity, technician closeout, estimates, retention, and owner visibility.
-            </p>
-
-            <div className="space-y-3 mb-8">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">A 0–2 score for every check, based on visible proof</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">The exact records, owners, dates, and queues to look for</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="text-slate-200">A one-page, 7-day plan for fixing the three worst leaks</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-6 max-w-lg">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                <div className="text-2xl font-extrabold text-emerald-400">27</div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Operating checks</div>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 text-center">
-                <div className="text-2xl font-extrabold text-emerald-400 flex items-center justify-center gap-0.5">
-                  6 <Star className="w-4 h-4 fill-emerald-400" />
-                </div>
-                <div className="text-[11px] text-slate-400 uppercase tracking-wide">Leak categories</div>
-              </div>
-            </div>
-
-            <div className="max-w-lg rounded-xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm text-slate-200">Every check asks for evidence another person can find. If the process only lives in someone’s memory, it does not earn the point.</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 shadow-2xl"
-          >
-            {stage === "gate" && (
-              <>
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wide uppercase text-emerald-300 mb-4">
-                  One Quick Question
-                </div>
-                <h3 className="text-2xl font-extrabold mb-2 leading-tight">
-                  Are you a pest control business owner?
-                </h3>
-                <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                  Be honest. The next page is built for owners ready to make more money. If that's not you, no harm done.
-                </p>
-
-                <div className="space-y-3">
-                  <Button
-                    onClick={acceptGate}
-                    size="lg"
-                    className="w-full min-h-[56px] h-auto py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-normal text-left leading-snug rounded-xl"
-                  >
-                    Yes — I'm a pest control owner and I want to make more money
-                  </Button>
-                  <Button
-                    onClick={declineGate}
-                    variant="outline"
-                    size="lg"
-                    className="w-full min-h-[52px] h-auto py-3 px-4 bg-transparent border-white/15 text-slate-400 hover:bg-white/5 hover:text-slate-200 font-medium whitespace-normal text-left leading-snug rounded-xl"
-                  >
-                    No — I'm not a pest control owner. Even if I was, I don't want to make more money
-                  </Button>
-                </div>
-
-              </>
-            )}
-
-            {stage === "form" && (
-              <>
-                <h3 className="text-xl font-bold mb-2">Get the 27-point playbook</h3>
-                <p className="text-slate-400 text-sm mb-6">
-                  Download it instantly, score your operation, and circle the three zeroes closest to cash or customer trust.
-                </p>
-
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="first-name" className="text-sm font-medium text-slate-300">First Name</label>
-                      <Input
-                        id="first-name"
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        placeholder="John"
-                        required
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="last-name" className="text-sm font-medium text-slate-300">Last Name</label>
-                      <Input
-                        id="last-name"
-                        value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        placeholder="Doe"
-                        required
-                        className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-slate-300">Work Email</label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="john@yourcompany.com"
-                      required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="routes" className="text-sm font-medium text-slate-300">How many routes do you currently run?</label>
-                    <select
-                      id="routes"
-                      value={formData.routes}
-                      onChange={(e) => setFormData({ ...formData, routes: e.target.value })}
-                      required
-                      className="w-full h-10 rounded-md bg-slate-800/50 border border-slate-700 text-white text-sm px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-2xl sm:p-7">
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <h3 className="text-xl font-bold">Your two-minute checkup</h3>
+            <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-bold text-emerald-300">{answeredCount} of 3</span>
+          </div>
+          <div className="space-y-5">
+            {checks.map((check, index) => (
+              <fieldset key={check.id} className="border-b border-white/10 pb-5 last:border-b-0 last:pb-0">
+                <legend className="mb-3 text-sm font-semibold leading-6 text-white">
+                  <span className="mr-2 text-emerald-300">{index + 1}.</span>{check.question}
+                </legend>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {(["yes", "sometimes", "no"] as const).map((answer) => (
+                    <button
+                      key={answer}
+                      type="button"
+                      aria-pressed={answers[check.id] === answer}
+                      onClick={() => choose(check.id, answer)}
+                      className={`min-h-11 rounded-lg border px-3 py-2 text-left text-sm font-medium transition-colors sm:text-center ${answers[check.id] === answer
+                        ? "border-emerald-400 bg-emerald-500/20 text-white"
+                        : "border-white/15 bg-slate-800/70 text-slate-300 hover:border-emerald-400/60 hover:text-white"}`}
                     >
-                      <option value="" disabled>Select one</option>
-                      <option value="0">Just getting started (0 routes)</option>
-                      <option value="1-2">1–2 routes</option>
-                      <option value="3-5">3–5 routes</option>
-                      <option value="6-10">6–10 routes</option>
-                      <option value="11+">11+ routes</option>
-                    </select>
-                  </div>
+                      {answerLabels[answer]}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
+          </div>
 
-                  <Button
-                    disabled={isSubmitting}
-                    size="lg"
-                    className="w-full min-h-[52px] h-auto py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-base whitespace-normal leading-snug rounded-lg"
-                  >
-                    {isSubmitting ? "Preparing..." : (
-                      <>Send Me The Revenue Leak Playbook <ArrowRight className="ml-2 h-4 w-4 shrink-0" /></>
-                    )}
-                  </Button>
+          {complete && (
+            <div className="mt-7 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-5" role="status" aria-live="polite">
+              <p className="text-xs font-bold uppercase tracking-wide text-emerald-300">Your first fix</p>
+              <h4 className="mt-2 text-xl font-bold">{priority?.title ?? "Keep your handoffs visible"}</h4>
+              <p className="mt-2 text-sm leading-6 text-slate-200">
+                {priority?.action ?? "Your answers suggest these handoffs are already tracked. Review 10 recent calls, route days, and invoices to confirm the process holds up in practice."}
+              </p>
+              <p className="mt-3 text-xs text-slate-400">This is a starting point from your answers, not a measured revenue loss or a full business audit.</p>
+            </div>
+          )}
 
-                  <p className="text-xs text-center text-slate-500 mt-4">
-                    Includes the $1M Playbook. We respect your inbox — unsubscribe anytime.
-                  </p>
-                </form>
-              </>
-            )}
-
-            {stage === "download" && (
-              <div className="space-y-4">
-                <CheckCircle2 className="h-9 w-9 text-emerald-400" />
-                <h3 className="text-xl font-bold">Your request was saved</h3>
-                <p role="status" className="text-sm text-slate-300">
-                  Email delivery is temporarily unavailable. Download the playbook here; there is no need to submit again.
-                </p>
-                <a href="/pest-control-revenue-leak-playbook.pdf" download className="block rounded-lg bg-emerald-600 px-4 py-3 text-center font-bold text-white hover:bg-emerald-500">
-                  Download the free playbook
-                </a>
-                <a href={buildMobileFieldSuccessPath({ source: "homepage_playbook", firstName: formData.firstName, lastName: formData.lastName, email: formData.email, routes: formData.routes, search: window.location.search })} className="block text-center text-sm text-emerald-300 underline">
-                  Continue to PestFlow
-                </a>
+          {complete && !saved && (
+            <form onSubmit={submit} className="mt-6 space-y-3 rounded-xl border border-white/10 bg-slate-800/60 p-5">
+              <h4 className="text-lg font-bold">Want the full 27-point playbook?</h4>
+              <p className="text-sm leading-6 text-slate-300">Get the deeper checks and a seven-day action plan by email.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="text-xs font-medium text-slate-300">First name
+                  <Input required value={firstName} onChange={(event) => setFirstName(event.target.value)} autoComplete="given-name" className="mt-1 border-slate-600 bg-slate-900 text-white" />
+                </label>
+                <label className="text-xs font-medium text-slate-300">Email
+                  <Input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" className="mt-1 border-slate-600 bg-slate-900 text-white" />
+                </label>
               </div>
-            )}
+              {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
+              <Button disabled={submitting} type="submit" className="w-full bg-emerald-600 font-bold text-white hover:bg-emerald-500">
+                {submitting ? "Saving your request…" : "Email me the full playbook"}<ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <p className="text-xs text-slate-400">We'll email the playbook and practical PestFlow tips. Unsubscribe anytime.</p>
+            </form>
+          )}
 
-            {stage === "exit" && (
-              <>
-                <h3 className="text-xl font-bold mb-3">No worries — this one's not for you.</h3>
-                <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-                  The playbook and quiz are built specifically for pest control owners ready to grow. If that changes, you know where to find us.
-                </p>
-                <Button
-                  variant="outline"
-                  onClick={() => setStage("gate")}
-                  className="w-full bg-transparent border-white/15 text-slate-300 hover:bg-white/5 hover:text-white"
-                >
-                  Actually, take me back
-                </Button>
-              </>
-            )}
-          </motion.div>
+          {saved && (
+            <div className="mt-6 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-5" role="status">
+              <h4 className="font-bold">Your request is saved</h4>
+              <p className="mt-1 text-sm text-slate-200">
+                {emailAccepted ? "The playbook is on its way." : "Email delivery is temporarily unavailable. You can download the playbook now."}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
+                <a href="/pest-control-revenue-leak-playbook.pdf" download className="text-emerald-300 underline">Download the playbook</a>
+                <a href="/growth-kit?download=1" className="text-emerald-300 underline">Open the full toolkit</a>
+              </div>
+            </div>
+          )}
+
+          {complete && (
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+              {!saved && <button type="button" onClick={() => { setAnswers({}); completedTracked.current = false; }} className="flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white">
+                <RotateCcw className="h-3.5 w-3.5" /> Start over
+              </button>}
+              <a href="/onboarding" className="text-sm font-semibold text-emerald-300 hover:text-emerald-200">Try PestFlow <ArrowRight className="inline h-4 w-4" /></a>
+            </div>
+          )}
         </div>
       </div>
     </section>
