@@ -225,6 +225,7 @@ function calendlyEmbedUrl(
   email: string,
   phone: string,
   selectedDate?: string,
+  embedded = false,
 ) {
   const campaign = campaignFromUrl();
   const params = new URLSearchParams(window.location.search);
@@ -235,6 +236,7 @@ function calendlyEmbedUrl(
     ...Object.fromEntries(LEAD_AD_CLICK_KEYS.map((key) => [key, sessionStorage.getItem(key)])),
   });
   return buildPestFlowCalendlyUrl({
+    embedDomain: embedded ? window.location.host : undefined,
     name,
     email,
     phone,
@@ -1055,6 +1057,7 @@ export function PlaybookActivationPopup() {
                 step === "workflow" ? email : "",
                 step === "workflow" ? phone : "",
                 selectedCalendarDate,
+                true,
               )}
               title="Book a PestFlow setup call"
               className={`h-full min-h-[420px] w-full bg-white transition-opacity duration-150 ${

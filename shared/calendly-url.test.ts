@@ -35,6 +35,22 @@ test("preserves inbound campaign attribution in the Calendly handoff", () => {
   assert.equal(url.searchParams.get("utm_content"), "popup-b");
 });
 
+test("enables parent-window booking notifications only for embedded calendars", () => {
+  const embedded = new URL(buildPestFlowCalendlyUrl({
+    embedDomain: "pestflow.org",
+    utmSource: "google",
+    utmMedium: "cpc",
+    utmCampaign: "24461240041",
+  }));
+  assert.equal(embedded.searchParams.get("embed_domain"), "pestflow.org");
+  assert.equal(embedded.searchParams.get("embed_type"), "Inline");
+  assert.equal(embedded.searchParams.get("utm_campaign"), "24461240041");
+
+  const direct = new URL(buildPestFlowCalendlyUrl({}));
+  assert.equal(direct.searchParams.has("embed_domain"), false);
+  assert.equal(direct.searchParams.has("embed_type"), false);
+});
+
 test("attributes Soro article demo bookings to the exact article", () => {
   const url = new URL(buildSoroArticleCalendlyUrl(" pest-control-routing-guide "));
 
