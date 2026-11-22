@@ -3,17 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, PlayCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import videoBackground from "@assets/generated_videos/pest_control_professional_suburban.mp4";
+import videoPoster from "@assets/generated_videos/pest_control_professional_suburban_poster.jpg";
 import { useState } from "react";
 import { DemoVideoModal } from "./auto-popup";
 import { analytics, EVENTS } from "@/lib/analytics";
 
-export function Hero({
-  variant,
-  disableBackgroundVideo = false,
-}: {
-  variant?: "tech";
-  disableBackgroundVideo?: boolean;
-} = {}) {
+export function Hero({ variant }: { variant?: "tech" } = {}) {
   const isTech = variant === "tech";
   const [showDemo, setShowDemo] = useState(false);
 
@@ -22,20 +17,18 @@ export function Hero({
       <DemoVideoModal open={showDemo} onOpenChange={setShowDemo} />
       {/* Video Background */}
       <div className="absolute inset-0 w-full h-full">
-        {!disableBackgroundVideo && (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 h-full w-full object-cover"
-          >
-            <source src={videoBackground} type="video/mp4" />
-          </video>
-        )}
-        {disableBackgroundVideo && (
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
-        )}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={videoPoster}
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={videoBackground} type="video/mp4" />
+        </video>
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-transparent" />
       </div>
