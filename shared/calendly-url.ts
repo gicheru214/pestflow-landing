@@ -10,6 +10,7 @@ export type CalendlyPrefill = {
   utmMedium?: string | null;
   utmCampaign?: string | null;
   utmContent?: string | null;
+  embedDomain?: string;
 };
 
 function phoneDigits(value = "") {
@@ -28,8 +29,15 @@ export function buildPestFlowCalendlyUrl({
   utmMedium,
   utmCampaign,
   utmContent,
+  embedDomain,
 }: CalendlyPrefill) {
   const url = new URL(PESTFLOW_CALENDLY_URL);
+  // Direct iframes need these parameters for Calendly's postMessage events,
+  // including the confirmed booking event used by Google Ads.
+  if (embedDomain) {
+    url.searchParams.set("embed_domain", embedDomain);
+    url.searchParams.set("embed_type", "Inline");
+  }
   url.searchParams.set("hide_gdpr_banner", "1");
   url.searchParams.set("hide_event_type_details", "1");
   url.searchParams.set("background_color", "ffffff");
