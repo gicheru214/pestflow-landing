@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { insertJobSchema, insertCustomerSchema, insertServiceSchema, insertInvoiceSchema, insertSubmissionSchema } from "@shared/schema";
 import { leadAdSourceFromRequest, MARKETING_ATTRIBUTION_COOKIE } from "@shared/lead-ad-source";
 import { isValidNanpPhone, nanpNationalDigits } from "@shared/phone";
-import { CALLBACK_CONSENT_VERSION, CALLBACK_DISCLOSURE } from "@shared/callback";
+import { withoutCallbackConsent } from "@shared/callback";
 import { z } from "zod";
 import {
   sendReviewRequest,
@@ -65,28 +65,6 @@ function hasAdminAccess(req: Request): boolean {
 function hasAuditAccess(req: Request): boolean {
   return hasAdminAccess(req)
     || configuredSecretMatches(req.get("x-audit-secret"), process.env.AUDIT_API_SECRET);
-}
-
-function withCallbackConsent<T extends Record<string, unknown>>(req: Request, body: T): T {
-  const existingAnswers = body.quizAnswers && typeof body.quizAnswers === "object" && !Array.isArray(body.quizAnswers)
-    ? { ...body.quizAnswers as Record<string, unknown> }
-    : {};
-  // A submitted quiz answer is never proof of consent. The completed phone
-  // form must send the callback request after showing the phone disclosure.
-  delete existingAnswers.aiSalesCallbackConsent;
-  if (body.callbackConsent === true && isValidNanpPhone(body.phone)) {
-    existingAnswers.aiSalesCallbackConsent = {
-      granted: true,
-      version: CALLBACK_CONSENT_VERSION,
-      recordedAt: new Date().toISOString(),
-      formType: body.type,
-      page: req.get("referer") || null,
-      method: "phone-entry-form-submit",
-      signedBy: [body.firstName, body.lastName].filter(Boolean).join(" ") || body.name || null,
-      disclosure: CALLBACK_DISCLOSURE,
-    };
-  }
-  return { ...body, callbackConsent: undefined, quizAnswers: existingAnswers };
 }
 
 function parseCookies(value: string | undefined): Record<string, string> {
@@ -870,7 +848,7 @@ export async function registerRoutes(
     try {
       const { name, email, phone, companyName, businessType, businessTypeOther, ownerRelationships, introTiming, ownerSituation, utmSource, utmCampaign, utmContent, draftId, callbackConsent } = parsed.data;
       const [firstName, ...rest] = name.split(/\s+/);
-      const values = withCallbackConsent(req, {
+      const values = withoutCallbackConsent({
         type: "referral_partner",
         firstName,
         lastName: rest.join(" ") || "—",
@@ -916,8 +894,7 @@ export async function registerRoutes(
         if (body.employer && !body.companyName) body.companyName = body.employer;
         if (body.ownerName && !body.technicians) body.technicians = `Owner: ${body.ownerName}`;
       }
-      const completePhoneForm = body.type === "newsletter" || body.type === "tech_lead" || body.type === "trial_lead";
-      const formData = completePhoneForm ? withCallbackConsent(req, body) : { ...body, callbackConsent: undefined };
+      const formData = withoutCallbackConsent(body);
       const validatedData = insertSubmissionSchema.parse({
         ...formData,
         leadAdSource: leadAdSourceFromRequest(

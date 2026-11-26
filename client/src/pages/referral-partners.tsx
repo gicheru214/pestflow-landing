@@ -4,7 +4,6 @@ import logoImage from "@assets/pestflow-brand-small.jpg";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { rememberReferralPartnerApplication } from "@/lib/referralPartnerConversion";
 import { limitPhoneInput, nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";
-import { CallbackDisclosure } from "@/components/callback-consent";
 
 type Application = {
   name: string;
@@ -82,7 +81,7 @@ function PartnerApplicationForm({ form, update, submit, sending, error, compact 
     <div className="flex gap-2" aria-hidden="true"><span className="h-1.5 flex-1 rounded-full bg-[#348a1a]" /><span className={`h-1.5 flex-1 rounded-full ${step === 2 ? "bg-[#348a1a]" : "bg-[#e0f5d5]"}`} /></div>
     {step === 1 ? <>
       <label className={labelClass}>Full name <span aria-hidden="true">*</span><input required minLength={2} autoComplete="name" className={inputClass} value={form.name} onChange={(event) => { update("name", event.target.value); setStepError(""); }} /></label>
-      <label className={labelClass}>Phone number (optional AI callback)<span className="relative block"><span aria-hidden="true" className="absolute left-4 top-2.5 text-sm font-semibold text-[#225810] sm:top-[1.16rem]">+1</span><input type="tel" inputMode="numeric" autoComplete="tel-national" aria-label="Phone number after +1" placeholder="2145550123" className={`${inputClass} pl-12`} value={form.phone} onChange={(event) => { update("phone", limitPhoneInput(event.target.value)); setStepError(""); }} /></span></label>
+      <label className={labelClass}>Phone number (optional)<span className="relative block"><span aria-hidden="true" className="absolute left-4 top-2.5 text-sm font-semibold text-[#225810] sm:top-[1.16rem]">+1</span><input type="tel" inputMode="numeric" autoComplete="tel-national" aria-label="Phone number after +1" placeholder="2145550123" className={`${inputClass} pl-12`} value={form.phone} onChange={(event) => { update("phone", limitPhoneInput(event.target.value)); setStepError(""); }} /></span></label>
       <SelectField label="What does your business do?" value={form.businessType} onChange={(value) => { update("businessType", value); setStepError(""); }} options={[{value:"agency",label:"Marketing agency"},{value:"bookkeeper",label:"Bookkeeping / accounting"},{value:"supplier",label:"Supplier / distributor"},{value:"consultant",label:"Consulting"},{value:"other",label:"Something else"}]} />
       {form.businessType === "other" && <label className={labelClass}>Describe your business <span aria-hidden="true">*</span><input required maxLength={120} placeholder="What service do you provide?" className={inputClass} value={form.businessTypeOther} onChange={(event) => { update("businessTypeOther", event.target.value); setStepError(""); }} /></label>}
       {stepError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{stepError}</p>}
@@ -94,7 +93,6 @@ function PartnerApplicationForm({ form, update, submit, sending, error, compact 
       {(!compact || optionalOpen) && <label className={`${labelClass} ${compact ? "sm:hidden" : ""}`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={compact ? 2 : 3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-base font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15 sm:text-sm" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
       {compact && <label className={`${labelClass} hidden sm:block`}>What kind of owner comes to mind? <span className="font-normal text-[#718676]">(optional)</span><textarea rows={3} maxLength={500} placeholder="For example: starting out, using paper, or thinking about changing software" className="mt-1.5 w-full resize-y rounded-xl border border-[#c0ecac] bg-white px-4 py-3 text-sm font-normal outline-none transition focus:border-[#348a1a] focus:ring-2 focus:ring-[#348a1a]/15" value={form.ownerSituation} onChange={(event) => update("ownerSituation", event.target.value)} /></label>}
       {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-      <CallbackDisclosure />
       <div className="flex gap-2.5 sm:gap-3"><button type="button" disabled={sending} onClick={() => { setStep(1); onStepChange?.(1); }} className={`rounded-xl border border-[#c0ecac] px-4 font-semibold text-[#225810] hover:bg-[#f2fbee] sm:px-5 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>Back</button><button type="submit" disabled={sending} className={`flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#348a1a] px-3 font-bold text-white transition hover:bg-[#296e14] disabled:cursor-wait disabled:opacity-60 sm:px-6 ${compact ? "py-2.5 sm:py-4" : "py-4"}`}>{sending ? "Sending…" : "Apply to partner"}<ArrowRight className="h-5 w-5" /></button></div>
     </>}
     <div className="hidden" aria-hidden="true"><label>Website<input tabIndex={-1} autoComplete="off" value={form.website} onChange={(event) => update("website", event.target.value)} /></label></div>
@@ -201,7 +199,7 @@ export default function ReferralPartners() {
           ...form,
           draftId: draftId.current,
           phone: nanpNationalDigits(form.phone),
-          callbackConsent: Boolean(form.phone.trim()),
+          callbackConsent: false,
           utmSource: params.get("utm_source") || "",
           utmCampaign: params.get("utm_campaign") || "",
           utmContent: params.get("utm_content") || "",

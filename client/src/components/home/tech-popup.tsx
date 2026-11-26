@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Wrench, Building2 } from "lucide-react";
 import logoImage from "@assets/pestflow-brand-small.jpg";
-import { CallbackDisclosure } from "@/components/callback-consent";
 import { nanpNationalDigits, nanpPhoneErrorMessage } from "@shared/phone";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
@@ -89,7 +88,7 @@ export function TechPopup() {
       role: "technician",
       source: "tech-landing",
       timestamp: new Date().toISOString(),
-      callbackConsent: Boolean(form.phone.trim()),
+      callbackConsent: false,
     };
 
     try {
@@ -286,7 +285,7 @@ export function TechPopup() {
                     <p className="text-[10px] text-slate-400 mt-1">Any email works — just use your work one if you have it.</p>
                   </Field>
 
-                  <Field label="Phone Number (optional AI callback)" error={errors.phone}>
+                  <Field label="Phone Number (optional)" error={errors.phone}>
                     <Input
                       type="tel"
                       placeholder="(555) 000-0000"
@@ -317,7 +316,6 @@ export function TechPopup() {
                 </div>
 
                 <div className="mt-4">
-                  <CallbackDisclosure />
                 </div>
                 {errors.form && <p role="alert" className="mt-3 text-xs text-red-600">{errors.form}</p>}
 
