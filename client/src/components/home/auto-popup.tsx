@@ -19,7 +19,6 @@ import {
 } from "@shared/phone";
 import { buildMobileFieldSuccessPath } from "@/lib/mobileFieldHandoff";
 import { BrandLogo } from "@/components/brand-logo";
-import { CallbackDisclosure } from "@/components/callback-consent";
 
 const GOOGLE_CLIENT_ID = "65383864801-kd754q4cjeep88638fus0e48kib9s4ts.apps.googleusercontent.com";
 
@@ -285,7 +284,7 @@ export function AutoPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId,
-          callbackConsent: Boolean(normalizedPhone),
+          callbackConsent: false,
         }),
       });
       if (!response.ok) {
@@ -461,7 +460,7 @@ export function AutoPopup() {
 
                   <div>
                     <label className="text-xs font-medium text-slate-400 mb-1 block">
-                      Phone (optional AI callback)
+                      Phone (optional)
                     </label>
                     <div
                       className={`flex h-9 overflow-hidden rounded-md border bg-white/5 transition-shadow focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#0d1117] ${
@@ -509,8 +508,6 @@ export function AutoPopup() {
                     />
                     {emailError && <p className="text-red-400 text-xs mt-0.5">{emailError}</p>}
                   </div>
-
-                  <CallbackDisclosure dark />
 
                   <Button
                     onClick={handleGuideSubmit}

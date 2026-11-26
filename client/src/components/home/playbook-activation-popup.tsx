@@ -14,7 +14,6 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CallbackDisclosure } from "@/components/callback-consent";
 import { analytics, EVENTS } from "@/lib/analytics";
 import { trackCalendlyDemoBooking } from "@/lib/googleAdsEvents";
 import { beginMetaLeadEvent, fireMetaLeadOnce } from "@/lib/metaLeadEvent";
@@ -541,7 +540,7 @@ export function PlaybookActivationPopup() {
           companyName: "Guide Request",
           technicians: "N/A",
           metaEventId: preferredMetaEventId,
-          callbackConsent: Boolean(normalizedPhone),
+          callbackConsent: false,
         }),
       });
       if (!response.ok) throw new Error("capture_failed");
@@ -710,7 +709,7 @@ export function PlaybookActivationPopup() {
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-slate-400">
-                      Phone (optional AI callback)
+                      Phone (optional)
                     </label>
                     <div
                       className={`flex h-9 overflow-hidden rounded-md border bg-white/5 transition-shadow focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 focus-within:ring-offset-[#0d1117] ${
@@ -774,7 +773,6 @@ export function PlaybookActivationPopup() {
                       {submitError}
                     </p>
                   )}
-                  <CallbackDisclosure dark />
                   <Button
                     type="button"
                     disabled={submitting}
